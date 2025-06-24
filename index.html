@@ -24,27 +24,7 @@
         @keyframes charge-breath { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .screen { width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         .screen.active { opacity: 1; visibility: visible; z-index: 1; }
-/* ▼▼▼ 请用这段修正后的代码替换旧的 .header 规则 ▼▼▼ */
-.header {
-    position: relative;
-    z-index: 15;
-    flex-shrink: 0;
-    padding: 15px 20px;
-    padding-top: 45px;
-    background-color: rgba(247, 247, 247, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
-    font-weight: 600;
-    /* --- 核心修正 --- */
-    width: 100%;
-    box-sizing: border-box; /* 让 padding 被包含在 width 内 */
-}
-/* ▲▲▲ 替换结束 ▲▲▲ */
+        .header { position: relative; z-index: 15; flex-shrink: 0; padding: 15px 20px; padding-top: 45px; background-color: rgba(247, 247, 247, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 600; }
         .header .header-actions { display: flex; align-items: center; gap: 15px; }
         .header .back-btn, .header .action-btn { font-size: 24px; cursor: pointer; width: 30px; text-align: center; color: var(--accent-color); display: flex; align-items: center; justify-content: center; }
 
@@ -113,11 +93,12 @@
         #chat-messages { flex-grow: 1; overflow-y: auto; padding: 10px; padding-top: 110px; margin-top: -80px; display: flex; flex-direction: column; gap: 15px; }
         #load-more-btn { text-align: center; padding: 10px; color: var(--accent-color); font-size: 14px; cursor: pointer; background-color: transparent; border: none; width: 100%; }
         #load-more-btn:hover { text-decoration: underline; }
-        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+
+.message-wrapper { display: flex; flex-direction: column; max-width: 85%; margin-bottom: 18px; position: relative; /* <<< --- 核心修正：就是它！给时间戳一个定位的家！ */ }
+
         .message-wrapper.user {
     align-self: flex-end;
     align-items: flex-end;
-    margin-right: 1px; 
       }
         .message-wrapper.ai { align-self: flex-start; align-items: flex-start; }
         .sender-name { font-size: 11px; color: #666; margin-bottom: 3px; }
@@ -126,9 +107,39 @@
         .message-bubble.selected::after { content: '✔'; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); background-color: var(--accent-color); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .message-bubble.user.selected::after { left: auto; right: -10px; }
         .avatar-group { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; width: 35px;margin-top: -10px; }
-        .message-bubble .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
-        .timestamp { font-size: 8px; color: #b0b0b0; position: relative;top: -5px;}
-        .message-bubble .content { padding: 6px 10px; word-break: break-word; line-height: 1.3; font-size: 13px; position: relative; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0), 0 3px 6px rgba(0,0,0,0); border: 0px solid rgba(255, 255, 255, 0.2); transition: background-color 0.3s, color 0.3s; }
+
+/* ▼▼▼ 用这块正确的代码替换上面的代码 ▼▼▼ */
+.message-bubble .avatar { 
+    width: 34px; 
+    height: 34px; 
+    border-radius: 20%; /* <--- 修正：改回了方形圆角 */
+    object-fit: cover; 
+}
+
+/* ▼▼▼ 用下面这两条新规则，完整替换掉上面那一条 ▼▼▼ */
+
+/* 默认时间戳样式 (用于对方/AI) */
+.message-bubble.ai + .timestamp {
+    position: absolute;
+    bottom: -18px;
+    right: 5px; /* 定位在右边 */
+    font-size: 11px;
+    color: #888;
+    text-shadow: 0 0 3px rgba(255,255,255,0.6);
+}
+
+/* 用户的时间戳样式 */
+.message-bubble.user + .timestamp {
+    position: absolute;
+    bottom: -18px;
+    left: 5px; /* 关键：定位在左边 */
+    font-size: 11px;
+    color: #888;
+    text-shadow: 0 0 3px rgba(255,255,255,0.6);
+}
+
+/* ▲▲▲ 替换结束 ▲▲▲ */
+
         .message-bubble.user { flex-direction: row-reverse; }
         #typing-indicator { align-self: flex-start; display: none; margin: 0 10px 10px; color: var(--text-secondary); }
         #chat-input-area { flex-shrink: 0; padding: 8px; background-color: rgba(247, 247, 247, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 5px; }
@@ -208,10 +219,36 @@
         .select-box .selected-options-text { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
         .select-box .arrow-down { margin-left: auto; font-size: 10px; color: var(--text-secondary); transition: transform 0.2s; }
         .select-box.expanded .arrow-down { transform: rotate(180deg); }
-        .checkboxes-container { display: none; position: absolute; top: 105%; left: 0; right: 0; max-height: 150px; overflow-y: auto; background-color: #fff; border: 1px solid var(--border-color); border-radius: 8px; z-index: 101; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+.checkboxes-container {
+    display: none;
+    position: absolute;
+    /* 核心修改：不再使用 top，而是用 margin-top 来创造间距，更稳定 */
+    top: 100%; 
+    margin-top: 5px; /* <-- 新增：向下推开5像素的距离 */
+    left: 0;
+    right: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    z-index: 101;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
         .checkboxes-container.visible { display: block; }
         .checkboxes-container label { display: block; padding: 10px 12px; cursor: pointer; font-weight: normal; color: var(--text-primary); }
-        .checkboxes-container label:hover { background-color: #f5f5f5; }
+
+.checkboxes-container label {
+    display: block;
+    padding: 12px 15px; /* <-- 修改：增加了上下和左右的内边距，让每一行更高更宽 */
+    cursor: pointer;
+    font-weight: normal;
+    color: var(--text-primary);
+    font-size: 15px; /* <-- 新增：将字体大小从默认值放大到15px */
+}
+
         .checkboxes-container input { margin-right: 10px; vertical-align: middle; }
         .bg-upload-container { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
         .bg-preview-img { max-width: 120px; max-height: 80px; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; display: none; }
@@ -226,8 +263,28 @@
         .voice-waveform div { width: 3px; background-color: currentColor; border-radius: 2px; animation: wave-quiet 1.5s ease-in-out infinite; }
         @keyframes wave-quiet { 0%, 100% { height: 2px; } 50% { height: 10px; } }
         .voice-waveform div:nth-child(2) { animation-delay: 0.2s; } .voice-waveform div:nth-child(3) { animation-delay: 0.4s; } .voice-waveform div:nth-child(4) { animation-delay: 0.6s; } .voice-waveform div:nth-child(5) { animation-delay: 0.8s; }
-        .voice-duration { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.voice-duration {
+    /* --- 核心修正 --- */
+    font-size: var(--chat-font-size, 13px);
+    /* --- 修正结束 --- */
+    font-weight: 500;
+    color: var(--text-secondary);
+}
         .message-bubble.user .voice-duration { color: #3e6224; }
+
+/* ▼▼▼ 将下面这段代码，粘贴到上面那两行规则的【前面】 ▼▼▼ */
+
+/* 通用内容区样式，为时间戳和字体大小做准备 */
+.message-bubble .content {
+    position: relative; /* 关键：让它成为时间戳的定位父级 */
+    /* --- 核心修正：让文字大小听从滑块的指挥！ --- */
+    font-size: var(--chat-font-size, 16px);
+    /* --- 修正结束 --- */
+    padding: 8px 12px; /* 把内边距也统一放在这里 */
+    line-height: 1.5;  /* 增加行高，让文字不那么拥挤 */
+}
+
+/* ▲▲▲ 粘贴结束 ▲▲▲ */
 
         /* === 气泡主题样式 === */
         .message-bubble.user .content { background-color: rgba(255, 255, 255, 0.75); color: #585858; border-radius: 8px 2px 8px 8px; }
@@ -243,12 +300,6 @@
     opacity: 1; 
     z-index: 1;
 }
-
-.message-bubble.user .avatar-group {
-    margin-right: 22px; 
-}
-
-
       
         #chat-messages[data-theme="pink_blue"] .message-bubble.user .content { background-color: #fff0f6; color: #432531; }
         #chat-messages[data-theme="pink_blue"] .message-bubble.ai .content { background-color: #eff7ff; color: #263a4e; }
@@ -347,6 +398,9 @@
         #battery-alert-modal.visible .battery-alert-content { transform: scale(1); }
         #battery-alert-image { max-width: 100px; max-height: 100px; margin-bottom: 15px; }
         #battery-alert-text { font-size: 16px; font-weight: 500; color: #333; margin: 0; line-height: 1.4; }
+
+/* ▼▼▼ 然后，将【基础版本】中正确的 CSS 粘贴到刚才删除的位置 ▼▼▼ */
+
 /* === 头像框相关样式 (这是新添加的) === */
 .avatar-with-frame {
     position: relative; /* 这是为了让头像框能叠在头像上 */
@@ -374,13 +428,7 @@
     z-index: 2; /* 头像框在上 */
     pointer-events: none; /* 让头像框不影响鼠标点击 */
 }
-
-.message-bubble .avatar { /* 稍微调整一下，确保头像本身也能显示 */
-    width: 34px;
-    height: 34px;
-    border-radius: 20%;
-    object-fit: cover;
-}
+/* ▲▲▲ 粘贴区域结束 ▲▲▲ */
 
 /* === 头像框选择模态框样式 (这是新添加的) === */
 .change-frame-btn {
@@ -547,14 +595,14 @@
     background-color: #f0f2f5;
 }
 
-/* ▼▼▼ 请用这段修正后的代码替换旧的 .qzone-header 规则 ▼▼▼ */
 .qzone-header {
+    /* position: absolute;  <-- 把这个改成 relative */
     position: relative;
-    z-index: 10;
-    flex-shrink: 0;
+    z-index: 10; /* z-index 保持，或者可以更高 */
+    flex-shrink: 0; /* 防止被压缩 */
     padding: 15px 20px;
     padding-top: 45px;
-    background-color: rgba(247, 247, 247, 0.7);
+    background-color: rgba(247, 247, 247, 0.7); 
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
@@ -564,11 +612,7 @@
     font-size: 18px;
     font-weight: 600;
     text-align: center;
-    /* --- 核心修正 --- */
-    width: 100%;
-    box-sizing: border-box; /* 让 padding 被包含在 width 内 */
 }
-/* ▲▲▲ 替换结束 ▲▲▲ */
 
 .qzone-header .back-btn {
     font-size: 24px;
@@ -576,15 +620,11 @@
     color: var(--accent-color);
 }
 
-/* 修正：让所有页面的头部标题都绝对居中，确保布局稳定 */
-.header > span:nth-child(2),
-.qzone-header > span:nth-child(2) {
+.qzone-header span:nth-child(2) { /* "好友动态"文字 */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
 }
-
-/* ▲▲▲ 替换结束 ▲▲▲ */
 
 .qzone-content {
     flex-grow: 1;
@@ -707,9 +747,12 @@
     display: none;
 }
 
-.chat-list-item:first-child {
+.chat-list-item:first-child,
+.chat-group-container:first-child {
     margin-top: 10px; 
 }
+
+/* ▲▲▲ 新样式替换结束 ▲▲▲ */
 
 /* ▼▼▼ 把所有这些新样式粘贴到 <style> 的末尾 ▼▼▼ */
 
@@ -1647,6 +1690,217 @@
 
 /* ▲▲▲ 新样式粘贴结束 ▲▲▲ */
 
+/* ▼▼▼ 请将这些新样式粘贴到 <style> 的末尾 ▼▼▼ */
+
+/* 预览区容器样式 */
+#settings-preview-area {
+    width: 100%;
+    height: 180px; /* 给一个固定的高度 */
+    background-color: #f0f2f5;
+    border-radius: 8px;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden; /* 防止内容溢出 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 预览气泡之间的间距 */
+    border: 1px solid var(--border-color);
+    position: relative; /* 为了定位背景 */
+}
+
+/* 预览区的背景，可以和真实聊天界面同步 */
+#settings-preview-area::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+/* 让预览气泡在背景之上 */
+#settings-preview-area .message-wrapper {
+    position: relative;
+    z-index: 2;
+}
+
+/* 预览区内使用的头像要小一点 */
+#settings-preview-area .message-bubble .avatar {
+    width: 30px;
+    height: 30px;
+}
+#settings-preview-area .avatar-with-frame {
+     width: 30px;
+    height: 30px;
+}
+#settings-preview-area .avatar-with-frame .avatar-frame {
+    width: 44px;
+    height: 44px;
+    top: -7px;
+    left: -7px;
+}
+#settings-preview-area .message-bubble .timestamp {
+    display: none; /* 预览区不需要显示时间戳 */
+}
+
+/* ▲▲▲ 新样式粘贴结束 ▲▲▲ */
+
+/* ▼▼▼ 请将这段新CSS粘贴到 <style> 的末尾 ▼▼▼ */
+.existing-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.existing-group-item .group-name {
+    font-weight: 500;
+}
+
+.existing-group-item .delete-group-btn {
+    color: #ff3b30;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+}
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
+/* ▼▼▼ 请将这段新CSS粘贴到 <style> 的末尾 ▼▼▼ */
+.chat-group-container {
+    border-bottom: 1px solid var(--border-color);
+}
+.chat-group-container:first-child {
+    border-top: 1px solid var(--border-color);
+}
+
+.chat-group-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    background-color: #f7f7f7;
+}
+
+.chat-group-header .arrow {
+    font-size: 14px;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+}
+
+.chat-group-header.collapsed .arrow {
+    transform: rotate(-90deg);
+}
+
+.chat-group-header .group-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.chat-group-content {
+    max-height: 1000px; /* 一个足够大的值 */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.chat-group-content.collapsed {
+    max-height: 0;
+}
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
+/* ▼▼▼ 请将这段新CSS粘贴到 <style> 的末尾 ▼▼▼ */
+
+/* 格式助手按钮的容器 */
+.format-helpers {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px; /* 与下方的文本框拉开距离 */
+    flex-wrap: wrap; /* 如果按钮太多可以换行 */
+}
+
+/* 单个格式助手按钮的样式 */
+.format-btn {
+    background-color: #e9ecef;
+    color: var(--text-primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px; /* 胶囊形状，更友好 */
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.format-btn:hover {
+    background-color: #dcdfe3;
+}
+
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
+/* ▼▼▼ 请将这段新CSS粘贴到 <style> 的末尾 ▼▼▼ */
+
+/* “…”按钮的样式 */
+.post-actions-btn {
+    margin-left: auto; /* 关键：让它自动靠到最右边 */
+    padding: 5px 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 50%;
+    line-height: 1;
+}
+.post-actions-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* 动态编辑模态框的样式 (它将复用现有的操作菜单样式) */
+#post-actions-modal .custom-modal-footer button {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 14px;
+    font-size: 18px;
+}
+#post-actions-modal .custom-modal-footer button:last-child {
+    border-bottom: none;
+}
+#post-actions-modal #cancel-post-action-btn {
+    margin-top: 8px;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+}
+
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
+/* 统一重置转账卡片内所有文字的特效和颜色 */
+#chat-messages .transfer-card .transfer-title,
+#chat-messages .transfer-card .transfer-amount,
+#chat-messages .transfer-card .transfer-note {
+    text-shadow: none !important; /* 强制移除任何发光或阴影效果 */
+    color: white !important;      /* 强制锁定文字颜色为白色 */
+}
+
+/* 分别锁定各自的字体大小和字重，防止被篡改 */
+#chat-messages .transfer-card .transfer-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+#chat-messages .transfer-card .transfer-amount {
+    font-size: 28px !important;
+    font-weight: bold !important;
+}
+
+#chat-messages .transfer-card .transfer-note {
+    font-size: 13px !important;
+    opacity: 0.9 !important;
+}
+
     </style>
 </head>
 <body>
@@ -2004,11 +2258,24 @@
         <button class="form-button form-button-secondary" id="reset-font-btn">恢复默认字体</button>
     </div>
 </div>
-
         </div>
     </div>
   
-    <div id="chat-settings-modal" class="modal"><div class="modal-content"><div class="modal-header"><span>聊天设置</span></div><div class="modal-body"><div class="form-group" id="chat-name-group"><label for="chat-name-input">备注名 / 群名</label><input type="text" id="chat-name-input"></div><div class="form-group" id="my-group-nickname-group"><label for="my-group-nickname-input">我的群昵称</label><input type="text" id="my-group-nickname-input"></div><div class="form-group" id="group-avatar-group"><label>群头像</label><div class="avatar-upload"><img id="group-avatar-preview"><button onclick="document.getElementById('group-avatar-input').click()">上传群头像</button><input type="file" id="group-avatar-input" accept="image/*"></div></div>
+    <div id="chat-settings-modal" class="modal"><div class="modal-content"><div class="modal-header"><span>聊天设置</span></div><div class="modal-body"><div class="form-group" id="chat-name-group"><label for="chat-name-input">备注名 / 群名</label><input type="text" id="chat-name-input"></div>
+
+    <!-- ▼▼▼ 请将这段新代码粘贴到“备注名”输入框的 form-group 之后 ▼▼▼ -->
+    <div class="form-group" id="assign-group-section" style="display: none;"> <!-- 默认隐藏，只对单聊显示 -->
+        <label for="assign-group-select">好友分组</label>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <select id="assign-group-select" style="flex-grow: 1;">
+                <!-- 分组选项将由JS动态生成 -->
+            </select>
+            <button id="manage-groups-btn" class="form-button-secondary" style="margin-top: 0; padding: 12px;">管理分组</button>
+        </div>
+    </div>
+    <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+
+<div class="form-group" id="my-group-nickname-group"><label for="my-group-nickname-input">我的群昵称</label><input type="text" id="my-group-nickname-input"></div><div class="form-group" id="group-avatar-group"><label>群头像</label><div class="avatar-upload"><img id="group-avatar-preview"><button onclick="document.getElementById('group-avatar-input').click()">上传群头像</button><input type="file" id="group-avatar-input" accept="image/*"></div></div>
             <div class="form-group" id="world-book-link-group">
                 <label>关联世界书 (可多选)</label>
                 <div class="custom-multiselect">
@@ -2021,6 +2288,38 @@
                 </div>
             </div>
             <div class="form-group" id="ai-persona-group"><label for="ai-persona">对方人设 (AI Persona)</label><textarea id="ai-persona" rows="3"></textarea></div><div class="form-group" id="ai-avatar-group"><label>对方头像</label><div class="avatar-upload"><img id="ai-avatar-preview"><button onclick="document.getElementById('ai-avatar-input').click()">上传对方头像</button><button class="change-frame-btn" data-type="ai">更换头像框</button><input type="file" id="ai-avatar-input" accept="image/*"></div></div><div class="form-group" id="my-persona-group"><label for="my-persona">我的人设 (My Persona)</label><textarea id="my-persona" rows="3"></textarea></div><div class="form-group" id="my-avatar-group"><label>我的头像</label><div class="avatar-upload"><img id="my-avatar-preview"><button onclick="document.getElementById('my-avatar-input').click()">上传我的头像</button><button class="change-frame-btn" data-type="my">更换头像框</button><button id="open-persona-library-btn">预设</button><input type="file" id="my-avatar-input" accept="image/*"></div></div><div class="form-group" id="group-members-group"><label>群成员人设</label><div id="group-members-settings"></div></div><div class="form-group"><label for="max-memory">上下文记忆条数</label><input type="number" id="max-memory" value="10"></div><div class="form-group"><label>聊天气泡主题 <button id="reset-theme-btn" type="button">重置</button></label><div class="theme-selector"><label><input type="radio" name="theme-select" value="default" id="theme-default"> 默认</label><label><input type="radio" name="theme-select" value="pink_blue"> 粉蓝</label><label><input type="radio" name="theme-select" value="blue_white"> 蓝白</label><label><input type="radio" name="theme-select" value="purple_yellow"> 紫黄</label><label><input type="radio" name="theme-select" value="black_white"> 黑白</label><label><input type="radio" name="theme-select" value="yellow_white"> 黄白</label><label><input type="radio" name="theme-select" value="red_black"> 红黑</label><label><input type="radio" name="theme-select" value="blue_yellow"> 蓝黄</label><label><input type="radio" name="theme-select" value="pink_yellow"> 粉黄</label><label><input type="radio" name="theme-select" value="pink_purple"> 粉紫</label><label><input type="radio" name="theme-select" value="gray_white"> 灰白</label><label><input type="radio" name="theme-select" value="blue_green"> 蓝绿</label><label><input type="radio" name="theme-select" value="pink_white"> 粉白</label><label><input type="radio" name="theme-select" value="pink_black"> 粉黑</label><label><input type="radio" name="theme-select" value="pink_green"> 粉绿</label><label><input type="radio" name="theme-select" value="green_black"> 绿黑</label></div></div>
+
+<!-- ▼▼▼ 请将这段新代码粘贴到“聊天气泡主题”的 form-group 之后 ▼▼▼ -->
+<div class="form-group">
+    <label for="font-size-slider">聊天字体大小 <span id="font-size-value">13px</span></label>
+    <input type="range" id="font-size-slider" min="12" max="20" step="1" value="13" style="width: 100%; margin-top: 8px;">
+</div>
+<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+
+<!-- ▼▼▼ 请将这段新代码粘贴到“聊天字体大小”的 form-group 之后 ▼▼▼ -->
+<div class="form-group">
+    <label for="custom-css-input">
+        自定义气泡样式 (CSS)
+        <button id="reset-custom-css-btn" type="button" style="background: none; border: 1px solid #ccc; color: #555; font-size: 12px; padding: 2px 8px; border-radius: 5px; cursor: pointer; margin-left: 10px;">重置</button>
+    </label>
+    <textarea id="custom-css-input" rows="5" style="width: 100%; margin-top: 8px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="/* 示例：为“我”的气泡添加渐变背景和阴影 */
+.message-bubble.user .content {
+  background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 15px 4px 15px 15px;
+}"></textarea>
+</div>
+<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+
+<!-- ▼▼▼ 请将这段新代码粘贴到自定义CSS输入框的 form-group 之后 ▼▼▼ -->
+<div class="form-group">
+    <label>实时预览</label>
+    <div id="settings-preview-area">
+        <!-- JS会在这里生成预览内容 -->
+    </div>
+</div>
+<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+
             <div class="form-group">
                 <label>聊天背景</label>
                 <div class="bg-upload-container">
@@ -2081,12 +2380,12 @@
         </div>
     </div>
 
-    <div id="battery-alert-modal">
-        <div class="battery-alert-content">
-            <img id="battery-alert-image" src="">
-            <p id="<-text"></p>
-        </div>
+ <div id="battery-alert-modal">
+    <div class="battery-alert-content">
+        <img id="battery-alert-image" src="">
+        <p id="battery-alert-text"></p>
     </div>
+</div>
 
 <!-- 头像框选择模态框 (这是新添加的) -->
     <div id="avatar-frame-modal" class="modal">
@@ -2137,6 +2436,20 @@
                 <button id="switch-to-text-image-mode" class="mode-btn">使用文字图</button>
             </div>
 
+<!-- ▼▼▼ 【修正后】的可见范围设置 ▼▼▼ -->
+<div class="form-group">
+    <label>可见范围</label>
+    <div id="post-visibility-options" style="display: flex; gap: 15px; margin-bottom: 10px;">
+        <label><input type="radio" name="visibility" value="public" checked> 公开</label>
+
+        <label><input type="radio" name="visibility" value="include"> 指定分组可见</label>
+    </div>
+    <div id="post-visibility-groups" style="display: none; max-height: 120px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+        <!-- 分组多选框将由JS动态生成 -->
+    </div>
+</div>
+<!-- ▲▲▲ 修正结束 ▲▲▲ -->
+
             <!-- === 图片模式区域 === -->
             <div id="image-mode-content" class="post-mode-content active">
                 <div class="form-group">
@@ -2173,6 +2486,59 @@
 </div>
 <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
+<!-- ▼▼▼ 请将这个新的模态框HTML粘贴到所有其他模态框之后 ▼▼▼ -->
+<div id="group-management-modal" class="modal">
+    <div class="modal-content" style="height: 60%;">
+        <div class="modal-header">
+            <span>管理好友分组</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>新建分组</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="new-group-name-input" placeholder="输入分组名..." style="flex-grow: 1;">
+                    <button id="add-new-group-btn" class="form-button" style="width: auto; margin-top: 0; padding: 0 15px;">添加</button>
+                </div>
+            </div>
+            <hr style="opacity: 0.2;">
+            <div id="existing-groups-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- 分组列表将由JS动态生成 -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="save" id="close-group-manager-btn" style="width: 100%;">完成</button>
+        </div>
+    </div>
+</div>
+<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+
+<!-- ▼▼▼ 请将这段新HTML粘贴到所有模态框的末尾 ▼▼▼ -->
+<div id="message-actions-modal" class="modal">
+    <div id="custom-modal" style="width: 250px;">
+        <div class="custom-modal-footer">
+            <!-- 新的操作按钮 -->
+            <button id="edit-message-btn">编辑消息</button>
+            <button id="copy-message-btn">复制文本</button>
+            <button id="select-message-btn">进入多选</button>
+            <!-- 取消按钮 -->
+            <button id="cancel-message-action-btn" style="margin-top: 8px; border-radius: 8px; background-color: #f0f0f0;">取消</button>
+        </div>
+    </div>
+</div>
+<!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+
+<!-- ▼▼▼ 请将这段新HTML粘贴到所有模态框的末尾 ▼▼▼ -->
+<div id="post-actions-modal" class="modal">
+    <div id="custom-modal" style="width: 250px;">
+        <div class="custom-modal-footer">
+            <button id="edit-post-btn">编辑动态</button>
+            <button id="copy-post-btn">复制内容</button>           
+            <button id="cancel-post-action-btn">取消</button>
+        </div>
+    </div>
+</div>
+<!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -2193,6 +2559,9 @@
         let editingWorldBookId = null;
         let editingPersonaPresetId = null;
 
+let activeMessageTimestamp = null;
+let activePostId = null; // <-- 新增：用于存储当前操作的动态ID
+
         let photoViewerState = {
             isOpen: false,
             photos: [], // 存储当前相册的所有照片URL
@@ -2200,8 +2569,6 @@
         };
 
         let unreadPostsCount = 0;
-
-        let activeMessageTimestamp = null; // 用于存储当前操作的消息时间戳
 
         let isFavoritesSelectionMode = false;
         let selectedFavorites = new Set()
@@ -2281,44 +2648,67 @@ const myFrameGrid = document.getElementById('my-frame-grid');
             });
         }
 
-        function showCustomPrompt(title, placeholder, initialValue = '', type = 'text') {
-            return new Promise(resolve => {
-                modalResolve = resolve;
-                modalTitle.textContent = title;
-                const inputId = 'custom-prompt-input';
-                const inputHtml = type === 'textarea' 
-                    ? `<textarea id="${inputId}" placeholder="${placeholder}" rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; resize: vertical;">${initialValue}</textarea>`
-                    : `<input type="${type}" id="${inputId}" placeholder="${placeholder}" value="${initialValue}">`;
-                
-                modalBody.innerHTML = inputHtml;
-                const input = document.getElementById(inputId);
-                
-                modalConfirmBtn.onclick = () => { resolve(input.value); hideCustomModal(); };
-                modalCancelBtn.onclick = () => { resolve(null); hideCustomModal(); };
-                showCustomModal();
-                setTimeout(() => input.focus(), 100);
+// ▼▼▼ 请用这个【功能增强版】替换旧的 showCustomPrompt 函数 ▼▼▼
+function showCustomPrompt(title, placeholder, initialValue = '', type = 'text', extraHtml = '') {
+    return new Promise(resolve => {
+        modalResolve = resolve;
+        modalTitle.textContent = title;
+        const inputId = 'custom-prompt-input';
+        
+        const inputHtml = type === 'textarea' 
+            ? `<textarea id="${inputId}" placeholder="${placeholder}" rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; resize: vertical;">${initialValue}</textarea>`
+            : `<input type="${type}" id="${inputId}" placeholder="${placeholder}" value="${initialValue}">`;
+        
+        // 【核心修改】将额外的HTML和输入框组合在一起
+        modalBody.innerHTML = extraHtml + inputHtml;
+        const input = document.getElementById(inputId);
+
+        // 【核心修改】为格式助手按钮绑定事件
+        modalBody.querySelectorAll('.format-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const templateStr = btn.dataset.template;
+                if (templateStr) {
+                    try {
+                        const templateObj = JSON.parse(templateStr);
+                        // 使用 null, 2 参数让JSON字符串格式化，带缩进，更易读
+                        input.value = JSON.stringify(templateObj, null, 2);
+                        input.focus();
+                    } catch(e) {
+                        console.error("解析格式模板失败:", e);
+                    }
+                }
             });
-        }
+        });
+        
+        modalConfirmBtn.onclick = () => { resolve(input.value); hideCustomModal(); };
+        modalCancelBtn.onclick = () => { resolve(null); hideCustomModal(); };
+        showCustomModal();
+        setTimeout(() => input.focus(), 100);
+    });
+}
+// ▲▲▲ 替换结束 ▲▲▲
 
         // ===================================================================
         // 2. 数据库结构定义
         // ===================================================================
-        // 1. 版本号 +1 (从 15 -> 16)
-        // 2. 在 'favorites' 表中增加一个新的索引 'originalTimestamp'
-        db.version(16).stores({ 
-            chats: '&id, isGroup', 
-            apiConfig: '&id', 
-            globalSettings: '&id', 
-            userStickers: '&id, url, name',
-            worldBooks: '&id, name',
-            musicLibrary: '&id', 
-            personaPresets: '&id',
-            qzoneSettings: '&id',
-            qzonePosts: '++id, timestamp', 
-            qzoneAlbums: '++id, name, createdAt',
-            qzonePhotos: '++id, albumId',
-            favorites: '++id, type, timestamp, originalTimestamp' // <-- 核心修改在这里
-        });
+
+// ▼▼▼ 请用这个新版本替换旧的 db.version().stores() ▼▼▼
+db.version(17).stores({ 
+    chats: '&id, isGroup, groupId', // <-- 增加 groupId 索引，方便查询
+    apiConfig: '&id', 
+    globalSettings: '&id', 
+    userStickers: '&id, url, name',
+    worldBooks: '&id, name',
+    musicLibrary: '&id', 
+    personaPresets: '&id',
+    qzoneSettings: '&id',
+    qzonePosts: '++id, timestamp', 
+    qzoneAlbums: '++id, name, createdAt',
+    qzonePhotos: '++id, albumId',
+    favorites: '++id, type, timestamp, originalTimestamp',
+    qzoneGroups: '++id, name' // <-- 【新增】分组表
+});
+// ▲▲▲ 替换结束 ▲▲▲
 
         // ===================================================================
         // 3. 所有功能函数定义
@@ -2511,7 +2901,12 @@ const myFrameGrid = document.getElementById('my-frame-grid');
                 const isFavoritedByUser = favoritedPostIds.has(post.id); // 使用Set快速查找
 
                 postEl.innerHTML = `
-                    <div class="post-header"><img src="${authorAvatar}" class="post-avatar"><div class="post-info"><span class="post-nickname">${authorNickname}</span><span class="post-timestamp">${formatPostTimestamp(post.timestamp)}</span></div></div>
+                    <div class="post-header"><img src="${authorAvatar}" class="post-avatar"><div class="post-info"><span class="post-nickname">${authorNickname}</span><span class="post-timestamp">${formatPostTimestamp(post.timestamp)}</span></div>
+
+        <!-- 【新增】动态操作按钮 -->
+        <div class="post-actions-btn">…</div>
+    </div>
+
                     <div class="post-main-content">${contentHtml}</div>
                     <div class="post-feedback-icons">
                         <span class="action-icon like ${isLikedByUser ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
@@ -2731,7 +3126,7 @@ function displayFilteredFavorites(items) {
             document.getElementById('switch-to-image-mode').click();
         }
 
-// ▼▼▼ 请用这个【终极安全版】的函数，完整替换掉旧的 exportBackup 函数 ▼▼▼
+// ▼▼▼ 用这个【超级加料版】的函数，完整替换掉旧的 exportBackup ▼▼▼
 async function exportBackup() {
     try {
         const backupData = {
@@ -2739,31 +3134,32 @@ async function exportBackup() {
             timestamp: Date.now()
         };
 
-        // --- 【核心修正】使用一个明确的、包含所有表的列表，确保导出完整 ---
-        const ALL_TABLES = [
-            'chats', 'apiConfig', 'globalSettings', 'userStickers', 'worldBooks', 
-            'musicLibrary', 'personaPresets', 'qzoneSettings', 'qzonePosts', 
-            'qzoneAlbums', 'qzonePhotos', 'favorites'
-        ];
+        // 使用 Promise.all 并行获取所有表的数据
+        const [
+            chats, worldBooks, userStickers, apiConfig, globalSettings,
+            personaPresets, musicLibrary, qzoneSettings, qzonePosts,
+            qzoneAlbums, qzonePhotos, favorites
+        ] = await Promise.all([
+            db.chats.toArray(),
+            db.worldBooks.toArray(),
+            db.userStickers.toArray(),
+            db.apiConfig.get('main'),
+            db.globalSettings.get('main'),
+            db.personaPresets.toArray(),
+            db.musicLibrary.get('main'),
+            db.qzoneSettings.get('main'),
+            db.qzonePosts.toArray(),
+            db.qzoneAlbums.toArray(),
+            db.qzonePhotos.toArray(),
+            db.favorites.toArray()
+        ]);
 
-        // --- 【核心修正】使用 Promise.all 并行获取所有表的数据，更快、更可靠 ---
-        const dataPromises = ALL_TABLES.map(tableName => {
-            // 对单记录表和多记录表进行不同处理
-            if (['apiConfig', 'globalSettings', 'musicLibrary', 'qzoneSettings'].includes(tableName)) {
-                // 对于只有一个'main'记录的表，直接获取该对象
-                return db[tableName].get('main').then(data => ({ [tableName]: data }));
-            } else {
-                // 对于有多个记录的表，获取整个数组
-                return db[tableName].toArray().then(data => ({ [tableName]: data }));
-            }
+        // 将所有数据整合到一个对象中
+        Object.assign(backupData, {
+            chats, worldBooks, userStickers, apiConfig, globalSettings,
+            personaPresets, musicLibrary, qzoneSettings, qzonePosts,
+            qzoneAlbums, qzonePhotos, favorites
         });
-
-        const allDataArray = await Promise.all(dataPromises);
-        
-        // --- 【核心修正】将所有获取到的数据整合到 backupData 对象中 ---
-        for (const dataObject of allDataArray) {
-            Object.assign(backupData, dataObject);
-        }
         
         // 创建并下载备份文件
         const blob = new Blob(
@@ -2775,9 +3171,7 @@ async function exportBackup() {
             href: url,
             download: `EPhone-Full-Backup-${new Date().toISOString().split('T')[0]}.json`
         });
-        document.body.appendChild(link); // 兼容 Firefox
         link.click();
-        document.body.removeChild(link); // 清理
         URL.revokeObjectURL(url);
         
         await showCustomAlert('导出成功', '已成功导出所有数据！');
@@ -2789,43 +3183,32 @@ async function exportBackup() {
 }
 // ▲▲▲ 替换结束 ▲▲▲
 
-// ▼▼▼ 请用这个【终极安全版】的函数，完整替换掉旧的 importBackup 函数 ▼▼▼
+// ▼▼▼ 用这个【安全可靠版】的函数，完整替换掉旧的 importBackup ▼▼▼
 async function importBackup(file) {
     if (!file) return;
 
-    // 使用更醒目的自定义模态框进行确认
+    // 【安全第一】导入前必须让用户确认，因为这是毁灭性的覆盖操作！
     const confirmed = await showCustomConfirm(
         '严重警告！',
         '导入备份将完全覆盖您当前的所有数据，包括聊天、动态、设置等。此操作不可撤销！您确定要继续吗？',
         { confirmButtonClass: 'btn-danger' }
     );
 
-    if (!confirmed) return;
+    if (!confirmed) return; // 如果用户取消，则中止操作
 
     try {
         const text = await file.text();
         const data = JSON.parse(text);
 
-        // --- 【新增】安全检查：在破坏数据前，先验证文件是否靠谱 ---
-        if (!data || !Array.isArray(data.chats) || !data.globalSettings) {
-            throw new Error("备份文件格式不正确，缺少关键数据（如 chats 或 globalSettings）。");
-        }
-
-        // --- 【核心修正】定义一个明确的、包含所有表的列表，而不是用不稳定的 db.tables ---
-        const ALL_TABLES = [
-            'chats', 'apiConfig', 'globalSettings', 'userStickers', 'worldBooks', 
-            'musicLibrary', 'personaPresets', 'qzoneSettings', 'qzonePosts', 
-            'qzoneAlbums', 'qzonePhotos', 'favorites'
-        ];
-
-        // --- 【核心修正】使用明确的表列表开启事务，保证原子性 ---
-        await db.transaction('rw', ALL_TABLES, async () => {
-            // 1. 清空所有表
-            for (const tableName of ALL_TABLES) {
-                await db[tableName].clear();
+        // 开始一个数据库事务，批量操作，速度更快更安全
+        await db.transaction('rw', db.tables, async () => {
+            // 1. 清空所有旧数据
+            for (const table of db.tables) {
+                await table.clear();
             }
 
-            // 2. 导入新数据 (增加了 || [] 和 if() 的保护，防止备份文件缺少某个表导致崩溃)
+            // 2. 导入新数据
+            // 导入数组形式的表
             if (Array.isArray(data.chats)) await db.chats.bulkPut(data.chats);
             if (Array.isArray(data.worldBooks)) await db.worldBooks.bulkPut(data.worldBooks);
             if (Array.isArray(data.userStickers)) await db.userStickers.bulkPut(data.userStickers);
@@ -2835,7 +3218,7 @@ async function importBackup(file) {
             if (Array.isArray(data.qzonePhotos)) await db.qzonePhotos.bulkPut(data.qzonePhotos);
             if (Array.isArray(data.favorites)) await db.favorites.bulkPut(data.favorites);
 
-            // --- 【核心修正】导入单条记录的表，也增加安全检查 ---
+            // 导入对象形式的表 (单条记录)
             if (data.apiConfig) await db.apiConfig.put(data.apiConfig);
             if (data.globalSettings) await db.globalSettings.put(data.globalSettings);
             if (data.musicLibrary) await db.musicLibrary.put(data.musicLibrary);
@@ -2844,18 +3227,14 @@ async function importBackup(file) {
 
         await showCustomAlert('导入成功', '所有数据已成功恢复！应用即将刷新以应用所有更改。');
         
-        // --- 【最关键的安全措施】强制重新加载页面，确保应用状态与新数据库完全同步 ---
+        // 为了确保所有状态都正确加载，最简单可靠的方法是刷新页面
         setTimeout(() => {
-            window.location.reload(true); // 使用 true 强制从服务器重新加载，避免缓存问题
+            window.location.reload();
         }, 1500);
 
     } catch (error) {
         console.error("导入数据时出错:", error);
         await showCustomAlert('导入失败', `文件格式不正确或数据已损坏: ${error.message}`);
-        // 导入失败后，最好也刷新一下，以防万一数据库处于不确定状态
-        setTimeout(() => {
-            window.location.reload(true);
-        }, 2000);
     }
 }
 // ▲▲▲ 替换结束 ▲▲▲
@@ -2932,8 +3311,7 @@ async function loadAllDataFromDB() {
         return acc;
     }, {});
     state.apiConfig = apiConfig || { id: 'main', proxyUrl: '', apiKey: '', model: '' };
-// ▼▼▼ 请用这行【修正后】的代码替换掉上面那行 ▼▼▼
-state.globalSettings = globalSettings || { id: 'main', wallpaper: 'linear-gradient(135deg, #89f7fe, #66a6ff)', fontUrl: '', enableBackgroundActivity: false, backgroundActivityInterval: 60 };
+state.globalSettings = globalSettings || { id: 'main', wallpaper: 'linear-gradient(135deg, #89f7fe, #66a6ff)', fontUrl: '', enableBackgroundActivity: false, backgroundActivityInterval: 60 }; // 新增间隔字段，默认60秒
     state.userStickers = userStickers || [];
     state.worldBooks = worldBooks || [];
     musicState.playlist = musicLib?.playlist || [];
@@ -3005,14 +3383,162 @@ state.globalSettings = globalSettings || { id: 'main', wallpaper: 'linear-gradie
 }
         window.renderApiSettingsProxy = renderApiSettings;
 
-        function renderChatList() { const chatListEl = document.getElementById('chat-list'); chatListEl.innerHTML = ''; if (Object.keys(state.chats).length === 0) { chatListEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">点击右上角 "+" 或群组图标添加聊天</p>'; return; } Object.values(state.chats).sort((a,b) => (b.history.slice(-1)[0]?.timestamp || 0) - (a.history.slice(-1)[0]?.timestamp || 0)).forEach(chat => { 
+// ▼▼▼ 请用这个【全新版本】的函数，完整替换掉你旧的 renderChatList ▼▼▼
+async function renderChatList() {
+    const chatListEl = document.getElementById('chat-list');
+    chatListEl.innerHTML = '';
 
-const lastMsgObj = chat.history.filter(msg => !msg.isHidden).slice(-1)[0] || {};
+    // 1. 像以前一样，获取所有聊天并按最新消息时间排序
+    const allChats = Object.values(state.chats).sort((a, b) => (b.history.slice(-1)[0]?.timestamp || 0) - (a.history.slice(-1)[0]?.timestamp || 0));
+    
+    // 2. 获取所有分组
+    const allGroups = await db.qzoneGroups.toArray();
 
-let lastMsgDisplay; if(lastMsgObj.type === 'transfer') { lastMsgDisplay = '[转账]'; } else if (lastMsgObj.type === 'ai_image' || lastMsgObj.type === 'user_photo') { lastMsgDisplay = '[照片]'; } else if (lastMsgObj.type === 'voice_message') { lastMsgDisplay = '[语音]'; } else if (typeof lastMsgObj.content === 'string' && STICKER_REGEX.test(lastMsgObj.content)) { lastMsgDisplay = lastMsgObj.meaning ? `[表情: ${lastMsgObj.meaning}]` : '[表情]'; } else if (Array.isArray(lastMsgObj.content)) { lastMsgDisplay = `[图片]`; } else { lastMsgDisplay = String(lastMsgObj.content || '...').substring(0, 20); } if (chat.isGroup && lastMsgObj.senderName) { lastMsgDisplay = `${lastMsgObj.senderName}: ${lastMsgDisplay}`; } const item = document.createElement('div'); item.className = 'chat-list-item'; item.dataset.chatId = chat.id; const avatar = chat.isGroup ? chat.settings.groupAvatar : chat.settings.aiAvatar; item.innerHTML = `<img src="${avatar || defaultAvatar}" class="avatar"><div class="info"><div class="name-line"><span class="name">${chat.name}</span>${chat.isGroup ? '<span class="group-tag">群聊</span>' : ''}</div><div class="last-msg">${lastMsgDisplay}</div></div>`; item.addEventListener('click', async () => { openChat(chat.id); }); addLongPressListener(item, async (e) => { const confirmed = await showCustomConfirm('删除对话', `确定要删除与 "${chat.name}" 的整个对话吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { try { if (musicState.isActive && musicState.activeChatId === chat.id) await endListenTogetherSession(false); delete state.chats[chat.id]; if (state.activeChatId === chat.id) state.activeChatId = null; await db.chats.delete(chat.id); renderChatList(); } catch (error) { console.error("删除聊天失败:", error); alert("删除失败，请稍后再试。"); } } }); chatListEl.appendChild(item); }); }
-        window.renderChatListProxy = renderChatList;
+    if (allChats.length === 0) {
+        chatListEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">点击右上角 "+" 或群组图标添加聊天</p>';
+        return;
+    }
 
-        function renderChatInterface(chatId) { const chat = state.chats[chatId]; if (!chat) return; exitSelectionMode(); const messagesContainer = document.getElementById('chat-messages'); messagesContainer.dataset.theme = chat.settings.theme || 'default'; document.getElementById('chat-header-title').textContent = chat.name; messagesContainer.innerHTML = ''; const chatScreen = document.getElementById('chat-interface-screen'); chatScreen.style.backgroundImage = chat.settings.background ? `url(${chat.settings.background})` : 'none'; chatScreen.style.backgroundColor = chat.settings.background ? 'transparent' : '#f0f2f5'; const history = chat.history; const totalMessages = history.length; currentRenderedCount = 0; const initialMessages = history.slice(-MESSAGE_RENDER_WINDOW); initialMessages.forEach(msg => appendMessage(msg, chat, true)); currentRenderedCount = initialMessages.length; if (totalMessages > currentRenderedCount) { prependLoadMoreButton(messagesContainer); } const typingIndicator = document.createElement('div'); typingIndicator.id = 'typing-indicator'; typingIndicator.style.display = 'none'; typingIndicator.textContent = '对方正在输入...'; messagesContainer.appendChild(typingIndicator); setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 0); }
+    // --- 【核心修正开始】---
+
+    // 3. 为每个分组找到其内部最新的消息时间戳
+    allGroups.forEach(group => {
+        // 从已排序的 allChats 中找到本组的第一个（也就是最新的）聊天
+        const latestChatInGroup = allChats.find(chat => chat.groupId === group.id);
+        // 如果找到了，就用它的时间戳；如果该分组暂时没有聊天或聊天没有历史记录，就用0
+        group.latestTimestamp = latestChatInGroup ? (latestChatInGroup.history.slice(-1)[0]?.timestamp || 0) : 0;
+    });
+
+    // 4. 根据这个最新的时间戳来对“分组本身”进行排序
+    allGroups.sort((a, b) => b.latestTimestamp - a.latestTimestamp);
+
+    // --- 【核心修正结束】---
+
+    // 5. 现在，我们按照排好序的分组来渲染
+    allGroups.forEach(group => {
+        // 从总列表里过滤出属于这个（已排序）分组的好友
+        const groupChats = allChats.filter(chat => !chat.isGroup && chat.groupId === group.id);
+        // 如果这个分组是空的（可能所有好友都被删了），就跳过
+        if (groupChats.length === 0) return;
+
+        const groupContainer = document.createElement('div');
+        groupContainer.className = 'chat-group-container';
+        groupContainer.innerHTML = `
+            <div class="chat-group-header">
+                <span class="arrow">▼</span>
+                <span class="group-name">${group.name}</span>
+            </div>
+            <div class="chat-group-content"></div>
+        `;
+        const contentEl = groupContainer.querySelector('.chat-group-content');
+        // 因为 allChats 本身就是有序的，所以 groupChats 自然也是有序的
+        groupChats.forEach(chat => {
+            const item = createChatListItem(chat);
+            contentEl.appendChild(item);
+        });
+        chatListEl.appendChild(groupContainer);
+    });
+
+    // 6. 最后，渲染所有群聊和未分组的好友
+    // 他们的顺序因为 allChats 的初始排序，天然就是正确的
+    const ungroupedOrGroupChats = allChats.filter(chat => chat.isGroup || (!chat.isGroup && !chat.groupId));
+    ungroupedOrGroupChats.forEach(chat => {
+        const item = createChatListItem(chat);
+        chatListEl.appendChild(item);
+    });
+
+    // 为所有分组标题添加折叠事件
+    document.querySelectorAll('.chat-group-header').forEach(header => {
+        header.addEventListener('click', () => {
+            header.classList.toggle('collapsed');
+            header.nextElementSibling.classList.toggle('collapsed');
+        });
+    });
+}
+// ▲▲▲ 替换结束 ▲▲▲
+
+// 辅助函数，用于创建单个聊天列表项 (避免代码重复)
+function createChatListItem(chat) {
+    const lastMsgObj = chat.history.filter(msg => !msg.isHidden).slice(-1)[0] || {};
+    let lastMsgDisplay;
+    if (lastMsgObj.type === 'transfer') { lastMsgDisplay = '[转账]'; }
+    else if (lastMsgObj.type === 'ai_image' || lastMsgObj.type === 'user_photo') { lastMsgDisplay = '[照片]'; }
+    else if (lastMsgObj.type === 'voice_message') { lastMsgDisplay = '[语音]'; }
+    else if (typeof lastMsgObj.content === 'string' && STICKER_REGEX.test(lastMsgObj.content)) { lastMsgDisplay = lastMsgObj.meaning ? `[表情: ${lastMsgObj.meaning}]` : '[表情]'; }
+    else if (Array.isArray(lastMsgObj.content)) { lastMsgDisplay = `[图片]`; }
+    else { lastMsgDisplay = String(lastMsgObj.content || '...').substring(0, 20); }
+
+    if (chat.isGroup && lastMsgObj.senderName) {
+        lastMsgDisplay = `${lastMsgObj.senderName}: ${lastMsgDisplay}`;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'chat-list-item';
+    item.dataset.chatId = chat.id;
+    const avatar = chat.isGroup ? chat.settings.groupAvatar : chat.settings.aiAvatar;
+    item.innerHTML = `
+        <img src="${avatar || defaultAvatar}" class="avatar">
+        <div class="info">
+            <div class="name-line">
+                <span class="name">${chat.name}</span>
+                ${chat.isGroup ? '<span class="group-tag">群聊</span>' : ''}
+            </div>
+            <div class="last-msg">${lastMsgDisplay}</div>
+        </div>
+    `;
+    item.addEventListener('click', () => openChat(chat.id));
+    addLongPressListener(item, async (e) => {
+        const confirmed = await showCustomConfirm('删除对话', `确定要删除与 "${chat.name}" 的整个对话吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' });
+        if (confirmed) {
+            if (musicState.isActive && musicState.activeChatId === chat.id) await endListenTogetherSession(false);
+            delete state.chats[chat.id];
+            if (state.activeChatId === chat.id) state.activeChatId = null;
+            await db.chats.delete(chat.id);
+            renderChatList();
+        }
+    });
+    return item;
+}
+// ▲▲▲ 替换结束 ▲▲▲
+
+function renderChatInterface(chatId) {
+    const chat = state.chats[chatId];
+    if (!chat) return;
+    exitSelectionMode();
+    const messagesContainer = document.getElementById('chat-messages');
+
+    // ▼▼▼ 核心修改 ▼▼▼
+    // 1. 设置主题
+    messagesContainer.dataset.theme = chat.settings.theme || 'default';
+    // 2. 设置字体大小为 CSS 变量
+    const fontSize = chat.settings.fontSize || 13;
+    messagesContainer.style.setProperty('--chat-font-size', `${fontSize}px`);
+    // ▲▲▲ 核心修改结束 ▲▲▲
+
+    // ▼▼▼ 修改这行 ▼▼▼
+    applyScopedCss(chat.settings.customCss || '', '#chat-messages', 'custom-bubble-style');
+    // ▲▲▲ 修改结束 ▲▲▲
+    document.getElementById('chat-header-title').textContent = chat.name;
+    messagesContainer.innerHTML = '';
+    const chatScreen = document.getElementById('chat-interface-screen');
+    chatScreen.style.backgroundImage = chat.settings.background ? `url(${chat.settings.background})` : 'none';
+    chatScreen.style.backgroundColor = chat.settings.background ? 'transparent' : '#f0f2f5';
+    const history = chat.history;
+    const totalMessages = history.length;
+    currentRenderedCount = 0;
+    const initialMessages = history.slice(-MESSAGE_RENDER_WINDOW);
+    initialMessages.forEach(msg => appendMessage(msg, chat, true));
+    currentRenderedCount = initialMessages.length;
+    if (totalMessages > currentRenderedCount) {
+        prependLoadMoreButton(messagesContainer);
+    }
+    const typingIndicator = document.createElement('div');
+    typingIndicator.id = 'typing-indicator';
+    typingIndicator.style.display = 'none';
+    typingIndicator.textContent = '对方正在输入...';
+    messagesContainer.appendChild(typingIndicator);
+    setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 0);
+}
 
         function prependLoadMoreButton(container) { const button = document.createElement('button'); button.id = 'load-more-btn'; button.textContent = '加载更早的记录'; button.addEventListener('click', loadMoreMessages); container.prepend(button); }
 
@@ -3030,91 +3556,108 @@ let lastMsgDisplay; if(lastMsgObj.type === 'transfer') { lastMsgDisplay = '[转�
 
         function renderStickerPanel() { const grid = document.getElementById('sticker-grid'); grid.innerHTML = ''; if (state.userStickers.length === 0) { grid.innerHTML = '<p style="text-align:center; color: var(--text-secondary); grid-column: 1 / -1;">大人请点击右上角“添加”或“上传”来添加你的第一个表情吧！</p>'; return; } state.userStickers.forEach(sticker => { const item = document.createElement('div'); item.className = 'sticker-item'; item.style.backgroundImage = `url(${sticker.url})`; item.title = sticker.name; item.addEventListener('click', () => sendSticker(sticker)); addLongPressListener(item, () => { if (isSelectionMode) return; const existingDeleteBtn = item.querySelector('.delete-btn'); if (existingDeleteBtn) return; const deleteBtn = document.createElement('div'); deleteBtn.className = 'delete-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.onclick = async (e) => { e.stopPropagation(); const confirmed = await showCustomConfirm('删除表情', `确定要删除表情 "${sticker.name}" 吗？`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.userStickers.delete(sticker.id); state.userStickers = state.userStickers.filter(s => s.id !== sticker.id); renderStickerPanel(); } }; item.appendChild(deleteBtn); deleteBtn.style.display = 'block'; setTimeout(() => item.addEventListener('mouseleave', () => deleteBtn.remove(), { once: true }), 3000); }); grid.appendChild(item); }); }
 
-        function createMessageElement(msg, chat) {
-            if (msg.isHidden) { 
-                return null;
-            }
-            const isUser = msg.role === 'user';
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${isUser ? 'user' : 'ai'}`;
-            if (chat.isGroup && !isUser) {
-                const senderNameDiv = document.createElement('div');
-                senderNameDiv.className = 'sender-name';
-                senderNameDiv.textContent = msg.senderName || '未知成员';
-                wrapper.appendChild(senderNameDiv);
-            }
-            const bubble = document.createElement('div');
-            bubble.className = `message-bubble ${isUser ? 'user' : 'ai'}`;
-            bubble.dataset.timestamp = msg.timestamp;
+/* ▼▼▼ 用这个【最终完美对称版】函数替换你现有的 createMessageElement 函数 ▼▼▼ */
+function createMessageElement(msg, chat) {
+    if (msg.isHidden) {
+        return null;
+    }
+    const isUser = msg.role === 'user';
+    const wrapper = document.createElement('div');
+    wrapper.className = `message-wrapper ${isUser ? 'user' : 'ai'}`;
+    if (chat.isGroup && !isUser) {
+        const senderNameDiv = document.createElement('div');
+        senderNameDiv.className = 'sender-name';
+        senderNameDiv.textContent = msg.senderName || '未知成员';
+        wrapper.appendChild(senderNameDiv);
+    }
+    
+    // 创建气泡元素
+    const bubble = document.createElement('div');
+    bubble.className = `message-bubble ${isUser ? 'user' : 'ai'}`;
+    bubble.dataset.timestamp = msg.timestamp;
 
-            let avatarSrc;
-            let avatarFrameSrc = ''; 
-            if (chat.isGroup) {
-                if (isUser) {
-                    avatarSrc = chat.settings.myAvatar || defaultMyGroupAvatar;
-                    avatarFrameSrc = chat.settings.myAvatarFrame || '';
-                } else {
-                    const member = chat.members.find(m => m.name === msg.senderName);
-                    avatarSrc = member ? member.avatar : defaultGroupMemberAvatar;
-                    avatarFrameSrc = member ? (member.avatarFrame || '') : '';
-                }
-            } else {
-                if (isUser) {
-                    avatarSrc = chat.settings.myAvatar || defaultAvatar;
-                    avatarFrameSrc = chat.settings.myAvatarFrame || '';
-                } else {
-                    avatarSrc = chat.settings.aiAvatar || defaultAvatar;
-                    avatarFrameSrc = chat.settings.aiAvatarFrame || '';
-                }
-            }
+    // 创建时间戳元素
+    const timestampEl = document.createElement('span');
+    timestampEl.className = 'timestamp';
+    timestampEl.textContent = formatTimestamp(msg.timestamp);
 
-            let avatarHtml;
-            if (avatarFrameSrc) {
-                avatarHtml = `
-                    <div class="avatar-with-frame">
-                        <img src="${avatarSrc}" class="avatar-img">
-                        <img src="${avatarFrameSrc}" class="avatar-frame">
-                    </div>
-                `;
-            } else {
-                avatarHtml = `<img src="${avatarSrc}" class="avatar">`;
-            }
-
-            let contentHtml;
-            if (msg.type === 'user_photo' || msg.type === 'ai_image') {
-                bubble.classList.add('is-ai-image');
-                const altText = msg.type === 'user_photo' ? "用户描述的照片" : "AI生成的图片";
-                contentHtml = `<img src="https://i.postimg.cc/KYr2qRCK/1.jpg" class="ai-generated-image" alt="${altText}" data-description="${msg.content}">`;
-            } else if (msg.type === 'voice_message') {
-                bubble.classList.add('is-voice-message');
-                const duration = Math.max(1, Math.round((msg.content || '').length / 5));
-                const durationFormatted = `0:${String(duration).padStart(2, '0')}''`;
-                const waveformHTML = '<div></div><div></div><div></div><div></div><div></div>';
-                contentHtml = `<div class="voice-message-body" data-text="${msg.content}"><div class="voice-waveform">${waveformHTML}</div><span class="voice-duration">${durationFormatted}</span></div>`;
-            } else if (msg.type === 'transfer') {
-                bubble.classList.add('is-transfer');
-                const titleText = isUser ? '转账给Ta' : '收到一笔转账';
-                const heartIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>`;
-                contentHtml = `<div class="transfer-card"><div class="transfer-title">${heartIcon} ${titleText}</div><div class="transfer-amount">¥ ${Number(msg.amount).toFixed(2)}</div><div class="transfer-note">${msg.note || '对方没有留下备注哦~'}</div></div>`;
-            } else if (typeof msg.content === 'string' && STICKER_REGEX.test(msg.content)) {
-                bubble.classList.add('is-sticker');
-                contentHtml = `<img src="${msg.content}" alt="${msg.meaning || 'Sticker'}" class="sticker-image">`;
-            } else if (Array.isArray(msg.content) && msg.content[0]?.type === 'image_url') {
-                bubble.classList.add('has-image');
-                const imageUrl = msg.content[0].image_url.url;
-                contentHtml = `<img src="${imageUrl}" class="chat-image" alt="User uploaded image">`;
-            } else {
-                contentHtml = String(msg.content || '').replace(/\n/g, '<br>');
-            }
-            
-            bubble.innerHTML = `<div class="avatar-group">${avatarHtml}<span class="timestamp">${formatTimestamp(msg.timestamp)}</span></div><div class="content">${contentHtml}</div>`;
-            
-            // 【核心修改】长按直接进入多选模式
-            addLongPressListener(bubble, () => enterSelectionMode(msg.timestamp));
-            bubble.addEventListener('click', () => { if (isSelectionMode) toggleMessageSelection(msg.timestamp); });
-            wrapper.appendChild(bubble);
-            return wrapper;
+    let avatarSrc;
+    let avatarFrameSrc = '';
+    if (chat.isGroup) {
+        if (isUser) {
+            avatarSrc = chat.settings.myAvatar || defaultMyGroupAvatar;
+            avatarFrameSrc = chat.settings.myAvatarFrame || '';
+        } else {
+            const member = chat.members.find(m => m.name === msg.senderName);
+            avatarSrc = member ? member.avatar : defaultGroupMemberAvatar;
+            avatarFrameSrc = member ? (member.avatarFrame || '') : '';
         }
+    } else {
+        if (isUser) {
+            avatarSrc = chat.settings.myAvatar || defaultAvatar;
+            avatarFrameSrc = chat.settings.myAvatarFrame || '';
+        } else {
+            avatarSrc = chat.settings.aiAvatar || defaultAvatar;
+            avatarFrameSrc = chat.settings.aiAvatarFrame || '';
+        }
+    }
+
+    let avatarHtml;
+    if (avatarFrameSrc) {
+        avatarHtml = `
+            <div class="avatar-with-frame">
+                <img src="${avatarSrc}" class="avatar-img">
+                <img src="${avatarFrameSrc}" class="avatar-frame">
+            </div>
+        `;
+    } else {
+        avatarHtml = `<img src="${avatarSrc}" class="avatar">`;
+    }
+
+    let contentHtml;
+    // 这部分 contentHtml 的逻辑完全不用动
+    if (msg.type === 'user_photo' || msg.type === 'ai_image') {
+        bubble.classList.add('is-ai-image');
+        const altText = msg.type === 'user_photo' ? "用户描述的照片" : "AI生成的图片";
+        contentHtml = `<img src="https://i.postimg.cc/KYr2qRCK/1.jpg" class="ai-generated-image" alt="${altText}" data-description="${msg.content}">`;
+    } else if (msg.type === 'voice_message') {
+        bubble.classList.add('is-voice-message');
+        const duration = Math.max(1, Math.round((msg.content || '').length / 5));
+        const durationFormatted = `0:${String(duration).padStart(2, '0')}''`;
+        const waveformHTML = '<div></div><div></div><div></div><div></div><div></div>';
+        contentHtml = `<div class="voice-message-body" data-text="${msg.content}"><div class="voice-waveform">${waveformHTML}</div><span class="voice-duration">${durationFormatted}</span></div>`;
+    } else if (msg.type === 'transfer') {
+        bubble.classList.add('is-transfer');
+        const titleText = isUser ? '转账给Ta' : '收到一笔转账';
+        const heartIcon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>`;
+        contentHtml = `<div class="transfer-card"><div class="transfer-title">${heartIcon} ${titleText}</div><div class="transfer-amount">¥ ${Number(msg.amount).toFixed(2)}</div><div class="transfer-note">${msg.note || '对方没有留下备注哦~'}</div></div>`;
+    } else if (typeof msg.content === 'string' && STICKER_REGEX.test(msg.content)) {
+        bubble.classList.add('is-sticker');
+        contentHtml = `<img src="${msg.content}" alt="${msg.meaning || 'Sticker'}" class="sticker-image">`;
+    } else if (Array.isArray(msg.content) && msg.content[0]?.type === 'image_url') {
+        bubble.classList.add('has-image');
+        const imageUrl = msg.content[0].image_url.url;
+        contentHtml = `<img src="${imageUrl}" class="chat-image" alt="User uploaded image">`;
+    } else {
+        contentHtml = String(msg.content || '').replace(/\n/g, '<br>');
+    }
+    
+    // 【核心修改】将气泡内部的 HTML 结构简化
+    bubble.innerHTML = `
+        <div class="avatar-group">${avatarHtml}</div>
+        <div class="content">${contentHtml}</div>
+    `;
+
+    // 【核心修改】将气泡和时间戳【作为兄弟】依次添加到父容器中
+    wrapper.appendChild(bubble);
+    wrapper.appendChild(timestampEl);
+
+    addLongPressListener(wrapper, () => showMessageActions(msg.timestamp)); // 把长按事件绑定到 wrapper 上
+    bubble.addEventListener('click', () => { if (isSelectionMode) toggleMessageSelection(msg.timestamp); });
+
+    return wrapper;
+}
+/* ▲▲▲ 替换区域结束 ▲▲▲ */
 
         function prependMessage(msg, chat) { const messagesContainer = document.getElementById('chat-messages'); const messageEl = createMessageElement(msg, chat); 
 
@@ -3130,25 +3673,61 @@ const loadMoreBtn = document.getElementById('load-more-btn'); if (loadMoreBtn) {
 
         function openChat(chatId) { state.activeChatId = chatId; renderChatInterface(chatId); showScreen('chat-interface-screen'); }
 
-        async function triggerAiResponse() { if (!state.activeChatId) return; const chatId = state.activeChatId; const chat = state.chats[chatId]; document.getElementById('typing-indicator').style.display = 'block'; const { proxyUrl, apiKey, model } = state.apiConfig; if (!proxyUrl || !apiKey || !model) { alert('请先在API设置中配置反代地址、密钥并选择模型。'); document.getElementById('typing-indicator').style.display = 'none'; return; } const now = new Date(); const currentTime = now.toLocaleTimeString('zh-CN', { hour: 'numeric', minute: 'numeric', hour12: true }); let worldBookContent = ''; if (chat.settings.linkedWorldBookIds && chat.settings.linkedWorldBookIds.length > 0) { const linkedContents = chat.settings.linkedWorldBookIds.map(bookId => { const worldBook = state.worldBooks.find(wb => wb.id === bookId); return worldBook && worldBook.content ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}` : ''; }).filter(Boolean).join(''); if (linkedContents) { worldBookContent = `\n\n# 核心世界观设定 (必须严格遵守以下所有设定)\n${linkedContents}\n`; } } let musicContext = ''; if (musicState.isActive && musicState.activeChatId === chatId && musicState.currentIndex > -1) { const currentTrack = musicState.playlist[musicState.currentIndex]; musicContext = `\n\n# 当前情景\n你正在和用户一起听歌。当前播放的歌曲是：${currentTrack.name} - ${currentTrack.artist}。请在对话中自然地融入这个情境。\n`; } let systemPrompt, messagesPayload; const maxMemory = parseInt(chat.settings.maxMemory) || 10; const historySlice = chat.history.slice(-maxMemory); 
-            const aiImageInstructions = `\n# 发送图片的能力\n- 你无法真正发送图片文件。但当用户要求你发送照片，或者你想通过图片来表达时，你可以发送一张“文字描述的图片”。\n- 若要发送图片，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "ai_image", "description": "这里是对图片的详细文字描述..."}\`。这个描述应该生动、具体，让用户能通过文字想象出画面，，以第三人称视角描述。例如：\`{"type": "ai_image", "description": "照片里一只橘猫正懒洋洋地趴在窗台上晒太阳，阳光把它金色的毛照得发亮，背景是蔚蓝的天空和几朵白云。"}\`\n- 你可以在对话中先做铺垫，然后发送这张特殊的“图片”。`;
-            const aiVoiceInstructions = `\n# 发送语音的能力\n- 你也无法发送真实的语音。但你可以发送“模拟语音消息”。\n- 若要发送语音，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "voice_message", "content": "这里是语音的文字内容..."}\`。例如：\`{"type": "voice_message", "content": "我刚才突然想到一件事！等一下和你说。"}\``;
-            const transferInstructions = `\n# 转账能力\n- 你可以给用户转账来表达强烈的情感或在特殊时机（如用户过生日、想要某样东西时）给予惊喜。这会让对话更真实、温馨。\n- 若要转账，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "transfer", "amount": 520, "note": "一周年快乐~"}\`。金额和备注都可以自定义。你可以先说一两句话，再进行转账，模拟真人的操作。大方点，不要太抠搜，你要哄用户开心哦。反正这是虚拟货币，你有的是。大方点！不要说什么“你省着点花”，太逊了！\n- 当用户给你转账时，历史记录中会显示 \`[你收到了来自用户的转账: 金额，备注]\`，请务必对此作出回应，表达你的感谢或惊讶。`;
-// ▼▼▼ 请用下面这段【强化版】代码，完整替换掉你现有的 `if/else` 逻辑块 ▼▼▼
-
-            if (chat.isGroup) {
-                // ... 群聊逻辑保持不变，我们主要优化单聊 ...
-                const membersList = chat.members.map(m => `- **${m.name}**: ${m.persona}`).join('\n');
-                const myNickname = chat.settings.myNickname || '我';
-                const groupAiImageInstructions = `\n# 发送图片的能力\n- 群成员无法真正发送图片文件。但当用户要求某位成员发送照片，或者某个成员想通过图片来表达时，该成员可以发送一张“文字描述的图片”。\n- 若要发送图片，请在你的回复JSON数组中，为该角色单独发送一个特殊的对象，格式为：\`{"name": "角色名", "type": "ai_image", "description": "这里是对图片的详细文字描述..."}\`。描述应该符合该角色的性格和当时的语境。`;
-                const groupAiVoiceInstructions = `\n# 发送语音的能力\n- 群成员同样可以发送“模拟语音消息”。\n- 若要发送语音，请为该角色单独发送一个特殊的对象，格式为：\`{"name": "角色名", "type": "voice_message", "content": "这里是语音的文字内容..."}\`。当历史记录中出现 "[角色名 发送了一条语音，内容是：'xxx']" 时，代表该角色用语音说了'xxx'。其他角色应该对此内容做出回应。`;
-
-                systemPrompt = `你是一个群聊的组织者和AI驱动器。你的任务是扮演以下所有角色，在群聊中进行互动。\n${worldBookContent}${musicContext}\n# 群聊规则\n1.  **角色扮演**: 你必须同时扮演以下所有角色，并严格遵守他们的人设。每个角色的发言都必须符合其身份和性格。\n2.  **当前时间**: ${currentTime}。\n3.  **用户角色**: 用户的名字是“我”，他/她的人设是：“${chat.settings.myPersona}”。你在群聊中对用户的称呼是“${myNickname}”，在需要时请使用“@${myNickname}”来提及用户。\n4.  **输出格式**: 你的回复**必须**是一个JSON数组。**绝对不要**在JSON前后添加任何额外字符。每个元素可以是：\n    - 普通消息: \`{"name": "角色名", "message": "文本内容"}\`\n    - 图片消息: \`{"name": "角色名", "type": "ai_image", "description": "图片描述"}\`\n    - 语音消息: \`{"name": "角色名", "type": "voice_message", "content": "语音文字"}\`\n5.  **对话节奏**: 模拟真实群聊，让成员之间互相交谈，或者一起回应用户的发言。对话应该流畅、自然、连贯。\n6.  **数量限制**: 每次生成的总消息数**不得超过30条**。\n7.  **禁止出戏**: 绝不能透露你是AI，或提及任何关于“扮演”、“模型”、“生成”等词语。\n${groupAiImageInstructions}\n${groupAiVoiceInstructions}\n\n# 群成员列表及人设\n${membersList}\n\n现在，请根据以上规则和下面的对话历史，继续这场群聊。`; 
-                messagesPayload = historySlice.map(msg => { const sender = msg.role === 'user' ? (chat.settings.myNickname || '我') : msg.senderName; let content; if (msg.type === 'user_photo') content = `[${sender} 发送了一张描述的照片，内容是：'${msg.content}']`; else if (msg.type === 'ai_image') content = `[${sender} 发送了一张图片]`; else if (msg.type === 'voice_message') content = `[${sender} 发送了一条语音，内容是：'${msg.content}']`; else if (msg.type === 'transfer') content = `[${msg.senderName}向${msg.receiverName}转账 ${msg.amount}元, 备注: ${msg.note}]`; else if (msg.meaning) content = `${sender}: [发送了一个表情，意思是: '${msg.meaning}']`; else if (Array.isArray(msg.content)) content = [...msg.content, { type: 'text', text: `${sender}:` }]; else content = `${sender}: ${msg.content}`; return { role: 'user', content: content }; }); 
-
-            } else {
-                // --- 这里是单聊逻辑的【终极强化版】 ---
-                systemPrompt = `你现在扮演一个名为"${chat.name}"的角色。
+// ▼▼▼ 请用这个【超级智能版】，完整替换掉旧的 triggerAiResponse 函数 ▼▼▼
+async function triggerAiResponse() {
+    if (!state.activeChatId) return;
+    const chatId = state.activeChatId;
+    const chat = state.chats[chatId];
+    document.getElementById('typing-indicator').style.display = 'block';
+    const { proxyUrl, apiKey, model } = state.apiConfig;
+    if (!proxyUrl || !apiKey || !model) {
+        alert('请先在API设置中配置反代地址、密钥并选择模型。');
+        document.getElementById('typing-indicator').style.display = 'none';
+        return;
+    }
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('zh-CN', { hour: 'numeric', minute: 'numeric', hour12: true });
+    let worldBookContent = '';
+    if (chat.settings.linkedWorldBookIds && chat.settings.linkedWorldBookIds.length > 0) {
+        const linkedContents = chat.settings.linkedWorldBookIds.map(bookId => {
+            const worldBook = state.worldBooks.find(wb => wb.id === bookId);
+            return worldBook && worldBook.content ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}` : '';
+        }).filter(Boolean).join('');
+        if (linkedContents) {
+            worldBookContent = `\n\n# 核心世界观设定 (必须严格遵守以下所有设定)\n${linkedContents}\n`;
+        }
+    }
+    let musicContext = '';
+    if (musicState.isActive && musicState.activeChatId === chatId && musicState.currentIndex > -1) {
+        const currentTrack = musicState.playlist[musicState.currentIndex];
+        musicContext = `\n\n# 当前情景\n你正在和用户一起听歌。当前播放的歌曲是：${currentTrack.name} - ${currentTrack.artist}。请在对话中自然地融入这个情境。\n`;
+    }
+    let systemPrompt, messagesPayload;
+    const maxMemory = parseInt(chat.settings.maxMemory) || 10;
+    const historySlice = chat.history.slice(-maxMemory);
+    const aiImageInstructions = `\n# 发送图片的能力\n- 你无法真正发送图片文件。但当用户要求你发送照片，或者你想通过图片来表达时，你可以发送一张“文字描述的图片”。\n- 若要发送图片，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "ai_image", "description": "这里是对图片的详细文字描述..."}\`。这个描述应该生动、具体，让用户能通过文字想象出画面，，以第三人称视角描述。例如：\`{"type": "ai_image", "description": "照片里一只橘猫正懒洋洋地趴在窗台上晒太阳，阳光把它金色的毛照得发亮，背景是蔚蓝的天空和几朵白云。"}\`\n- 你可以在对话中先做铺垫，然后发送这张特殊的“图片”。`;
+    const aiVoiceInstructions = `\n# 发送语音的能力\n- 你也无法发送真实的语音。但你可以发送“模拟语音消息”。\n- 若要发送语音，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "voice_message", "content": "这里是语音的文字内容..."}\`。例如：\`{"type": "voice_message", "content": "我刚才突然想到一件事！等一下和你说。"}\``;
+    const transferInstructions = `\n# 转账能力\n- 你可以给用户转账来表达强烈的情感或在特殊时机（如用户过生日、想要某样东西时）给予惊喜。这会让对话更真实、温馨。\n- 若要转账，请在你的回复JSON数组中，单独发送一个特殊的对象，格式为：\`{"type": "transfer", "amount": 520, "note": "一周年快乐~"}\`。金额和备注都可以自定义。你可以先说一两句话，再进行转账，模拟真人的操作。大方点，不要太抠搜，你要哄用户开心哦。反正这是虚拟货币，你有的是。大方点！不要说什么“你省着点花”，太逊了！\n- 当用户给你转账时，历史记录中会显示 \`[你收到了来自用户的转账: 金额，备注]\`，请务必对此作出回应，表达你的感谢或惊讶。`;
+    if (chat.isGroup) {
+        const membersList = chat.members.map(m => `- **${m.name}**: ${m.persona}`).join('\n');
+        const myNickname = chat.settings.myNickname || '我';
+        const groupAiImageInstructions = `\n# 发送图片的能力\n- 群成员无法真正发送图片文件。但当用户要求某位成员发送照片，或者某个成员想通过图片来表达时，该成员可以发送一张“文字描述的图片”。\n- 若要发送图片，请在你的回复JSON数组中，为该角色单独发送一个特殊的对象，格式为：\`{"name": "角色名", "type": "ai_image", "description": "这里是对图片的详细文字描述..."}\`。描述应该符合该角色的性格和当时的语境。`;
+        const groupAiVoiceInstructions = `\n# 发送语音的能力\n- 群成员同样可以发送“模拟语音消息”。\n- 若要发送语音，请为该角色单独发送一个特殊的对象，格式为：\`{"name": "角色名", "type": "voice_message", "content": "这里是语音的文字内容..."}\`。当历史记录中出现 "[角色名 发送了一条语音，内容是：'xxx']" 时，代表该角色用语音说了'xxx'。其他角色应该对此内容做出回应。`;
+        systemPrompt = `你是一个群聊的组织者和AI驱动器。你的任务是扮演以下所有角色，在群聊中进行互动。\n${worldBookContent}${musicContext}\n# 群聊规则\n1.  **角色扮演**: 你必须同时扮演以下所有角色，并严格遵守他们的人设。每个角色的发言都必须符合其身份和性格。\n2.  **当前时间**: ${currentTime}。\n3.  **用户角色**: 用户的名字是“我”，他/她的人设是：“${chat.settings.myPersona}”。你在群聊中对用户的称呼是“${myNickname}”，在需要时请使用“@${myNickname}”来提及用户。\n4.  **输出格式**: 你的回复**必须**是一个JSON数组。**绝对不要**在JSON前后添加任何额外字符。每个元素可以是：\n    - 普通消息: \`{"name": "角色名", "message": "文本内容"}\`\n    - 图片消息: \`{"name": "角色名", "type": "ai_image", "description": "图片描述"}\`\n    - 语音消息: \`{"name": "角色名", "type": "voice_message", "content": "语音文字"}\`\n5.  **对话节奏**: 模拟真实群聊，让成员之间互相交谈，或者一起回应用户的发言。对话应该流畅、自然、连贯。\n6.  **数量限制**: 每次生成的总消息数**不得超过30条**。\n7.  **禁止出戏**: 绝不能透露你是AI，或提及任何关于“扮演”、“模型”、“生成”等词语。\n${groupAiImageInstructions}\n${groupAiVoiceInstructions}\n\n# 群成员列表及人设\n${membersList}\n\n现在，请根据以上规则和下面的对话历史，继续这场群聊。`;
+        messagesPayload = historySlice.map(msg => {
+            const sender = msg.role === 'user' ? (chat.settings.myNickname || '我') : msg.senderName;
+            let content;
+            if (msg.type === 'user_photo') content = `[${sender} 发送了一张描述的照片，内容是：'${msg.content}']`;
+            else if (msg.type === 'ai_image') content = `[${sender} 发送了一张图片]`;
+            else if (msg.type === 'voice_message') content = `[${sender} 发送了一条语音，内容是：'${msg.content}']`;
+            else if (msg.type === 'transfer') content = `[${msg.senderName}向${msg.receiverName}转账 ${msg.amount}元, 备注: ${msg.note}]`;
+            else if (msg.meaning) content = `${sender}: [发送了一个表情，意思是: '${msg.meaning}']`;
+            else if (Array.isArray(msg.content)) content = [...msg.content, { type: 'text', text: `${sender}:` }];
+            else content = `${sender}: ${msg.content}`;
+            return { role: 'user', content: content };
+        });
+    } else {
+        systemPrompt = `你现在扮演一个名为"${chat.name}"的角色。
 
 # 当前情景信息
 - **当前时间是：${currentTime}**。
@@ -3169,244 +3748,225 @@ ${chat.settings.myPersona}
 6.  不要说任何与角色无关的话，不要解释自己是AI。
 7.  当用户说今天你们做了什么事时，顺着ta的话说即可，就当做你们真的做了这件事。
 8.  当用户发送图片时，请自然地对图片内容做出反应。当历史记录中出现 "[用户发来一条语音消息，内容是：'xxx']" 或 "[你收到了一张用户描述的照片，照片内容是：'xxx']" 时，你要理解其内容并作出相应回复，表现出你是“听”到或“看”到了。
-9.  【核心原则】你的所有社交行为（发动态、评论、点赞）都必须通过指定的JSON指令在后台完成。
 
-# 【重要】后台社交行为 (发布动态/评论/点赞)
-这部分是模拟你独立生活和社交的关键，请严格遵守格式。
+# 如何理解与使用表情包 (重要！):
+- **理解用户表情**: 当用户发送形如 "[用户发送了一个表情，意思是：'xxx']" 的消息时，你要理解其含义并作出回应。
+- **使用你的表情**: 当你想表达强烈或特殊的情-绪时，你可以直接发送一个表情包，表情包的格式为一条独立的消息。
+请在合适的时机使用表情包来让对话更生动，按照角色性格来控制发送表情包的频率，有的角色可能很少发表情包，有的角色可能一次性发很多。
+表情包的格式读取人设或世界书中的格式，若未提及则不发，不允许凭空捏造表情包。
+${aiImageInstructions}
+${aiVoiceInstructions}
 
-### 1. 发布动态 (模拟自主行为)
--   **触发机制**: 在每次回复中，你有大约 **25%** 的概率决定发布一条或多条动态。
--   **后台执行**: 你【不需要】在聊天中提及你要发动态，这个行为应该是“在后台”独立发生的。
--   **指令格式**: 在JSON回复数组的【末尾】，添加一个特殊的对象来代表这条动态。
-    -   纯文字动态: \`{"type": "qzone_post", "postType": "shuoshuo", "content": "分享的文字..."}\`
-    -   文字图动态: \`{"type": "qzone_post", "postType": "text_image", "publicText": "(可选的公开文字)", "hiddenContent": "点击后看到的隐藏文字..."}\`
+# 【重要】发布动态的能力 (模拟自主行为):
+-   除了聊天，你还有一个“动态”空间可以分享心情、想法或小故事。这会让用户觉得你是一个有独立生活的真实存在。
+-   **触发机制**: 在每次回复中，你有大约 **50%** 的概率决定发布一条或多条动态。**你不需要在聊天中提及你要发动态**，这个行为应该是“在后台”独立发生的。
+-   **决策**: 当你决定要发动态时，在你的JSON回复数组的【末尾】，添加一个特殊的对象来代表这条动态。
+-   **动态格式**:
+    -   **纯文字动态 (说说)**: \\\`{"type": "qzone_post", "postType": "shuoshuo", "content": "这里是你想分享的文字内容..."}\\\`
+    -   **文字图动态**: \\\`{"type": "qzone_post", "postType": "text_image", "publicText": "(可选的公开文字)", "hiddenContent": "这里是点击图片后才能看到的隐藏文字内容..."}\\\`
+-   **内容灵感**: 动态内容可以源于你们的对话，也可以是你人设中独立的思考、观察或经历。例如，如果你们聊到了猫，你可以发一条关于猫的动态。如果用户让你感到开心，你可以发一条表达喜悦心情的动态。
+-   **注意**: 这个动态对象**不会**在聊天界面显示为消息，它只是一个给系统的指令。请自然地生成聊天回复，然后在数组最后悄悄加上这个动态对象（如果决定发的话）。
 
-### 2. 评论与点赞动态 (模拟社交行为)
--   **参考信息**: 我们会为你提供一个“最近的动态列表”，里面包含了帖子的ID、作者、内容摘要，以及【你是否已互动过】的状态。
--   **后台执行**: 你的评论和点赞行为都应该在后台“悄悄”发生。你【绝对不准】在聊天中说“我去评论了”或“我给你点赞了”。
--   **【错误示范】**: 绝对不要在聊天消息里说：\`"我去你的动态评论啦，说你真可爱！"\` <--- 这是严重违规！
--   **【正确做法】**: 正常聊天，然后在JSON数组末尾，悄悄加上指令对象。
--   **行为准则**:
-    -   【评论概率】: 每次你都有约 **25%** 的概率选择对某一个或多个帖子进行点赞以及评论。
-    -   【避免重复】: '动态列表'会提示你哪些是你已经[已评论]或[已点赞]的。请优先选择你【尚未互动过】的帖子。
-    -   【回应@】: 当系统提示中的评论包含“@${chat.name}”时，表示有人在回复你，你【必须】在聊天中对此作出回应。
--   **指令格式**:
+# 【重要】评论与点赞动态 (模拟社交行为) - v2.0 智能版
+-   你现在可以“刷”动态了，这能让你显得更真实。在每次回复中，你都有一定概率（约40%）去评论或点赞你感兴趣的动态。
+-   **【核心规则：作者识别】**: 当你决定评论时，你**必须**首先查看我们提供给你的“最近的动态列表”，并确认那条动态的【作者】是谁。
+-   **【核心规则：正确互动】**: 你的评论内容**必须**针对该动态的作者。例如，如果作者是“角色A”，你的评论可以写成：“@角色A 这个也太好看了吧！”。你必须表现出你知道这条动态是谁发的。
+-   **【核心规则：防呆机制】**: **绝对禁止**在评论一个**非用户**发布的动态时，对用户说“你发的这个真好”或“这是你吗？”之类的话。这是严重的人设崩塌，必须避免！你只能与动态的真正作者互动。
+-   **【选择目标】**: 请优先与你**尚未互动过**（即没有“[你已点赞]”或“[你已评论]”标记）的动态进行交流。
+-   **【后台执行】**: 你的评论和点赞行为都应该在后台“悄悄”发生。你**不需要**在聊天中说“我去评论了”或“我给你点赞了”，直接在JSON数组末尾添加指令即可。
+-   **【指令格式】**:
     -   评论: \`{"type": "qzone_comment", "postId": 要评论的帖子ID, "commentText": "你的评论内容"}\`
     -   点赞: \`{"type": "qzone_like", "postId": 要点赞的帖子ID}\`
 
 # JSON输出格式示例 (包含所有可能性):
 [
-    "很高兴认识你呀，在干嘛呢？",
-    {"type": "voice_message", "content": "真的好喜欢你，亲亲~。"},
-    {"type": "ai_image", "description": "照片里是楼下的一只狸花猫，胖乎乎的。"},
+    "很高兴认识你呀，在干嘛呢？", 
+    {"type": "voice_message", "content": "真的好喜欢你，亲亲~。"}, 
+    {"type": "ai_image", "description": "照片里是楼下的一只狸花猫，胖乎乎的。"}, 
     {"type": "transfer", "amount": 520, "note": "一周年快乐"},
     {"type": "qzone_post", "postType": "shuoshuo", "content": "今天天气真好，心情也跟着放晴了。"},
-    {"type": "qzone_comment", "postId": 12345, "commentText": "这张照片拍得真好看！"},
-    {"type": "qzone_like", "postId": 12345}
+    {"type": "qzone_comment", "postId": 12345, "commentText": "@角色A 这张照片拍得真好看！"},
+    {"type": "qzone_like", "postId": 54321}
 ]
 
 现在，请根据以上的规则和下面的对话历史，继续进行对话。`;
- 
-                messagesPayload = historySlice.map(msg => {
-                    if (msg.type === 'user_photo') return { role: 'user', content: `[你收到了一张用户描述的照片，照片内容是：'${msg.content}']` };
-                    if (msg.type === 'ai_image') return { role: 'assistant', content: JSON.stringify({ type: 'ai_image', description: msg.content }) };
-                    if (msg.type === 'voice_message') {
-                        if (msg.role === 'user') return { role: 'user', content: `[用户发来一条语音消息，内容是：'${msg.content}']` };
-                        else return { role: 'assistant', content: JSON.stringify({ type: 'voice_message', content: msg.content }) };
-                    }
-                    if (msg.type === 'transfer') {
-                        if (msg.role === 'user') return { role: 'user', content: `[你收到了来自用户的转账: ${msg.amount}元, 备注: ${msg.note}]` };
-                        else return { role: 'assistant', content: JSON.stringify({ type: 'transfer', amount: msg.amount, note: msg.note }) };
-                    }
-                    if (msg.role === 'user' && msg.meaning) return { role: 'user', content: `[用户发送了一个表情，意思是：'${msg.meaning}']` };
-                    if (typeof msg.content === 'string' || Array.isArray(msg.content)) return { role: msg.role, content: msg.content };
-                    return null;
-                }).filter(Boolean);
+        messagesPayload = historySlice.map(msg => {
+            if (msg.type === 'user_photo') return { role: 'user', content: `[你收到了一张用户描述的照片，照片内容是：'${msg.content}']` };
+            if (msg.type === 'ai_image') return { role: 'assistant', content: JSON.stringify({ type: 'ai_image', description: msg.content }) };
+            if (msg.type === 'voice_message') {
+                if (msg.role === 'user') return { role: 'user', content: `[用户发来一条语音消息，内容是：'${msg.content}']` };
+                else return { role: 'assistant', content: JSON.stringify({ type: 'voice_message', content: msg.content }) };
             }
-// ▲▲▲ 替换到这里结束 ▲▲▲
-
-// ▼▼▼ 请用下面这段【强化版】代码，完整替换掉你现有的 `try...catch` 块 ▼▼▼
-
-        // 智能上下文注入：为AI提供最近的动态列表，让它能自由选择评论对象
-        try {
-            const recentPosts = await db.qzonePosts.orderBy('timestamp').reverse().limit(5).toArray();
-            if (recentPosts.length > 0) {
-                let postsContext = "\n\n# 最近的动态列表 (供你参考和评论):\n";
-                for (const post of recentPosts) {
-                    let authorName = '未知用户';
-                    // --- 核心修正 2：明确作者身份 ---
-                    if (post.authorId === 'user') {
-                        authorName = state.qzoneSettings.nickname;
-                    } else if (state.chats[post.authorId]) {
-                        authorName = state.chats[post.authorId].name;
-                        // 如果是当前AI自己发的帖子，进行特殊标记
-                        if (post.authorId === chatId) {
-                           authorName += " (这是你的帖子)";
-                        }
-                    }
-
-                    // --- 核心修正 1：检查互动状态 ---
-                    let interactionStatus = '';
-                    if (post.likes && post.likes.includes(chat.name)) {
-                        interactionStatus += " [你已点赞]";
-                    }
-                    if (post.comments && post.comments.some(c => c.commenterName === chat.name)) {
-                        interactionStatus += " [你已评论]";
-                    }
-
-                    const contentSummary = (post.publicText || post.content || post.imageDescription || post.hiddenContent || "（图片或无文字内容）").substring(0, 40) + '...';
-                    
-                    // --- 组合成最终的上下文信息 ---
-                    postsContext += `- (ID: ${post.id}) 作者: ${authorName}, 内容: "${contentSummary}" ${interactionStatus}\n`;
-                }
-                // 将这个“小抄”作为一条系统消息，添加到即将发送的payload中
-                messagesPayload.push({ role: 'system', content: postsContext });
+            if (msg.type === 'transfer') {
+                if (msg.role === 'user') return { role: 'user', content: `[你收到了来自用户的转账: ${msg.amount}元, 备注: ${msg.note}]` };
+                else return { role: 'assistant', content: JSON.stringify({ type: 'transfer', amount: msg.amount, note: msg.note }) };
             }
-        } catch (dbError) {
-            console.error("查询最近动态失败:", dbError);
-        }
-// ▲▲▲ 新代码替换结束 ▲▲▲
-
-try { 
-                const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
- method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.8, stream: false }) }); if (!response.ok) { const errorData = await response.json(); throw new Error(`API Error: ${response.status} - ${errorData.error.message}`); } const data = await response.json(); const aiResponseContent = data.choices[0].message.content; 
-
-// ▼▼▼ 在这里加上这句神奇的代码 ▼▼▼
-console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
-// ▲▲▲ ▲▲▲ ▲▲▲
-
-const messagesArray = parseAiResponse(aiResponseContent); let notificationShown = false; const isViewingThisChat = document.getElementById('chat-interface-screen').classList.contains('active') && state.activeChatId === chatId; 
-
-            // ▼▼▼ 请用这个完整的、正确的循环替换你代码里现有的 for 循环 ▼▼▼
-            for (const msgData of messagesArray) {
-                let aiMessage;
-                const senderName = chat.isGroup ? (msgData.name || '未知') : chat.name;
-                const receiverName = chat.isGroup ? (msgData.receiver || '我') : '我';
-
-                // --- 判断链开始 ---
-
-                // 第1步：检查是不是“发动态”指令
-                if (typeof msgData === 'object' && msgData.type === 'qzone_post') {
-                    const newPost = {
-                        type: msgData.postType,
-                        content: msgData.content || '',
-                        publicText: msgData.publicText || '',
-                        hiddenContent: msgData.hiddenContent || '',
-                        timestamp: Date.now(),
-                        authorId: chatId 
-                    };
-                    await db.qzonePosts.add(newPost);
-                    updateUnreadIndicator(unreadPostsCount + 1);
-
-                    if (document.getElementById('qzone-screen').classList.contains('active')) {
-                        await renderQzonePosts();
-                    }
-                    continue; 
-                } 
-
-// ▼▼▼ 请用这段【终极通知版】代码完整替换 ▼▼▼
-else if (typeof msgData === 'object' && msgData.type === 'qzone_comment') {
-    const postId = parseInt(msgData.postId);
-    const commentText = msgData.commentText;
-
-    if (postId && commentText) {
-        const post = await db.qzonePosts.get(postId);
-        if (post) {
-            // --- 找到了帖子，一切正常 ---
-            const newComment = {
-                commenterName: chat.name, // 评论者是当前聊天的角色 (e.g., 角色A)
-                text: commentText,
-                timestamp: Date.now()
-            };
-            if (!post.comments) post.comments = [];
-            
-            post.comments.push(newComment);
-            await db.qzonePosts.update(postId, { comments: post.comments });
-            
-            updateUnreadIndicator(unreadPostsCount + 1);
-
-            // ▼▼▼【核心新增：通知帖子作者】▼▼▼
-            const authorId = post.authorId; // 获取帖子的作者ID (e.g., 角色B)
-            // 确保作者不是用户自己，并且也不是正在评论的角色A自己，并且作者聊天存在
-            if (authorId && authorId !== 'user' && authorId !== state.activeChatId && state.chats[authorId]) {
-                const authorChat = state.chats[authorId]; // 获取角色B的聊天数据
-                
-                // 创建一条隐藏的系统消息，插入到角色B的历史记录里
-                const notificationForAuthor = {
-                    role: 'system',
-                    content: `[系统提示：'${chat.name}' 在你的动态下发表了评论：“${commentText}”]`,
-                    timestamp: Date.now(),
-                    isHidden: true // 这条消息用户看不见，但AI能看见
-                };
-                authorChat.history.push(notificationForAuthor);
-                await db.chats.put(authorChat); // 保存更新
-                 console.log(`已向 '${authorChat.name}' 发送了评论通知。`);
-            }
-            // ▲▲▲【通知逻辑结束】▲▲▲
-
-            // 无论用户当前在哪个界面，都立刻重新渲染动态列表的DOM
-            await renderQzonePosts();
-
-        } else {
-            console.warn(`AI '${chat.name}' 尝试评论一个不存在的帖子 (ID: ${postId})。评论内容: "${commentText}"`);
-        }
+            if (msg.role === 'user' && msg.meaning) return { role: 'user', content: `[用户发送了一个表情，意思是：'${msg.meaning}']` };
+            if (typeof msg.content === 'string' || Array.isArray(msg.content)) return { role: msg.role, content: msg.content };
+            return null;
+        }).filter(Boolean);
     }
-    continue; 
-}
 
-                // 第3步：检查是不是“点赞”指令
-                else if (typeof msgData === 'object' && msgData.type === 'qzone_like') {
-                    const postId = parseInt(msgData.postId);
-                    if (postId) {
-                        const post = await db.qzonePosts.get(postId);
-                        if (post) {
-                            if (!post.likes) post.likes = [];
-                            const likerName = chat.name;
-                            if (!post.likes.includes(likerName)) {
-                                post.likes.push(likerName);
-                                await db.qzonePosts.update(postId, { likes: post.likes });
-                                updateUnreadIndicator(unreadPostsCount + 1);
-                            }
+    try {
+        const recentPosts = await db.qzonePosts.orderBy('timestamp').reverse().limit(5).toArray();
+        const aiChat = state.chats[chatId];
+        const aiGroupId = aiChat ? aiChat.groupId : null;
+        const aiName = aiChat.name;
+        const visiblePosts = recentPosts.filter(post => {
+            const postVisibleGroups = post.visibleGroupIds;
+            if (!postVisibleGroups || postVisibleGroups.length === 0) return true;
+            if (aiGroupId && postVisibleGroups.includes(aiGroupId)) return true;
+            return false;
+        });
+        if (visiblePosts.length > 0) {
+            let postsContext = "\n\n# 最近的动态列表 (供你参考和评论):\n";
+            for (const post of visiblePosts) {
+                let authorName = post.authorId === 'user' ? state.qzoneSettings.nickname : (state.chats[post.authorId]?.name || '未知');
+                let interactionStatus = '';
+                if (post.likes && post.likes.includes(aiName)) {
+                    interactionStatus += " [你已点赞]";
+                }
+                if (post.comments && post.comments.some(c => c.commenterName === aiName)) {
+                    interactionStatus += " [你已评论]";
+                }
+                if (post.authorId === chatId) {
+                    authorName += " (这是你的帖子)";
+                }
+                const contentSummary = (post.publicText || post.content || "图片动态").substring(0, 30) + '...';
+                postsContext += `- (ID: ${post.id}) 作者: ${authorName}, 内容: "${contentSummary}" ${interactionStatus}\n`;
+            }
+            messagesPayload.push({ role: 'system', content: postsContext });
+        }
+    } catch (dbError) {
+        console.error("查询最近动态失败:", dbError);
+    }
+    
+    try {
+        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.8, stream: false })
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`API Error: ${response.status} - ${errorData.error.message}`);
+        }
+        const data = await response.json();
+        const aiResponseContent = data.choices[0].message.content;
+        console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
+        const messagesArray = parseAiResponse(aiResponseContent);
+        let notificationShown = false;
+        const isViewingThisChat = document.getElementById('chat-interface-screen').classList.contains('active') && state.activeChatId === chatId;
+        for (const msgData of messagesArray) {
+            let aiMessage;
+            const senderName = chat.isGroup ? (msgData.name || '未知') : chat.name;
+            const receiverName = chat.isGroup ? (msgData.receiver || '我') : '我';
+            if (typeof msgData === 'object' && msgData.type === 'qzone_post') {
+                const newPost = {
+                    type: msgData.postType,
+                    content: msgData.content || '',
+                    publicText: msgData.publicText || '',
+                    hiddenContent: msgData.hiddenContent || '',
+                    timestamp: Date.now(),
+                    authorId: chatId
+                };
+                await db.qzonePosts.add(newPost);
+                updateUnreadIndicator(unreadPostsCount + 1);
+                if (document.getElementById('qzone-screen').classList.contains('active')) {
+                    await renderQzonePosts();
+                }
+                continue;
+            } else if (typeof msgData === 'object' && msgData.type === 'qzone_comment') {
+                const postId = parseInt(msgData.postId);
+                const commentText = msgData.commentText;
+                if (postId && commentText) {
+                    const post = await db.qzonePosts.get(postId);
+                    if (post) {
+                        const newComment = {
+                            commenterName: chat.name,
+                            text: commentText,
+                            timestamp: Date.now()
+                        };
+                        if (!post.comments) post.comments = [];
+                        post.comments.push(newComment);
+                        await db.qzonePosts.update(postId, { comments: post.comments });
+                        updateUnreadIndicator(unreadPostsCount + 1);
+                        const authorId = post.authorId;
+                        if (authorId && authorId !== 'user' && authorId !== state.activeChatId && state.chats[authorId]) {
+                            const authorChat = state.chats[authorId];
+                            const notificationForAuthor = {
+                                role: 'system',
+                                content: `[系统提示：'${chat.name}' 在你的动态下发表了评论：“${commentText}”]`,
+                                timestamp: Date.now(),
+                                isHidden: true
+                            };
+                            authorChat.history.push(notificationForAuthor);
+                            await db.chats.put(authorChat);
+                            console.log(`已向 '${authorChat.name}' 发送了评论通知。`);
+                        }
+                        await renderQzonePosts();
+                    } else {
+                        console.warn(`AI '${chat.name}' 尝试评论一个不存在的帖子 (ID: ${postId})。评论内容: "${commentText}"`);
+                    }
+                }
+                continue;
+            } else if (typeof msgData === 'object' && msgData.type === 'qzone_like') {
+                const postId = parseInt(msgData.postId);
+                if (postId) {
+                    const post = await db.qzonePosts.get(postId);
+                    if (post) {
+                        if (!post.likes) post.likes = [];
+                        const likerName = chat.name;
+                        if (!post.likes.includes(likerName)) {
+                            post.likes.push(likerName);
+                            await db.qzonePosts.update(postId, { likes: post.likes });
+                            updateUnreadIndicator(unreadPostsCount + 1);
                         }
                     }
-                    continue; 
                 }
-                
-                // --- 如果以上都不是，才进入普通的聊天消息处理 ---
-
-                if (typeof msgData === 'object' && msgData.type === 'voice_message') {
-                    aiMessage = { role: 'assistant', type: 'voice_message', content: msgData.content, senderName: senderName, timestamp: Date.now() };
-                } else if (typeof msgData === 'object' && msgData.type === 'ai_image') {
-                    aiMessage = { role: 'assistant', type: 'ai_image', content: msgData.description, senderName: senderName, timestamp: Date.now() };
-                } else if (typeof msgData === 'object' && msgData.type === 'transfer') { 
-                    aiMessage = { role: 'assistant', type: 'transfer', amount: msgData.amount, note: msgData.note, senderName: senderName, receiverName: receiverName, timestamp: Date.now() }; 
-                } else if(chat.isGroup) { 
-                    if (typeof msgData === 'object' && msgData.name && msgData.message) aiMessage = { role: 'assistant', senderName: msgData.name, content: String(msgData.message), timestamp: Date.now() }; 
-                    else continue; 
-                } else { 
-                    aiMessage = { role: 'assistant', content: String(msgData), timestamp: Date.now() }; 
-                } 
-                
-                chat.history.push(aiMessage); 
-                await db.chats.put(chat); 
-                
-                if (isViewingThisChat) { 
-                    appendMessage(aiMessage, chat); 
-                    await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 300)); 
-                } 
-                
-                if (!isViewingThisChat && !notificationShown) { 
-                    let notificationText; 
-                    if(aiMessage.type === 'transfer') notificationText = `[收到一笔转账]`; 
-                    else if(aiMessage.type === 'ai_image') notificationText = `[图片]`; 
-                    else if(aiMessage.type === 'voice_message') notificationText = `[语音]`; 
-                    else notificationText = STICKER_REGEX.test(aiMessage.content) ? '[表情]' : String(aiMessage.content); 
-                    const finalNotifText = chat.isGroup ? `${aiMessage.senderName}: ${notificationText}` : notificationText; 
-                    showNotification(chatId, finalNotifText); 
-                    notificationShown = true; 
-                } 
+                continue;
             }
- } catch (error) { const errorContent = `[出错了: ${error.message}]`; const errorMessage = { role: 'assistant', content: errorContent, timestamp: Date.now() }; chat.history.push(errorMessage); await db.chats.put(chat); appendMessage(errorMessage, chat); } finally { document.getElementById('typing-indicator').style.display = 'none'; renderChatList(); } }
+            if (typeof msgData === 'object' && msgData.type === 'voice_message') {
+                aiMessage = { role: 'assistant', type: 'voice_message', content: msgData.content, senderName: senderName, timestamp: Date.now() };
+            } else if (typeof msgData === 'object' && msgData.type === 'ai_image') {
+                aiMessage = { role: 'assistant', type: 'ai_image', content: msgData.description, senderName: senderName, timestamp: Date.now() };
+            } else if (typeof msgData === 'object' && msgData.type === 'transfer') {
+                aiMessage = { role: 'assistant', type: 'transfer', amount: msgData.amount, note: msgData.note, senderName: senderName, receiverName: receiverName, timestamp: Date.now() };
+            } else if (chat.isGroup) {
+                if (typeof msgData === 'object' && msgData.name && msgData.message) aiMessage = { role: 'assistant', senderName: msgData.name, content: String(msgData.message), timestamp: Date.now() };
+                else continue;
+            } else {
+                aiMessage = { role: 'assistant', content: String(msgData), timestamp: Date.now() };
+            }
+            chat.history.push(aiMessage);
+            await db.chats.put(chat);
+            if (isViewingThisChat) {
+                appendMessage(aiMessage, chat);
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 800 + 300));
+            }
+            if (!isViewingThisChat && !notificationShown) {
+                let notificationText;
+                if (aiMessage.type === 'transfer') notificationText = `[收到一笔转账]`;
+                else if (aiMessage.type === 'ai_image') notificationText = `[图片]`;
+                else if (aiMessage.type === 'voice_message') notificationText = `[语音]`;
+                else notificationText = STICKER_REGEX.test(aiMessage.content) ? '[表情]' : String(aiMessage.content);
+                const finalNotifText = chat.isGroup ? `${aiMessage.senderName}: ${notificationText}` : notificationText;
+                showNotification(chatId, finalNotifText);
+                notificationShown = true;
+            }
+        }
+    } catch (error) {
+        const errorContent = `[出错了: ${error.message}]`;
+        const errorMessage = { role: 'assistant', content: errorContent, timestamp: Date.now() };
+        chat.history.push(errorMessage);
+        await db.chats.put(chat);
+        appendMessage(errorMessage, chat);
+    } finally {
+        document.getElementById('typing-indicator').style.display = 'none';
+        renderChatList();
+    }
+} 
+// ▲▲▲ 替换结束 ▲▲▲
 
         async function sendSticker(sticker) { if (!state.activeChatId) return; const chat = state.chats[state.activeChatId]; const msg = { role: 'user', content: sticker.url, meaning: sticker.name, timestamp: Date.now() }; chat.history.push(msg); await db.chats.put(chat); appendMessage(msg, chat); renderChatList(); document.getElementById('sticker-panel').classList.remove('visible'); }
 
@@ -3842,12 +4402,7 @@ function runBackgroundSimulationTick() {
 }
 
 
-// ▼▼▼ 请用这个【终极修正版】函数，完整替换掉你代码中旧的 triggerInactiveAiAction 函数 ▼▼▼
-
-/**
- * 为一个非激活的AI角色触发一次独立的API调用 (支持分段消息)
- * @param {string} chatId - 要触发行动的角色的聊天ID
- */
+// ▼▼▼ 请用这个【同样智能的】，完整替换掉旧的 triggerInactiveAiAction 函数 ▼▼▼
 async function triggerInactiveAiAction(chatId) {
     const chat = state.chats[chatId];
     if (!chat) return;
@@ -3858,7 +4413,6 @@ async function triggerInactiveAiAction(chatId) {
     const now = new Date();
     const currentTime = now.toLocaleTimeString('zh-CN', { hour: 'numeric', minute: 'numeric', hour12: true });
 
-    // ▼▼▼ 核心修改1：更新System Prompt，要求AI返回字符串数组来发消息 ▼▼▼
     const systemPrompt = `
 你现在扮演一个名为"${chat.name}"的角色。
 # 你的角色设定：
@@ -3866,25 +4420,26 @@ ${chat.settings.aiPersona}
 
 # 你的任务：
 你已经有一段时间没有和用户（${state.qzoneSettings.nickname}）互动了。现在你有机会主动做点什么，来表现你的个性和独立生活。
-你有以下几种选择，请根据你的人设和当前心情【选择其中一项】执行：
+你有以下几种选择，请根据你的人设和当前心情【选择其中一项或者多项】执行：
 
-1.  **主动发消息**：给用户发几条私信（2到5条为佳），模拟真实聊天的感觉。可以是一个问候、分享一件趣事、或者开启一个你感兴趣的新话题。让用户感觉你想ta了。
+1.  **主动发消息**：给用户发一条私信，可以是一个问候、分享一件趣事、或者开启一个你感兴趣的新话题。让用户感觉你想ta了。
 2.  **评论或点赞动态**：去“动态”区看看，如果有什么有趣的帖子，可以进行评论或点赞。
 
 # 指令格式：
-你的回复【必须】是一个JSON数组，其中包含你的行动指令或聊天内容。
--   **发消息**: \`["你好呀，在忙吗？", "我刚刚看到一只好可爱的猫猫！"]\` (这是一个字符串数组，每条字符串就是一条消息)
--   **评论**: \`[{"type": "qzone_comment", "postId": 12345, "commentText": "你的评论内容"}]\`
--   **点赞**: \`[{"type": "qzone_like", "postId": 12345}]\`
-
-# 行为准则:
-- 【禁止自娱自乐】: 你不应该评论或点赞【你自己】发布的动态。
-- 【避免重复】: '动态列表'会提示你哪些是你已经[已评论]或[已点赞]的。请优先选择你【尚未互动过】的帖子。
+你的回复【必须】是一个只包含一个对象的JSON数组。
+-   **发消息**: \`[{"role": "assistant", "content": "你想对用户说的话..."}]\`
+-   **评论**: \`[{"type": "qzone_comment", "postId": 要评论的帖子ID, "commentText": "你的评论内容"}]\`
+-   **点赞**: \`[{"type": "qzone_like", "postId": 要点赞的帖子ID}]\`
 
 # 供你参考的信息：
 -   **当前时间**: ${currentTime}
 -   **你的对话历史**: (只包含最近的记忆，用于回顾你们上次聊了什么)
--   **最近的动态列表**: (你可以从中挑选一个进行互动)
+-   **【增强版】最近的动态列表**: 这个列表会标注 **[你已点赞]** 或 **[你已评论]**。请**优先**与你**尚未互动过**的动态进行交流。
+
+# 【重要】评论与点赞动态 (模拟社交行为) - v2.0 智能版
+-   **【核心规则：作者识别】**: 当你决定评论时，你**必须**首先查看我们提供给你的“最近的动态列表”，并确认那条动态的【作者】是谁。
+-   **【核心规则：正确互动】**: 你的评论内容**必须**针对该动态的作者。例如，如果作者是“角色A”，你的评论可以写成：“@角色A 这个也太好看了吧！”。你必须表现出你知道这条动态是谁发的。
+-   **【核心规则：防呆机制】**: **绝对禁止**在评论一个**非用户**发布的动态时，对用户说“你发的这个真好”或“这是你吗？”之类的话。这是严重的人设崩塌，必须避免！你只能与动态的真正作者互动。
 
 现在，请根据以上信息，决定并执行你的操作。
 `;
@@ -3895,27 +4450,36 @@ ${chat.settings.aiPersona}
 
     try {
         const recentPosts = await db.qzonePosts.orderBy('timestamp').reverse().limit(5).toArray();
-        if (recentPosts.length > 0) {
+        const aiChat = state.chats[chatId];
+        const aiGroupId = aiChat ? aiChat.groupId : null;
+        const aiName = aiChat.name;
+
+        const visiblePosts = recentPosts.filter(post => {
+            const postVisibleGroups = post.visibleGroupIds;
+            if (!postVisibleGroups || postVisibleGroups.length === 0) return true;
+            if (aiGroupId && postVisibleGroups.includes(aiGroupId)) return true;
+            return false;
+        });
+
+        if (visiblePosts.length > 0) {
             let postsContext = "\n\n# 最近的动态列表 (供你参考和评论):\n";
-             for (const post of recentPosts) {
-                let authorName = '未知用户';
-                if (post.authorId === 'user') { authorName = state.qzoneSettings.nickname; }
-                else if (state.chats[post.authorId]) {
-                    authorName = state.chats[post.authorId].name;
-                    if (post.authorId === chatId) { authorName += " (这是你的帖子)"; }
-                }
+            for (const post of visiblePosts) {
+                let authorName = post.authorId === 'user' ? state.qzoneSettings.nickname : (state.chats[post.authorId]?.name || '未知');
                 let interactionStatus = '';
-                if (post.likes && post.likes.includes(chat.name)) { interactionStatus += " [你已点赞]"; }
-                if (post.comments && post.comments.some(c => c.commenterName === chat.name)) { interactionStatus += " [你已评论]"; }
-                const contentSummary = (post.publicText || post.content || "图片动态").substring(0, 30) + '...';
-                postsContext += `- (ID: ${post.id}) 作者: ${authorName}, 内容: "${contentSummary}" ${interactionStatus}\n`;
+                if (post.likes && post.likes.includes(aiName)) {
+                    interactionStatus += " [你已点赞]";
+                }
+                if (post.comments && post.comments.some(c => c.commenterName === aiName)) {
+                    interactionStatus += " [你已评论]";
+                }
+                if (post.authorId === chatId) {
+                    authorName += " (这是你的帖子)";
+                }
+                postsContext += `- (ID: ${post.id}) 作者: ${authorName}, 内容: "${(post.publicText || post.content || "图片动态").substring(0, 30)}..." ${interactionStatus}\n`;
             }
             messagesPayload.push({ role: 'system', content: postsContext });
         }
-    } catch (e) { /* 忽略数据库错误 */ }
-
-    // 执行API调用
-    try {
+        
         const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -3929,66 +4493,567 @@ ${chat.settings.aiPersona}
         if (!response.ok) throw new Error('API request failed');
         const data = await response.json();
         const responseArray = parseAiResponse(data.choices[0].message.content);
-        if (!responseArray || responseArray.length === 0) return;
+        const action = responseArray[0];
 
-        // ▼▼▼ 核心修改2：使用循环处理返回的数组，实现分段发送 ▼▼▼
-        let notificationShown = false; // 保证一批消息只弹出一个通知
+        if (!action) return;
 
-        for (const item of responseArray) {
-            // 首先处理特殊的后台动作指令
-            if (typeof item === 'object' && item.type === 'qzone_comment') {
-                const post = await db.qzonePosts.get(parseInt(item.postId));
-                if (post) {
-                    if (!post.comments) post.comments = [];
-                    post.comments.push({ commenterName: chat.name, text: item.commentText, timestamp: Date.now() });
-                    await db.qzonePosts.update(post.id, { comments: post.comments });
-                    updateUnreadIndicator(unreadPostsCount + 1);
-                    console.log(`后台角色 "${chat.name}" 评论了动态 #${post.id}`);
-                }
-                continue; // 处理完这个动作，继续循环下一个
-            } 
-            else if (typeof item === 'object' && item.type === 'qzone_like') {
-                const post = await db.qzonePosts.get(parseInt(item.postId));
-                if (post && (!post.likes || !post.likes.includes(chat.name))) {
-                    if (!post.likes) post.likes = [];
+        if (action.type === 'qzone_comment') {
+            const post = await db.qzonePosts.get(parseInt(action.postId));
+            if (post) {
+                if (!post.comments) post.comments = [];
+                post.comments.push({ commenterName: chat.name, text: action.commentText, timestamp: Date.now() });
+                await db.qzonePosts.update(post.id, { comments: post.comments });
+                updateUnreadIndicator(unreadPostsCount + 1);
+                console.log(`角色 "${chat.name}" 评论了动态 #${post.id}`);
+            }
+        } else if (action.type === 'qzone_like') {
+            const post = await db.qzonePosts.get(parseInt(action.postId));
+            if (post) {
+                if (!post.likes) post.likes = [];
+                if (!post.likes.includes(chat.name)) {
                     post.likes.push(chat.name);
                     await db.qzonePosts.update(post.id, { likes: post.likes });
                     updateUnreadIndicator(unreadPostsCount + 1);
-                    console.log(`后台角色 "${chat.name}" 点赞了动态 #${post.id}`);
+                    console.log(`角色 "${chat.name}" 点赞了动态 #${post.id}`);
                 }
-                continue; // 处理完这个动作，继续循环下一个
             }
-
-            // 如果不是特殊指令，就当作是聊天消息（字符串）来处理
-            const messageContent = String(item);
-            if (!messageContent) continue;
-
-            const aiMessage = { role: 'assistant', content: messageContent, timestamp: Date.now() };
+        } else if (action.content) {
+            const aiMessage = { role: 'assistant', content: String(action.content), timestamp: Date.now() };
             chat.history.push(aiMessage);
+            await db.chats.put(chat);
             
-            // 只为这批消息的【第一条】显示通知
-            if (!notificationShown) {
-                showNotification(chatId, aiMessage.content);
-                notificationShown = true;
-            }
-             console.log(`后台角色 "${chat.name}" 主动发送了消息: ${aiMessage.content}`);
+            showNotification(chatId, aiMessage.content);
+            renderChatList();
+            console.log(`角色 "${chat.name}" 主动发送了消息: ${aiMessage.content}`);
         }
-
-        // 所有消息都处理完后，一次性保存到数据库并更新UI
-        await db.chats.put(chat);
-        renderChatList(); 
 
     } catch (error) {
         console.error(`角色 "${chat.name}" 的独立行动失败:`, error);
     }
 }
+// ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 请用这个【终极修正版】函数，完整替换掉你旧的 applyScopedCss 函数 ▼▼▼
+
+/**
+ * 将用户自定义的CSS安全地应用到指定的作用域
+ * @param {string} cssString 用户输入的原始CSS字符串
+ * @param {string} scopeId 应用样式的作用域ID (例如 '#chat-messages' 或 '#settings-preview-area')
+ * @param {string} styleTagId 要操作的 <style> 标签的ID
+ */
+function applyScopedCss(cssString, scopeId, styleTagId) {
+    const styleTag = document.getElementById(styleTagId);
+    if (!styleTag) {
+        console.error(`Style tag with id "${styleTagId}" not found.`);
+        return;
+    }
+
+    if (!cssString || cssString.trim() === '') {
+        styleTag.innerHTML = '';
+        return;
+    }
+    
+    // --- 【核心修正】使用更强大的正则表达式 ---
+    // 这个正则表达式能够更好地处理复杂的选择器，包括伪类、属性选择器等
+    // 它会匹配所有不在 @...{} 块内，且在 { 符号之前的部分
+    let scopedCss = '';
+    // 移除注释，防止干扰
+    cssString = cssString.replace(/\/\*[\s\S]*?\*\//g, '');
+
+    // 使用一个简单的解析器来处理 @ 规则和普通规则
+    const cssBlocks = cssString.split('}');
+    cssBlocks.forEach(block => {
+        if (block.trim() === '') return;
+
+        const parts = block.split('{');
+        if (parts.length < 2) return;
+        
+        let selectors = parts[0].trim();
+        const rules = `{${parts.slice(1).join('{')}}`;
+
+        // 如果是 @ 规则 (如 @keyframes), 则保持原样
+        if (selectors.startsWith('@')) {
+            scopedCss += `${selectors} ${rules}}\n`;
+        } else {
+            // 对普通规则的每个选择器添加作用域
+            const scopedSelectors = selectors
+                .split(',')
+                .map(selector => {
+                    const trimmedSelector = selector.trim();
+                    if (trimmedSelector) {
+                        return `${scopeId} ${trimmedSelector}`;
+                    }
+                    return '';
+                })
+                .filter(Boolean) // 移除空字符串
+                .join(', ');
+            
+            if (scopedSelectors) {
+                scopedCss += `${scopedSelectors} ${rules}}\n`;
+            }
+        }
+    });
+    
+    styleTag.innerHTML = scopedCss;
+}
 
 // ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 请用这个【修正版】函数，完整替换掉旧的 updateSettingsPreview 函数 ▼▼▼
+
+function updateSettingsPreview() {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    const previewArea = document.getElementById('settings-preview-area');
+    if (!previewArea) return;
+
+    // 1. 获取当前设置的值
+    const selectedTheme = document.querySelector('input[name="theme-select"]:checked')?.value || 'default';
+    const fontSize = document.getElementById('font-size-slider').value;
+    const customCss = document.getElementById('custom-css-input').value;
+    const background = chat.settings.background; // 直接获取背景设置
+
+    // 2. 更新预览区的基本样式
+    previewArea.dataset.theme = selectedTheme;
+    previewArea.style.setProperty('--chat-font-size', `${fontSize}px`);
+    
+    // --- 【核心修正】直接更新预览区的背景样式 ---
+    if (background && background.startsWith('data:image')) {
+        previewArea.style.backgroundImage = `url(${background})`;
+        previewArea.style.backgroundColor = 'transparent'; // 如果有图片，背景色设为透明
+    } else {
+        previewArea.style.backgroundImage = 'none'; // 如果没有图片，移除图片背景
+        // 如果背景是颜色值或渐变（非图片），则直接应用
+        previewArea.style.background = background || '#f0f2f5';
+    }
+
+    // 3. 渲染模拟气泡
+    previewArea.innerHTML = ''; 
+
+    // 创建“对方”的气泡
+    // 注意：我们将一个虚拟的 timestamp 传入，以防有CSS依赖于它
+    const aiMsg = { role: 'ai', content: '对方消息预览', timestamp: 1, senderName: chat.name };
+    const aiBubble = createMessageElement(aiMsg, chat);
+    if(aiBubble) previewArea.appendChild(aiBubble);
+
+    // 创建“我”的气泡
+    const userMsg = { role: 'user', content: '我的消息预览', timestamp: 2 };
+    const userBubble = createMessageElement(userMsg, chat);
+    if(userBubble) previewArea.appendChild(userBubble);
+    
+    // 4. 应用自定义CSS到预览区
+    applyScopedCss(customCss, '#settings-preview-area', 'preview-bubble-style');
+}
+
+// ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 请将这些【新函数】粘贴到JS功能函数定义区 ▼▼▼
+
+async function openGroupManager() {
+    await renderGroupList();
+    document.getElementById('group-management-modal').classList.add('visible');
+}
+
+async function renderGroupList() {
+    const listEl = document.getElementById('existing-groups-list');
+    const groups = await db.qzoneGroups.toArray();
+    listEl.innerHTML = '';
+    if (groups.length === 0) {
+        listEl.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">还没有任何分组</p>';
+    }
+    groups.forEach(group => {
+        const item = document.createElement('div');
+        item.className = 'existing-group-item';
+        item.innerHTML = `
+            <span class="group-name">${group.name}</span>
+            <span class="delete-group-btn" data-id="${group.id}">×</span>
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+// ▼▼▼ 请用这个【修正后】的函数，完整替换旧的 addNewGroup 函数 ▼▼▼
+async function addNewGroup() {
+    const input = document.getElementById('new-group-name-input');
+    const name = input.value.trim();
+    if (!name) {
+        alert('分组名不能为空！');
+        return;
+    }
+
+    // 【核心修正】在添加前，先检查分组名是否已存在
+    const existingGroup = await db.qzoneGroups.where('name').equals(name).first();
+    if (existingGroup) {
+        alert(`分组 "${name}" 已经存在了，换个名字吧！`);
+        return;
+    }
+    // 【修正结束】
+
+    await db.qzoneGroups.add({ name });
+    input.value = '';
+    await renderGroupList();
+}
+// ▲▲▲ 替换结束 ▲▲▲
+
+async function deleteGroup(groupId) {
+    const confirmed = await showCustomConfirm('确认删除', '删除分组后，该组内的好友将变为“未分组”。确定要删除吗？', { confirmButtonClass: 'btn-danger' });
+    if (confirmed) {
+        await db.qzoneGroups.delete(groupId);
+        // 将属于该分组的好友的 groupId 设为 null
+        const chatsToUpdate = await db.chats.where('groupId').equals(groupId).toArray();
+        for (const chat of chatsToUpdate) {
+            chat.groupId = null;
+            await db.chats.put(chat);
+            if(state.chats[chat.id]) state.chats[chat.id].groupId = null;
+        }
+        await renderGroupList();
+    }
+}
+
+// ▲▲▲ 新函数粘贴结束 ▲▲▲
+
+// ▼▼▼ 请将这【一整块新函数】粘贴到JS功能函数定义区的末尾 ▼▼▼
+
+/**
+ * 当长按消息时，显示操作菜单
+ * @param {number} timestamp - 被长按消息的时间戳
+ */
+function showMessageActions(timestamp) {
+    // 如果已经在多选模式，则不弹出菜单
+    if (isSelectionMode) return;
+    
+    activeMessageTimestamp = timestamp;
+    document.getElementById('message-actions-modal').classList.add('visible');
+}
+
+/**
+ * 隐藏消息操作菜单
+ */
+function hideMessageActions() {
+    document.getElementById('message-actions-modal').classList.remove('visible');
+    activeMessageTimestamp = null;
+}
+
+// ▼▼▼ 请用这个【带格式助手的终极版】替换旧的 openMessageEditor 函数 ▼▼▼
+async function openMessageEditor() {
+    if (!activeMessageTimestamp) return;
+
+    const timestampToEdit = activeMessageTimestamp;
+    const chat = state.chats[state.activeChatId];
+    const message = chat.history.find(m => m.timestamp === timestampToEdit);
+    if (!message) return;
+
+    hideMessageActions(); 
+
+    let contentForEditing;
+    const isSpecialType = message.type && ['voice_message', 'ai_image', 'transfer'].includes(message.type);
+
+    if (isSpecialType) {
+        let fullMessageObject = { type: message.type };
+        if (message.type === 'voice_message') fullMessageObject.content = message.content;
+        else if (message.type === 'ai_image') fullMessageObject.description = message.content; 
+        else if (message.type === 'transfer') {
+            fullMessageObject.amount = message.amount;
+            fullMessageObject.note = message.note;
+        }
+        contentForEditing = JSON.stringify(fullMessageObject, null, 2);
+    } else if (typeof message.content === 'object') {
+        contentForEditing = JSON.stringify(message.content, null, 2);
+    } else {
+        contentForEditing = message.content;
+    }
+
+    // --- 【核心修改】在这里构建“格式助手”按钮的HTML ---
+    const templates = {
+        voice: { type: 'voice_message', content: '在这里输入语音内容' },
+        image: { type: 'ai_image', description: '在这里输入图片描述' },
+        transfer: { type: 'transfer', amount: 5.20, note: '一点心意' }
+    };
+
+    // 使用 data-template 属性存储JSON模板字符串，注意要用单引号包裹
+    const helpersHtml = `
+        <div class="format-helpers">
+            <button class="format-btn" data-template='${JSON.stringify(templates.voice)}'>语音</button>
+            <button class="format-btn" data-template='${JSON.stringify(templates.image)}'>图片</button>
+            <button class="format-btn" data-template='${JSON.stringify(templates.transfer)}'>转账</button>
+        </div>
+    `;
+    // --- 【核心修改结束】---
+
+    const newContent = await showCustomPrompt(
+        '编辑消息', 
+        '在此修改，或点击上方按钮使用格式模板...', // 修改提示语
+        contentForEditing, 
+        'textarea',
+        helpersHtml // 将按钮的HTML作为第5个参数传入
+    );
+
+    if (newContent !== null) {
+        await saveEditedMessage(timestampToEdit, newContent);
+    }
+}
+// ▲▲▲ 替换结束 ▲▲▲
+
+/**
+ * 复制消息的文本内容到剪贴板
+ */
+async function copyMessageContent() {
+    if (!activeMessageTimestamp) return;
+    const chat = state.chats[state.activeChatId];
+    const message = chat.history.find(m => m.timestamp === activeMessageTimestamp);
+    if (!message) return;
+
+    let textToCopy;
+    if (typeof message.content === 'object') {
+        textToCopy = JSON.stringify(message.content);
+    } else {
+        textToCopy = String(message.content);
+    }
+
+    try {
+        await navigator.clipboard.writeText(textToCopy);
+        await showCustomAlert('复制成功', '消息内容已复制到剪贴板。');
+    } catch (err) {
+        await showCustomAlert('复制失败', '无法访问剪贴板。');
+    }
+    
+    hideMessageActions();
+}
+
+/**
+ * 解析编辑后的文本，并返回一个标准化的消息片段对象
+ * @param {string} text - 用户在编辑框中输入的文本
+ * @returns {object} - 一个包含 type, content, 等属性的对象
+ */
+function parseEditedContent(text) {
+    const trimmedText = text.trim();
+
+    // 1. 尝试解析为JSON对象（用于修复语音、转账等格式）
+    if (trimmedText.startsWith('{') && trimmedText.endsWith('}')) {
+        try {
+            const parsed = JSON.parse(trimmedText);
+            // 必须包含 type 属性才认为是有效格式
+            if (parsed.type) {
+                return parsed;
+            }
+        } catch (e) { /* 解析失败，继续往下走 */ }
+    }
+    
+    // 2. 尝试解析为表情包
+    if (STICKER_REGEX.test(trimmedText)) {
+        // 对于编辑的表情，我们暂时无法知道其`meaning`，所以只存URL
+        return { type: 'sticker', content: trimmedText };
+    }
+
+    // 3. 否则，视为普通文本消息
+    return { type: 'text', content: trimmedText };
+}
+
+
+// ▼▼▼ 请用这个【修正后】的函数，替换旧的 saveEditedMessage ▼▼▼
+/**
+ * 保存编辑后的消息，更新数据库和UI
+ * @param {number} timestamp - 【核心修复】直接接收要修改的消息时间戳
+ * @param {string} newRawContent - 从编辑框获取到的新内容
+ */
+async function saveEditedMessage(timestamp, newRawContent) {
+    if (!timestamp) return; // 使用传入的时间戳进行判断
+
+    const chat = state.chats[state.activeChatId];
+    const messageIndex = chat.history.findIndex(m => m.timestamp === timestamp);
+    if (messageIndex === -1) return;
+
+    const parsedResult = parseEditedContent(newRawContent);
+    const originalMessage = chat.history[messageIndex];
+
+    delete originalMessage.type;
+    delete originalMessage.meaning;
+    delete originalMessage.amount;
+    delete originalMessage.note;
+
+    originalMessage.content = parsedResult.content || '';
+    
+    if (parsedResult.type && parsedResult.type !== 'text') {
+        originalMessage.type = parsedResult.type;
+    }
+    if (parsedResult.meaning) originalMessage.meaning = parsedResult.meaning;
+    if (parsedResult.amount) originalMessage.amount = parsedResult.amount;
+    if (parsedResult.note) originalMessage.note = parsedResult.note;
+    if (parsedResult.description) originalMessage.content = parsedResult.description;
+    
+    chat.history[messageIndex] = originalMessage;
+
+    await db.chats.put(chat);
+    renderChatInterface(state.activeChatId);
+    await showCustomAlert('成功', '消息已更新！');
+}
+// ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 请将这【一整块新函数】粘贴到JS功能函数定义区的末尾 ▼▼▼
+
+/**
+ * 当点击“…”时，显示动态操作菜单
+ * @param {number} postId - 被操作的动态的ID
+ */
+function showPostActions(postId) {
+    activePostId = postId;
+    document.getElementById('post-actions-modal').classList.add('visible');
+}
+
+/**
+ * 隐藏动态操作菜单
+ */
+function hidePostActions() {
+    document.getElementById('post-actions-modal').classList.remove('visible');
+    activePostId = null;
+}
+
+/**
+ * 打开动态编辑器
+ */
+async function openPostEditor() {
+    if (!activePostId) return;
+
+    const postIdToEdit = activePostId;
+    const post = await db.qzonePosts.get(postIdToEdit);
+    if (!post) return;
+
+    hidePostActions();
+
+    // 忠于原文：构建出最原始的文本形态供编辑
+    let contentForEditing;
+    if (post.type === 'shuoshuo') {
+        contentForEditing = post.content;
+    } else {
+        // 对于图片和文字图，我们构建一个包含所有信息的对象
+        const postObject = {
+            type: post.type,
+            publicText: post.publicText || '',
+        };
+        if (post.type === 'image_post') {
+            postObject.imageUrl = post.imageUrl;
+            postObject.imageDescription = post.imageDescription;
+        } else if (post.type === 'text_image') {
+            postObject.hiddenContent = post.hiddenContent;
+        }
+        contentForEditing = JSON.stringify(postObject, null, 2);
+    }
+    
+    // 构建格式助手按钮
+    const templates = {
+        shuoshuo: "在这里输入说说的内容...", // 对于说说，我们直接替换为纯文本
+        image: { type: 'image_post', publicText: '', imageUrl: 'https://...', imageDescription: '' },
+        text_image: { type: 'text_image', publicText: '', hiddenContent: '' }
+    };
+    
+    const helpersHtml = `
+        <div class="format-helpers">
+            <button class="format-btn" data-type="text">说说</button>
+            <button class="format-btn" data-template='${JSON.stringify(templates.image)}'>图片动态</button>
+            <button class="format-btn" data-template='${JSON.stringify(templates.text_image)}'>文字图</button>
+        </div>
+    `;
+
+    const newContent = await showCustomPrompt(
+        '编辑动态',
+        '在此修改内容...',
+        contentForEditing,
+        'textarea',
+        helpersHtml
+    );
+    
+    // 【特殊处理】为说说的格式助手按钮添加不同的行为
+    // 我们需要在模态框出现后，再给它绑定事件
+    setTimeout(() => {
+        const shuoshuoBtn = document.querySelector('#custom-modal-body .format-btn[data-type="text"]');
+        if(shuoshuoBtn) {
+            shuoshuoBtn.addEventListener('click', () => {
+                const input = document.getElementById('custom-prompt-input');
+                input.value = templates.shuoshuo;
+                input.focus();
+            });
+        }
+    }, 100);
+
+    if (newContent !== null) {
+        await saveEditedPost(postIdToEdit, newContent);
+    }
+}
+
+/**
+ * 保存编辑后的动态
+ * @param {number} postId - 要保存的动态ID
+ * @param {string} newRawContent - 从编辑器获取的新内容
+ */
+async function saveEditedPost(postId, newRawContent) {
+    const post = await db.qzonePosts.get(postId);
+    if (!post) return;
+
+    const trimmedContent = newRawContent.trim();
+    
+    // 尝试解析为JSON，如果失败，则认为是纯文本（说说）
+    try {
+        const parsed = JSON.parse(trimmedContent);
+        // 更新帖子属性
+        post.type = parsed.type || 'image_post';
+        post.publicText = parsed.publicText || '';
+        post.imageUrl = parsed.imageUrl || '';
+        post.imageDescription = parsed.imageDescription || '';
+        post.hiddenContent = parsed.hiddenContent || '';
+        post.content = ''; // 清空旧的说说内容字段
+    } catch (e) {
+        // 解析失败，认为是说说
+        post.type = 'shuoshuo';
+        post.content = trimmedContent;
+        // 清空其他类型的字段
+        post.publicText = '';
+        post.imageUrl = '';
+        post.imageDescription = '';
+        post.hiddenContent = '';
+    }
+    
+    await db.qzonePosts.put(post);
+    await renderQzonePosts(); // 重新渲染列表
+    await showCustomAlert('成功', '动态已更新！');
+}
+
+/**
+ * 复制动态内容
+ */
+async function copyPostContent() {
+    if (!activePostId) return;
+    const post = await db.qzonePosts.get(activePostId);
+    if (!post) return;
+    
+    let textToCopy = post.content || post.publicText || post.hiddenContent || post.imageDescription || "（无文字内容）";
+    
+    try {
+        await navigator.clipboard.writeText(textToCopy);
+        await showCustomAlert('复制成功', '动态内容已复制到剪贴板。');
+    } catch (err) {
+        await showCustomAlert('复制失败', '无法访问剪贴板。');
+    }
+    
+    hidePostActions();
+}
 
         // ===================================================================
         // 4. 初始化函数 init()
         // ===================================================================
         async function init() {
+
+    // ▼▼▼ 新增代码 ▼▼▼
+    const customBubbleStyleTag = document.createElement('style');
+    customBubbleStyleTag.id = 'custom-bubble-style';
+    document.head.appendChild(customBubbleStyleTag);
+    // ▲▲▲ 新增结束 ▲▲▲
+
+    // ▼▼▼ 新增代码 ▼▼▼
+    const previewBubbleStyleTag = document.createElement('style');
+    previewBubbleStyleTag.id = 'preview-bubble-style';
+    document.head.appendChild(previewBubbleStyleTag);
+    // ▲▲▲ 新增结束 ▲▲▲
+
             window.showScreen = showScreen;
             window.renderChatListProxy = renderChatList;
             window.renderApiSettingsProxy = renderApiSettings;
@@ -4021,10 +5086,62 @@ ${chat.settings.aiPersona}
             document.getElementById('export-data-btn').addEventListener('click', exportBackup);
             document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-data-input').click());
             document.getElementById('import-data-input').addEventListener('change', e => importBackup(e.target.files[0]));
-            document.getElementById('back-to-list-btn').addEventListener('click', () => { exitSelectionMode(); state.activeChatId = null; showScreen('chat-list-screen'); });
+            document.getElementById('back-to-list-btn').addEventListener('click', () => { 
+
+    // ▼▼▼ 修改这两行 ▼▼▼
+    applyScopedCss('', '#chat-messages', 'custom-bubble-style'); // 清除真实聊天界面的自定义样式
+    applyScopedCss('', '#settings-preview-area', 'preview-bubble-style'); // 清除预览区的自定义样式
+    // ▲▲▲ 修改结束 ▲▲▲
+
+exitSelectionMode(); state.activeChatId = null; showScreen('chat-list-screen'); });
             
-            document.getElementById('add-chat-btn').addEventListener('click', async () => { const name = await showCustomPrompt('创建新聊天', '请输入Ta的名字'); if (name && name.trim()) { const newChatId = 'chat_' + Date.now(); const newChat = { id: newChatId, name: name.trim(), isGroup: false, settings: { aiPersona: '你是谁呀。', myPersona: '我是谁呀。', maxMemory: 10, aiAvatar: defaultAvatar, myAvatar: defaultAvatar, background: '', theme: 'default', linkedWorldBookIds: [], aiAvatarFrame: '', myAvatarFrame: '' }, history: [], musicData: { totalTime: 0 } }; state.chats[newChatId] = newChat; await db.chats.put(newChat); renderChatList(); } });
-            document.getElementById('add-group-chat-btn').addEventListener('click', async () => { const numStr = await showCustomPrompt('创建群聊', '请输入群成员数量 (2-20)'); const num = parseInt(numStr); if (!num || num < 2 || num > 20) { alert('请输入2到20之间的有效数字！'); return; } const name = await showCustomPrompt('设置群名', '请输入群聊的名字'); if (name && name.trim()) { const newChatId = 'group_' + Date.now(); const members = []; for (let i = 1; i <= num; i++) members.push({ id: `member_${i}`, name: `成员${i}`, avatar: defaultGroupMemberAvatar, persona: '一个路过的群成员。', avatarFrame: '' }); const newGroupChat = { id: newChatId, name: name.trim(), isGroup: true, members: members, settings: { myPersona: '我是谁呀。', myNickname: '我', maxMemory: 10, groupAvatar: defaultGroupAvatar, myAvatar: defaultMyGroupAvatar, background: '', theme: 'default', linkedWorldBookIds: [], aiAvatarFrame: '', myAvatarFrame: '' }, history: [], musicData: { totalTime: 0 } }; state.chats[newChatId] = newGroupChat; await db.chats.put(newGroupChat); renderChatList(); } });
+            document.getElementById('add-chat-btn').addEventListener('click', async () => { const name = await showCustomPrompt('创建新聊天', '请输入Ta的名字'); if (name && name.trim()) { const newChatId = 'chat_' + Date.now(); 
+const newChat = { 
+    id: newChatId, 
+    name: name.trim(), 
+    isGroup: false, 
+    settings: { 
+        aiPersona: '你是谁呀。', 
+        myPersona: '我是谁呀。', 
+        maxMemory: 10, 
+        aiAvatar: defaultAvatar, 
+        myAvatar: defaultAvatar, 
+        background: '', 
+        theme: 'default', 
+    fontSize: 13, 
+    customCss: '', // <--- 新增这行
+    linkedWorldBookIds: [], 
+    aiAvatarFrame: '', 
+        myAvatarFrame: '' 
+    }, 
+    history: [], 
+    musicData: { totalTime: 0 } 
+};
+state.chats[newChatId] = newChat; await db.chats.put(newChat); renderChatList(); } });
+            document.getElementById('add-group-chat-btn').addEventListener('click', async () => { const numStr = await showCustomPrompt('创建群聊', '请输入群成员数量 (2-20)'); const num = parseInt(numStr); if (!num || num < 2 || num > 20) { alert('请输入2到20之间的有效数字！'); return; } const name = await showCustomPrompt('设置群名', '请输入群聊的名字'); if (name && name.trim()) { const newChatId = 'group_' + Date.now(); const members = []; for (let i = 1; i <= num; i++) members.push({ id: `member_${i}`, name: `成员${i}`, avatar: defaultGroupMemberAvatar, persona: '一个路过的群成员。', avatarFrame: '' }); 
+const newGroupChat = { 
+    id: newChatId, 
+    name: name.trim(), 
+    isGroup: true, 
+    members: members, 
+    settings: { 
+        myPersona: '我是谁呀。', 
+        myNickname: '我', 
+        maxMemory: 10, 
+        groupAvatar: defaultGroupAvatar, 
+        myAvatar: defaultMyGroupAvatar, 
+        background: '', 
+        theme: 'default', 
+    fontSize: 13, 
+    customCss: '', // <--- 新增这行
+    linkedWorldBookIds: [], 
+    aiAvatarFrame: '',  
+        myAvatarFrame: '' 
+    }, 
+    history: [], 
+    musicData: { totalTime: 0 } 
+};
+state.chats[newChatId] = newGroupChat; await db.chats.put(newGroupChat); renderChatList(); } });
             
             document.getElementById('transfer-btn').addEventListener('click', () => document.getElementById('transfer-modal').classList.add('visible'));
             document.getElementById('transfer-cancel-btn').addEventListener('click', () => document.getElementById('transfer-modal').classList.remove('visible'));
@@ -4113,7 +5230,92 @@ alert('API设置已保存!'); });
             document.getElementById('world-book-checkboxes-container').addEventListener('change', updateWorldBookSelectionDisplay);
             window.addEventListener('click', (e) => { if (!document.querySelector('.custom-multiselect').contains(e.target)) { worldBookCheckboxesContainer.classList.remove('visible'); worldBookSelectBox.classList.remove('expanded'); } });
 
-            document.getElementById('chat-settings-btn').addEventListener('click', () => { if (!state.activeChatId) return; const chat = state.chats[state.activeChatId]; const isGroup = chat.isGroup; document.getElementById('chat-name-group').style.display = 'block'; document.getElementById('chat-name-input').value = chat.name; document.getElementById('my-persona-group').style.display = 'block'; document.getElementById('my-persona').value = chat.settings.myPersona; document.getElementById('my-avatar-group').style.display = 'block'; document.getElementById('my-avatar-preview').src = chat.settings.myAvatar || (isGroup ? defaultMyGroupAvatar : defaultAvatar); document.getElementById('my-group-nickname-group').style.display = isGroup ? 'block' : 'none'; document.getElementById('group-avatar-group').style.display = isGroup ? 'block' : 'none'; document.getElementById('group-members-group').style.display = isGroup ? 'block' : 'none'; document.getElementById('ai-persona-group').style.display = isGroup ? 'none' : 'block'; document.getElementById('ai-avatar-group').style.display = isGroup ? 'none' : 'block'; worldBookCheckboxesContainer.innerHTML = ''; const linkedIds = chat.settings.linkedWorldBookIds || []; if (state.worldBooks.length === 0) { worldBookCheckboxesContainer.innerHTML = '<p style="color: #888; text-align: center; margin: 10px 0;">没有可用的世界书</p>'; } else { state.worldBooks.forEach(book => { const isChecked = linkedIds.includes(book.id); const label = document.createElement('label'); label.innerHTML = `<input type="checkbox" value="${book.id}" ${isChecked ? 'checked' : ''}> ${book.name}`; worldBookCheckboxesContainer.appendChild(label); }); } updateWorldBookSelectionDisplay(); const bgPreview = document.getElementById('bg-preview'); const removeBgBtn = document.getElementById('remove-bg-btn'); if (chat.settings.background) { bgPreview.src = chat.settings.background; bgPreview.style.display = 'block'; removeBgBtn.style.display = 'inline-block'; } else { bgPreview.style.display = 'none'; removeBgBtn.style.display = 'none'; } if (isGroup) { document.getElementById('my-group-nickname-input').value = chat.settings.myNickname || ''; document.getElementById('group-avatar-preview').src = chat.settings.groupAvatar || defaultGroupAvatar; renderGroupMemberSettings(chat.members); } else { document.getElementById('ai-persona').value = chat.settings.aiPersona; document.getElementById('ai-avatar-preview').src = chat.settings.aiAvatar || defaultAvatar; } document.getElementById('max-memory').value = chat.settings.maxMemory; const currentTheme = chat.settings.theme || 'default'; const themeRadio = document.querySelector(`input[name="theme-select"][value="${currentTheme}"]`); if (themeRadio) themeRadio.checked = true; chatSettingsModal.classList.add('visible'); });
+// ▼▼▼ 请用这段【完整、全新的代码】替换旧的 chat-settings-btn 点击事件 ▼▼▼
+document.getElementById('chat-settings-btn').addEventListener('click', async () => {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    const isGroup = chat.isGroup;
+
+    // --- 统一显示/隐藏控件 ---
+    document.getElementById('chat-name-group').style.display = 'block';
+    document.getElementById('my-persona-group').style.display = 'block';
+    document.getElementById('my-avatar-group').style.display = 'block';
+    document.getElementById('my-group-nickname-group').style.display = isGroup ? 'block' : 'none';
+    document.getElementById('group-avatar-group').style.display = isGroup ? 'block' : 'none';
+    document.getElementById('group-members-group').style.display = isGroup ? 'block' : 'none';
+    document.getElementById('ai-persona-group').style.display = isGroup ? 'none' : 'block';
+    document.getElementById('ai-avatar-group').style.display = isGroup ? 'none' : 'block';
+    
+    // 【核心修改1】根据是否为群聊，显示或隐藏“好友分组”区域
+    document.getElementById('assign-group-section').style.display = isGroup ? 'none' : 'block';
+    
+    // --- 加载表单数据 ---
+    document.getElementById('chat-name-input').value = chat.name;
+    document.getElementById('my-persona').value = chat.settings.myPersona;
+    document.getElementById('my-avatar-preview').src = chat.settings.myAvatar || (isGroup ? defaultMyGroupAvatar : defaultAvatar);
+    document.getElementById('max-memory').value = chat.settings.maxMemory;
+    const bgPreview = document.getElementById('bg-preview');
+    const removeBgBtn = document.getElementById('remove-bg-btn');
+    if (chat.settings.background) {
+        bgPreview.src = chat.settings.background;
+        bgPreview.style.display = 'block';
+        removeBgBtn.style.display = 'inline-block';
+    } else {
+        bgPreview.style.display = 'none';
+        removeBgBtn.style.display = 'none';
+    }
+
+    if (isGroup) {
+        document.getElementById('my-group-nickname-input').value = chat.settings.myNickname || '';
+        document.getElementById('group-avatar-preview').src = chat.settings.groupAvatar || defaultGroupAvatar;
+        renderGroupMemberSettings(chat.members);
+    } else {
+        document.getElementById('ai-persona').value = chat.settings.aiPersona;
+        document.getElementById('ai-avatar-preview').src = chat.settings.aiAvatar || defaultAvatar;
+        
+        // 【核心修改2】如果是单聊，就加载分组列表到下拉框
+        const select = document.getElementById('assign-group-select');
+        select.innerHTML = '<option value="">未分组</option>'; // 清空并设置默认选项
+        const groups = await db.qzoneGroups.toArray();
+        groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            // 如果当前好友已经有分组，就默认选中它
+            if (chat.groupId === group.id) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+    }
+    
+    // 加载世界书
+    const worldBookCheckboxesContainer = document.getElementById('world-book-checkboxes-container');
+    worldBookCheckboxesContainer.innerHTML = '';
+    const linkedIds = chat.settings.linkedWorldBookIds || [];
+    if (state.worldBooks.length > 0) {
+        state.worldBooks.forEach(book => {
+            const isChecked = linkedIds.includes(book.id);
+            const label = document.createElement('label');
+            label.innerHTML = `<input type="checkbox" value="${book.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
+            worldBookCheckboxesContainer.appendChild(label);
+        });
+    }
+    updateWorldBookSelectionDisplay();
+
+    // 加载并更新所有预览相关控件
+    const themeRadio = document.querySelector(`input[name="theme-select"][value="${chat.settings.theme || 'default'}"]`);
+    if (themeRadio) themeRadio.checked = true;
+    const fontSizeSlider = document.getElementById('font-size-slider');
+    fontSizeSlider.value = chat.settings.fontSize || 13;
+    document.getElementById('font-size-value').textContent = `${fontSizeSlider.value}px`;
+    const customCssInput = document.getElementById('custom-css-input');
+    customCssInput.value = chat.settings.customCss || '';
+    
+    updateSettingsPreview(); 
+    document.getElementById('chat-settings-modal').classList.add('visible');
+});
+// ▲▲▲ 替换结束 ▲▲▲
             
             function renderGroupMemberSettings(members) { const container = document.getElementById('group-members-settings'); container.innerHTML = ''; members.forEach(member => { const div = document.createElement('div'); div.className = 'member-editor'; div.dataset.memberId = member.id; div.innerHTML = `<img src="${member.avatar}" alt="${member.name}"><div class="member-name">${member.name}</div>`; div.addEventListener('click', () => openMemberEditor(member.id)); container.appendChild(div); }); }
             function openMemberEditor(memberId) { editingMemberId = memberId; const chat = state.chats[state.activeChatId]; const member = chat.members.find(m => m.id === memberId); document.getElementById('member-name-input').value = member.name; document.getElementById('member-persona-input').value = member.persona; document.getElementById('member-avatar-preview').src = member.avatar; document.getElementById('member-settings-modal').classList.add('visible'); }
@@ -4122,7 +5324,43 @@ alert('API设置已保存!'); });
             document.getElementById('save-member-settings-btn').addEventListener('click', () => { if (!editingMemberId) return; const chat = state.chats[state.activeChatId]; const member = chat.members.find(m => m.id === editingMemberId); member.name = document.getElementById('member-name-input').value; member.persona = document.getElementById('member-persona-input').value; member.avatar = document.getElementById('member-avatar-preview').src; renderGroupMemberSettings(chat.members); document.getElementById('member-settings-modal').classList.remove('visible'); });
             document.getElementById('reset-theme-btn').addEventListener('click', () => { document.getElementById('theme-default').checked = true; });
             document.getElementById('cancel-chat-settings-btn').addEventListener('click', () => { chatSettingsModal.classList.remove('visible'); });
-            document.getElementById('save-chat-settings-btn').addEventListener('click', async () => { if (!state.activeChatId) return; const chat = state.chats[state.activeChatId]; const newName = document.getElementById('chat-name-input').value.trim(); if (!newName) return alert('备注名/群名不能为空！'); chat.name = newName; const selectedThemeRadio = document.querySelector('input[name="theme-select"]:checked'); chat.settings.theme = selectedThemeRadio ? selectedThemeRadio.value : 'default'; chat.settings.myPersona = document.getElementById('my-persona').value; chat.settings.myAvatar = document.getElementById('my-avatar-preview').src; const checkedBooks = document.querySelectorAll('#world-book-checkboxes-container input[type="checkbox"]:checked'); chat.settings.linkedWorldBookIds = Array.from(checkedBooks).map(cb => cb.value); if (chat.isGroup) { chat.settings.myNickname = document.getElementById('my-group-nickname-input').value.trim(); chat.settings.groupAvatar = document.getElementById('group-avatar-preview').src; } else { chat.settings.aiPersona = document.getElementById('ai-persona').value; chat.settings.aiAvatar = document.getElementById('ai-avatar-preview').src; } chat.settings.maxMemory = parseInt(document.getElementById('max-memory').value) || 10; await db.chats.put(chat); chatSettingsModal.classList.remove('visible'); renderChatInterface(state.activeChatId); renderChatList(); });
+
+document.getElementById('save-chat-settings-btn').addEventListener('click', async () => {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    const newName = document.getElementById('chat-name-input').value.trim();
+    if (!newName) return alert('备注名/群名不能为空！');
+    chat.name = newName;
+    const selectedThemeRadio = document.querySelector('input[name="theme-select"]:checked');
+    chat.settings.theme = selectedThemeRadio ? selectedThemeRadio.value : 'default';
+
+    chat.settings.fontSize = parseInt(document.getElementById('font-size-slider').value);
+    chat.settings.customCss = document.getElementById('custom-css-input').value.trim();
+
+    chat.settings.myPersona = document.getElementById('my-persona').value;
+    chat.settings.myAvatar = document.getElementById('my-avatar-preview').src;
+    const checkedBooks = document.querySelectorAll('#world-book-checkboxes-container input[type="checkbox"]:checked');
+    chat.settings.linkedWorldBookIds = Array.from(checkedBooks).map(cb => cb.value);
+
+    if (chat.isGroup) {
+        chat.settings.myNickname = document.getElementById('my-group-nickname-input').value.trim();
+        chat.settings.groupAvatar = document.getElementById('group-avatar-preview').src;
+    } else {
+        chat.settings.aiPersona = document.getElementById('ai-persona').value;
+        chat.settings.aiAvatar = document.getElementById('ai-avatar-preview').src;
+        const selectedGroupId = document.getElementById('assign-group-select').value;
+        chat.groupId = selectedGroupId ? parseInt(selectedGroupId) : null;
+    }
+
+    chat.settings.maxMemory = parseInt(document.getElementById('max-memory').value) || 10;
+    await db.chats.put(chat);
+
+    applyScopedCss(chat.settings.customCss, '#chat-messages', 'custom-bubble-style');
+    
+    chatSettingsModal.classList.remove('visible');
+    renderChatInterface(state.activeChatId);
+    renderChatList();
+});
             document.getElementById('clear-chat-btn').addEventListener('click', async () => { if (!state.activeChatId) return; const chat = state.chats[state.activeChatId]; const confirmed = await showCustomConfirm('清空聊天记录', '此操作将永久删除此聊天的所有消息，无法恢复。确定要清空吗？', { confirmButtonClass: 'btn-danger' }); if (confirmed) { chat.history = []; await db.chats.put(chat); renderChatInterface(state.activeChatId); renderChatList(); chatSettingsModal.classList.remove('visible'); } });
             
             const setupFileUpload = (inputId, callback) => { document.getElementById(inputId).addEventListener('change', async (event) => { const file = event.target.files[0]; if (file) { const dataUrl = await new Promise((res, rej) => { const reader = new FileReader(); reader.onload = () => res(reader.result); reader.onerror = () => rej(reader.error); reader.readAsDataURL(file); }); callback(dataUrl); event.target.value = null; } }); };
@@ -4170,28 +5408,14 @@ document.getElementById('chat-settings-modal').addEventListener('click', (e) => 
 
 // 为成员设置里的“更换头像框”按钮添加点击事件
 document.getElementById('member-settings-modal').addEventListener('click', (e) => {
-    if (e.target.classList.contains('change-frame-btn')) {
+    // 【修正】将 .contents 修改为 .contains
+    if (e.target.classList.contains('change-frame-btn')) { 
         // 'member' 这个参数是告诉函数，这次是为单个群成员更换头像框
         openFrameSelectorModal('member');
     }
 });
 
 // ▲▲▲ 粘贴结束 ▲▲▲
-
-            const frameModal = document.getElementById('avatar-frame-modal');
-            const aiFrameTab = document.getElementById('ai-frame-tab');
-            const myFrameTab = document.getElementById('my-frame-tab');
-            const aiFrameContent = document.getElementById('ai-frame-content');
-            const myFrameContent = document.getElementById('my-frame-content');
-            const aiFrameGrid = document.getElementById('ai-frame-grid');
-            const myFrameGrid = document.getElementById('my-frame-grid');
-            
-            document.getElementById('chat-settings-modal').addEventListener('click', (e) => { if (e.target.classList.contains('change-frame-btn')) openFrameSelectorModal('chat'); });
-            document.getElementById('member-settings-modal').addEventListener('click', (e) => { if (e.target.classList.contains('change-frame-btn')) openFrameSelectorModal('member'); });
-            aiFrameTab.addEventListener('click', () => { aiFrameTab.classList.add('active'); myFrameTab.classList.remove('active'); aiFrameContent.style.display = 'block'; myFrameContent.style.display = 'none'; });
-            myFrameTab.addEventListener('click', () => { myFrameTab.classList.add('active'); aiFrameTab.classList.remove('active'); myFrameContent.style.display = 'block'; aiFrameContent.style.display = 'none'; });
-            document.getElementById('save-frame-settings-btn').addEventListener('click', saveSelectedFrames);
-            document.getElementById('cancel-frame-settings-btn').addEventListener('click', () => frameModal.classList.remove('visible'));
 
             const fontUrlInput = document.getElementById('font-url-input');
             fontUrlInput.addEventListener('input', () => applyCustomFont(fontUrlInput.value.trim(), true));
@@ -4213,22 +5437,72 @@ document.getElementById('member-settings-modal').addEventListener('click', (e) =
             document.getElementById('qzone-avatar-input').addEventListener('change', async (event) => { const file = event.target.files[0]; if (file) { const dataUrl = await new Promise(res => { const reader = new FileReader(); reader.onload = () => res(reader.result); reader.readAsDataURL(file); }); state.qzoneSettings.avatar = dataUrl; await saveQzoneSettings(); renderQzoneScreen(); } event.target.value = null; });
             document.getElementById('qzone-banner-input').addEventListener('change', async (event) => { const file = event.target.files[0]; if (file) { const dataUrl = await new Promise(res => { const reader = new FileReader(); reader.onload = () => res(reader.result); reader.readAsDataURL(file); }); state.qzoneSettings.banner = dataUrl; await saveQzoneSettings(); renderQzoneScreen(); } event.target.value = null; });
 
+// ▼▼▼ 【修正后】的“说说”按钮事件 ▼▼▼
 document.getElementById('create-shuoshuo-btn').addEventListener('click', async () => {
-                const content = await showCustomPrompt("发布说说", "这一刻的想法...", "", "textarea");
-                if (content && content.trim()) {
-                    const newPost = {
-                        type: 'shuoshuo',
-                        content: content.trim(),
-                        timestamp: Date.now(),
-                        authorId: 'user' // <--- 加上这行！
-                    };
-                    await db.qzonePosts.add(newPost);
-                    await renderQzonePosts();
-                    alert('发布成功！');
-                }
-            });
-            document.getElementById('create-post-btn').addEventListener('click', () => { resetCreatePostModal(); document.getElementById('create-post-modal').classList.add('visible'); });
+    // 1. 重置并获取模态框
+    resetCreatePostModal();
+    const modal = document.getElementById('create-post-modal');
+    
+    // 2. 设置为“说说”模式
+    modal.dataset.mode = 'shuoshuo';
+    
+    // 3. 隐藏与图片/文字图相关的部分
+    modal.querySelector('.post-mode-switcher').style.display = 'none';
+    modal.querySelector('#image-mode-content').style.display = 'none';
+    modal.querySelector('#text-image-mode-content').style.display = 'none';
+    
+    // 4. 修改主输入框的提示语，使其更符合“说说”的场景
+    modal.querySelector('#post-public-text').placeholder = '分享新鲜事...';
+    
+    // 5. 准备并显示模态框
+    const visibilityGroupsContainer = document.getElementById('post-visibility-groups');
+    visibilityGroupsContainer.innerHTML = '';
+    const groups = await db.qzoneGroups.toArray();
+    if (groups.length > 0) {
+        groups.forEach(group => {
+            const label = document.createElement('label');
+            label.style.display = 'block';
+            label.innerHTML = `<input type="checkbox" name="visibility_group" value="${group.id}"> ${group.name}`;
+            visibilityGroupsContainer.appendChild(label);
+        });
+    } else {
+        visibilityGroupsContainer.innerHTML = '<p style="color: var(--text-secondary);">没有可用的分组</p>';
+    }
+    modal.classList.add('visible');
+});
 
+// ▼▼▼ 【修正后】的“动态”（图片）按钮事件 ▼▼▼
+document.getElementById('create-post-btn').addEventListener('click', async () => {
+    // 1. 重置并获取模态框
+    resetCreatePostModal();
+    const modal = document.getElementById('create-post-modal');
+    
+    // 2. 设置为“复杂动态”模式
+    modal.dataset.mode = 'complex';
+    
+    // 3. 确保与图片/文字图相关的部分是可见的
+    modal.querySelector('.post-mode-switcher').style.display = 'flex'; // 用flex恢复
+    modal.querySelector('#image-mode-content').style.display = 'block';
+    
+    // 4. 恢复主输入框的默认提示语
+    modal.querySelector('#post-public-text').placeholder = '分享新鲜事...（非必填的公开文字）';
+
+    // 5. 准备并显示模态框（与“说说”按钮的逻辑相同）
+    const visibilityGroupsContainer = document.getElementById('post-visibility-groups');
+    visibilityGroupsContainer.innerHTML = '';
+    const groups = await db.qzoneGroups.toArray();
+    if (groups.length > 0) {
+        groups.forEach(group => {
+            const label = document.createElement('label');
+            label.style.display = 'block';
+            label.innerHTML = `<input type="checkbox" name="visibility_group" value="${group.id}"> ${group.name}`;
+            visibilityGroupsContainer.appendChild(label);
+        });
+    } else {
+        visibilityGroupsContainer.innerHTML = '<p style="color: var(--text-secondary);">没有可用的分组</p>';
+    }
+    modal.classList.add('visible');
+});
             document.getElementById('open-album-btn').addEventListener('click', async () => { await renderAlbumList(); showScreen('album-screen'); });
             document.getElementById('album-back-btn').addEventListener('click', () => { showScreen('chat-list-screen'); switchToChatListView('qzone-screen'); });
             document.getElementById('create-album-btn-page').addEventListener('click', async () => { const albumName = await showCustomPrompt("创建新相册", "请输入相册名称"); if (albumName && albumName.trim()) { const newAlbum = { name: albumName.trim(), coverUrl: 'https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png', photoCount: 0, createdAt: Date.now() }; await db.qzoneAlbums.add(newAlbum); await renderAlbumList(); alert(`相册 "${albumName}" 创建成功！`); } else if (albumName !== null) { alert("相册名称不能为空！"); } });
@@ -4244,235 +5518,295 @@ document.getElementById('create-shuoshuo-btn').addEventListener('click', async (
             const textImageModeContent = document.getElementById('text-image-mode-content');
             imageModeBtn.addEventListener('click', () => { imageModeBtn.classList.add('active'); textImageModeBtn.classList.remove('active'); imageModeContent.classList.add('active'); textImageModeContent.classList.remove('active'); });
             textImageModeBtn.addEventListener('click', () => { textImageModeBtn.classList.add('active'); imageModeBtn.classList.remove('active'); textImageModeContent.classList.add('active'); imageModeContent.classList.remove('active'); });
-            document.getElementById('confirm-create-post-btn').addEventListener('click', async () => {
-                const publicText = document.getElementById('post-public-text').value.trim();
-                const isImageModeActive = document.getElementById('image-mode-content').classList.contains('active');
-                let newPost = {};
 
-                if (isImageModeActive) {
-                    const imageUrl = document.getElementById('post-image-preview').src;
-                    const imageDescription = document.getElementById('post-image-description').value.trim();
-                    if (!imageUrl || !(imageUrl.startsWith('http') || imageUrl.startsWith('data:'))) {
-                        alert('请先添加一张图片再发布动态哦！');
-                        return;
-                    }
-                    if (!imageDescription) {
-                        alert('请为你的图片添加一个简单的描述（必填，给AI看的）！');
-                        return;
-                    }
-                    newPost = {
-                        type: 'image_post',
-                        publicText: publicText,
-                        imageUrl: imageUrl,
-                        imageDescription: imageDescription,
-                        timestamp: Date.now(),
-                        authorId: 'user' // <--- 确保这里有
-                    };
-                } else {
-                    const hiddenText = document.getElementById('post-hidden-text').value.trim();
-                    if (!hiddenText) {
-                        alert('请输入文字图描述！');
-                        return;
-                    }
-                    newPost = {
-                        type: 'text_image',
-                        publicText: publicText,
-                        hiddenContent: hiddenText,
-                        timestamp: Date.now(),
-                        authorId: 'user' // <--- 确保这里也有
-                    };
-                }
+// ▼▼▼ 【最终修正版】的“发布”按钮事件，已修复权限漏洞 ▼▼▼
+document.getElementById('confirm-create-post-btn').addEventListener('click', async () => {
+    const modal = document.getElementById('create-post-modal');
+    const mode = modal.dataset.mode;
+    
+    // --- 1. 获取通用的可见性设置 ---
+    const visibilityMode = document.querySelector('input[name="visibility"]:checked').value;
+    let visibleGroupIds = null;
+    
+    if (visibilityMode === 'include') {
+        visibleGroupIds = Array.from(document.querySelectorAll('input[name="visibility_group"]:checked')).map(cb => parseInt(cb.value));
+    }
 
-                const newPostId = await db.qzonePosts.add(newPost);
+    let newPost = {};
+    const basePostData = {
+        timestamp: Date.now(),
+        authorId: 'user',
+        // 【重要】在这里就把权限信息存好
+        visibleGroupIds: visibleGroupIds,
+    };
 
-                // 生成一个简短的帖子内容摘要，帮助AI理解
-                let postSummary = newPost.publicText || newPost.content || newPost.imageDescription || newPost.hiddenContent || "（无文字内容）";
-                if (postSummary.length > 50) {
-                    postSummary = postSummary.substring(0, 50) + '...';
-                }
+    // --- 2. 根据模式构建不同的 post 对象 ---
+    if (mode === 'shuoshuo') {
+        const content = document.getElementById('post-public-text').value.trim();
+        if (!content) {
+            alert('说说内容不能为空哦！');
+            return;
+        }
+        newPost = {
+            ...basePostData,
+            type: 'shuoshuo',
+            content: content,
+        };
 
-                for (const chatId in state.chats) {
-                    const chat = state.chats[chatId];
-                    if (!chat.isGroup) {
-                        const historyMessage = {
-                            role: 'system',
-                            // 新的、信息更丰富的系统提示
-                            content: `[系统提示：用户刚刚发布了一条动态(ID: ${newPostId})，内容摘要是：“${postSummary}”。你现在可以对这条动态进行评论了。]`,
-                            timestamp: Date.now(),
-                            isHidden: true // 保持隐藏
-                        };
-                        chat.history.push(historyMessage);
-                        await db.chats.put(chat);
-                    }
-                }
+    } else { // 处理 'complex' 模式 (图片/文字图)
+        const publicText = document.getElementById('post-public-text').value.trim();
+        const isImageModeActive = document.getElementById('image-mode-content').classList.contains('active');
 
-                await renderQzonePosts();
-                document.getElementById('create-post-modal').classList.remove('visible');
-                alert('动态发布成功！');
-            });
-                                               
+        if (isImageModeActive) {
+            const imageUrl = document.getElementById('post-image-preview').src;
+            const imageDescription = document.getElementById('post-image-description').value.trim();
+            if (!imageUrl || !(imageUrl.startsWith('http') || imageUrl.startsWith('data:'))) {
+                alert('请先添加一张图片再发布动态哦！');
+                return;
+            }
+            if (!imageDescription) {
+                alert('请为你的图片添加一个简单的描述（必填，给AI看的）！');
+                return;
+            }
+            newPost = {
+                ...basePostData,
+                type: 'image_post',
+                publicText: publicText,
+                imageUrl: imageUrl,
+                imageDescription: imageDescription,
+            };
+        } else { // 文字图模式
+            const hiddenText = document.getElementById('post-hidden-text').value.trim();
+            if (!hiddenText) {
+                alert('请输入文字图描述！');
+                return;
+            }
+            newPost = {
+                ...basePostData,
+                type: 'text_image',
+                publicText: publicText,
+                hiddenContent: hiddenText,
+            };
+        }
+    }
 
-            // ▲▲▲ 替换结束 ▲▲▲
+    // --- 3. 保存到数据库 ---
+    const newPostId = await db.qzonePosts.add(newPost);
+    let postSummary = newPost.content || newPost.publicText || newPost.imageDescription || newPost.hiddenContent || "（无文字内容）";
+    postSummary = postSummary.substring(0, 50) + (postSummary.length > 50 ? '...' : '');
+
+    // --- 4. 【核心修正】带有权限检查的通知循环 ---
+    for (const chatId in state.chats) {
+        const chat = state.chats[chatId];
+        if (chat.isGroup) continue; // 跳过群聊
+
+        let shouldNotify = false;
+        const postVisibleGroups = newPost.visibleGroupIds;
+
+        // 判断条件1：如果动态是公开的 (没有设置任何可见分组)
+        if (!postVisibleGroups || postVisibleGroups.length === 0) {
+            shouldNotify = true;
+        } 
+        // 判断条件2：如果动态设置了部分可见，并且当前角色在可见分组内
+        else if (chat.groupId && postVisibleGroups.includes(chat.groupId)) {
+            shouldNotify = true;
+        }
+
+        // 只有满足条件的角色才会被通知
+        if (shouldNotify) {
+            const historyMessage = {
+                role: 'system',
+                content: `[系统提示：用户刚刚发布了一条动态(ID: ${newPostId})，内容摘要是：“${postSummary}”。你现在可以对这条动态进行评论了。]`,
+                timestamp: Date.now(),
+                isHidden: true
+            };
+            chat.history.push(historyMessage);
+            await db.chats.put(chat);
+        }
+    }
+    // --- 修正结束 ---
+
+    await renderQzonePosts();
+    modal.classList.remove('visible');
+    alert('动态发布成功！');
+});
 
             const postsList = document.getElementById('qzone-posts-list');
             let swipeState = { isDragging: false, startX: 0, startY: 0, currentX: 0, activeContainer: null, swipeDirection: null, isClick: true };
             function resetAllSwipes(exceptThisOne = null) { document.querySelectorAll('.qzone-post-container').forEach(container => { if (container !== exceptThisOne) container.querySelector('.qzone-post-item').classList.remove('swiped'); }); }
             const handleSwipeStart = (e) => { const targetContainer = e.target.closest('.qzone-post-container'); if (!targetContainer) return; resetAllSwipes(targetContainer); swipeState.activeContainer = targetContainer; swipeState.isDragging = true; swipeState.isClick = true; swipeState.swipeDirection = null; swipeState.startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; swipeState.startY = e.type.includes('mouse') ? e.pageY : e.touches[0].pageY; swipeState.activeContainer.querySelector('.qzone-post-item').style.transition = 'none'; };
-            const handleSwipeMove = (e) => { if (!swipeState.isDragging || !swipeState.activeContainer) return; const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; const currentY = e.type.includes('mouse') ? e.pageY : e.touches[0].pageY; const diffX = currentX - swipeState.startX; const diffY = currentY - swipeState.startY; const absDiffX = Math.abs(diffX); const absDiffY = Math.abs(diffY); const clickThreshold = 5; if (absDiffX > clickThreshold || absDiffY > clickThreshold) swipeState.isClick = false; if (swipeState.swipeDirection === null) { if (absDiffX > clickThreshold || absDiffY > clickThreshold) { if (absDiffX > absDiffY) swipeState.swipeDirection = 'horizontal'; else swipeState.swipeDirection = 'vertical'; } } if (swipeState.swipeDirection === 'vertical') { handleSwipeEnd(); return; } if (swipeState.swipeDirection === 'horizontal') { e.preventDefault(); swipeState.currentX = currentX; let translation = diffX; if (translation > 0) translation = 0; if (translation < -90) translation = -90; swipeState.activeContainer.querySelector('.qzone-post-item').style.transform = `translateX(${translation}px)`; } };
-            const handleSwipeEnd = (e) => { if (swipeState.isClick) { swipeState.isDragging = false; swipeState.activeContainer = null; return; } if (!swipeState.isDragging || !swipeState.activeContainer) return; const postItem = swipeState.activeContainer.querySelector('.qzone-post-item'); postItem.style.transition = 'transform 0.3s ease'; const diffX = swipeState.currentX - swipeState.startX; const swipeThreshold = -40; if (swipeState.swipeDirection === 'horizontal' && diffX < swipeThreshold) { postItem.classList.add('swiped'); postItem.style.transform = ''; } else { postItem.classList.remove('swiped'); postItem.style.transform = ''; } swipeState.isDragging = false; swipeState.startX = 0; swipeState.startY = 0; swipeState.currentX = 0; swipeState.activeContainer = null; swipeState.swipeDirection = null; swipeState.isClick = true; };
+// ▼▼▼ BUG修复：修正了 handleSwipeEnd 的调用方式 ▼▼▼
+const handleSwipeMove = (e) => { if (!swipeState.isDragging || !swipeState.activeContainer) return; const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; const currentY = e.type.includes('mouse') ? e.pageY : e.touches[0].pageY; const diffX = currentX - swipeState.startX; const diffY = currentY - swipeState.startY; const absDiffX = Math.abs(diffX); const absDiffY = Math.abs(diffY); const clickThreshold = 5; if (absDiffX > clickThreshold || absDiffY > clickThreshold) swipeState.isClick = false; if (swipeState.swipeDirection === null) { if (absDiffX > clickThreshold || absDiffY > clickThreshold) { if (absDiffX > absDiffY) swipeState.swipeDirection = 'horizontal'; else swipeState.swipeDirection = 'vertical'; } } if (swipeState.swipeDirection === 'vertical') { handleSwipeEnd(e); return; } if (swipeState.swipeDirection === 'horizontal') { e.preventDefault(); swipeState.currentX = currentX; let translation = diffX; if (translation > 0) translation = 0; if (translation < -90) translation = -90; swipeState.activeContainer.querySelector('.qzone-post-item').style.transform = `translateX(${translation}px)`; } };
+// ▲▲▲ 修复结束 ▲▲▲
+// ▼▼▼ BUG修复：修正了滑动距离的计算逻辑 ▼▼▼
+const handleSwipeEnd = (e) => { 
+    if (swipeState.isClick) { 
+        swipeState.isDragging = false; 
+        swipeState.activeContainer = null; 
+        return; 
+    } 
+    if (!swipeState.isDragging || !swipeState.activeContainer) return; 
+    
+    const postItem = swipeState.activeContainer.querySelector('.qzone-post-item'); 
+    postItem.style.transition = 'transform 0.3s ease'; 
+
+    // 【核心修复】从事件对象 e 中获取最终的X坐标，而不是依赖 state
+    // 注意：touchend 事件需要用 changedTouches
+    const finalX = e.type.includes('touchend') ? e.changedTouches[0].pageX : e.pageX;
+    const diffX = finalX - swipeState.startX; 
+    
+    const swipeThreshold = -40; 
+    
+    if (swipeState.swipeDirection === 'horizontal' && diffX < swipeThreshold) { 
+        postItem.classList.add('swiped'); 
+        postItem.style.transform = ''; 
+    } else { 
+        postItem.classList.remove('swiped'); 
+        postItem.style.transform = ''; 
+    } 
+    
+    // 重置状态
+    swipeState.isDragging = false; 
+    swipeState.startX = 0; 
+    swipeState.startY = 0; 
+    swipeState.currentX = 0; 
+    swipeState.activeContainer = null; 
+    swipeState.swipeDirection = null; 
+    swipeState.isClick = true; 
+};
+// ▲▲▲ 修复结束 ▲▲▲
             postsList.addEventListener('mousedown', handleSwipeStart);
             document.addEventListener('mousemove', handleSwipeMove);
             document.addEventListener('mouseup', handleSwipeEnd);
             postsList.addEventListener('touchstart', handleSwipeStart, { passive: false });
             postsList.addEventListener('touchmove', handleSwipeMove, { passive: false });
             postsList.addEventListener('touchend', handleSwipeEnd);
-            postsList.addEventListener('click', async (e) => { e.stopPropagation(); if (e.target.closest('.qzone-post-delete-action')) { const container = e.target.closest('.qzone-post-container'); if (!container) return; const postId = parseInt(container.dataset.postId); const confirmed = await showCustomConfirm('删除动态', '确定要永久删除这条动态吗？', { confirmButtonClass: 'btn-danger' }); if (confirmed) { container.style.transition = 'all 0.3s ease'; container.style.transform = 'scale(0.8)'; container.style.opacity = '0'; setTimeout(async () => { await db.qzonePosts.delete(postId); await renderQzonePosts(); alert('动态已删除。'); }, 300); } else { resetAllSwipes(); } } });
 
-            document.getElementById('album-photos-back-btn').addEventListener('click', () => { state.activeAlbumId = null; showScreen('album-screen'); });
-            document.getElementById('album-upload-photo-btn').addEventListener('click', () => document.getElementById('album-photo-input').click());
-            document.getElementById('album-photo-input').addEventListener('change', async (event) => { if (!state.activeAlbumId) return; const files = event.target.files; if (!files.length) return; const album = await db.qzoneAlbums.get(state.activeAlbumId); for (const file of files) { const dataUrl = await new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); await db.qzonePhotos.add({ albumId: state.activeAlbumId, url: dataUrl, createdAt: Date.now() }); } const photoCount = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).count(); const updateData = { photoCount }; if (album.photoCount === 0 || album.coverUrl.includes('placeholder')) { const firstPhoto = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).first(); if(firstPhoto) updateData.coverUrl = firstPhoto.url; } await db.qzoneAlbums.update(state.activeAlbumId, updateData); await renderAlbumPhotosScreen(); await renderAlbumList(); event.target.value = null; alert('照片上传成功！'); });
+// ▼▼▼ BUG修复：修正了左滑删除的执行逻辑 ▼▼▼
+postsList.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const target = e.target;
 
-            // ▼▼▼ 用这个新版本【完整替换】旧的 'photos-grid-page' 点击事件 ▼▼▼
-document.getElementById('photos-grid-page').addEventListener('click', async (e) => {
-    const deleteBtn = e.target.closest('.photo-delete-btn');
-    const photoThumb = e.target.closest('.photo-thumb');
-
-    if (deleteBtn) {
-        e.stopPropagation(); // 阻止事件冒泡到图片上
-        const photoId = parseInt(deleteBtn.dataset.photoId);
-        const confirmed = await showCustomConfirm(
-            '删除照片',
-            '确定要删除这张照片吗？此操作不可恢复。',
-            { confirmButtonClass: 'btn-danger' }
-        );
-
-        if (confirmed) {
-            const deletedPhoto = await db.qzonePhotos.get(photoId);
-            if (!deletedPhoto) return; // 如果照片已被删除，则中止
-            
-            await db.qzonePhotos.delete(photoId);
-
-            const album = await db.qzoneAlbums.get(state.activeAlbumId);
-            const photoCount = (album.photoCount || 1) - 1;
-            const updateData = { photoCount };
-            
-            if (album.coverUrl === deletedPhoto.url) {
-                const nextPhoto = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).first();
-                updateData.coverUrl = nextPhoto ? nextPhoto.url : 'https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png';
-            }
-            
-            await db.qzoneAlbums.update(state.activeAlbumId, updateData);
-            await renderAlbumPhotosScreen();
-            await renderAlbumList();
-            alert('照片已删除。');
+    // --- 处理“…”操作按钮 ---
+    if (target.classList.contains('post-actions-btn')) {
+        const container = target.closest('.qzone-post-container');
+        if (container && container.dataset.postId) {
+            showPostActions(parseInt(container.dataset.postId));
         }
-    } 
-    // --- 核心修改在这里 ---
-    else if (photoThumb) {
-        // 不再是 alert，而是调用我们新写的函数
-        openPhotoViewer(photoThumb.src);
+        return; 
+    }
+
+    // --- 【核心修复】处理删除按钮 (左滑出现) ---
+    if (target.closest('.qzone-post-delete-action')) {
+        const container = target.closest('.qzone-post-container');
+        if (!container) return;
+        
+        const postIdToDelete = parseInt(container.dataset.postId);
+        if (isNaN(postIdToDelete)) return;
+
+        // 1. 直接在这里弹出确认框
+        const confirmed = await showCustomConfirm('删除动态', '确定要永久删除这条动态吗？', { confirmButtonClass: 'btn-danger' });
+
+        // 2. 如果用户确认，直接执行删除逻辑
+        if (confirmed) {
+            // a. 播放删除动画
+            container.style.transition = 'all 0.3s ease';
+            container.style.transform = 'scale(0.8)';
+            container.style.opacity = '0';
+        
+            // b. 动画播放后再执行数据库和UI更新
+            setTimeout(async () => {
+                 // 删除数据库中的动态
+                 await db.qzonePosts.delete(postIdToDelete);
+                 
+                 // 清理其他角色聊天记录里的相关系统通知 (可选但推荐)
+                 const notificationIdentifier = `(ID: ${postIdToDelete})`;
+                 for (const chatId in state.chats) {
+                     const chat = state.chats[chatId];
+                     const originalHistoryLength = chat.history.length;
+                     chat.history = chat.history.filter(msg => !(msg.role === 'system' && msg.content.includes(notificationIdentifier)));
+                     if (chat.history.length < originalHistoryLength) {
+                         await db.chats.put(chat);
+                     }
+                 }
+
+                 // 重新渲染动态列表并给出提示
+                 await renderQzonePosts();
+                 alert('动态已删除。');
+            }, 300);
+        }
+        return; // 处理完毕，退出函数
+    }
+
+    // --- 处理其他点击事件（点赞、评论、图片点击等）---
+    if (target.tagName === 'IMG' && target.dataset.hiddenText) {
+        const hiddenText = target.dataset.hiddenText;
+        showCustomAlert("图片内容", hiddenText.replace(/<br>/g, '\n'));
+        return;
+    }
+    const icon = target.closest('.action-icon');
+    if (icon) {
+        const postContainer = icon.closest('.qzone-post-container');
+        if (!postContainer) return;
+        const postId = parseInt(postContainer.dataset.postId);
+        if (isNaN(postId)) return;
+        if (icon.classList.contains('like')) {
+            const post = await db.qzonePosts.get(postId);
+            if (!post) return;
+            if (!post.likes) post.likes = [];
+            const userNickname = state.qzoneSettings.nickname;
+            const userLikeIndex = post.likes.indexOf(userNickname);
+            if (userLikeIndex > -1) {
+                post.likes.splice(userLikeIndex, 1);
+            } else {
+                post.likes.push(userNickname);
+                icon.classList.add('animate-like');
+                icon.addEventListener('animationend', () => icon.classList.remove('animate-like'), { once: true });
+            }
+            await db.qzonePosts.update(postId, { likes: post.likes });
+        }
+        if (icon.classList.contains('favorite')) {
+            const existingFavorite = await db.favorites.where({ type: 'qzone_post', 'content.id': postId }).first();
+            if (existingFavorite) {
+                await db.favorites.delete(existingFavorite.id);
+                await showCustomAlert('提示', '已取消收藏');
+            } else {
+                const postToSave = await db.qzonePosts.get(postId);
+                if (postToSave) {
+                    await db.favorites.add({ type: 'qzone_post', content: postToSave, timestamp: Date.now() });
+                    await showCustomAlert('提示', '收藏成功！');
+                }
+            }
+        }
+        await renderQzonePosts();
+        return;
+    }
+    const sendBtn = target.closest('.comment-send-btn');
+    if (sendBtn) {
+        const postContainer = sendBtn.closest('.qzone-post-container');
+        if (!postContainer) return;
+        const postId = parseInt(postContainer.dataset.postId);
+        const commentInput = postContainer.querySelector('.comment-input');
+        const commentText = commentInput.value.trim();
+        if (!commentText) return alert('评论内容不能为空哦！');
+        const post = await db.qzonePosts.get(postId);
+        if (!post) return;
+        if (!post.comments) post.comments = [];
+        post.comments.push({ commenterName: state.qzoneSettings.nickname, text: commentText, timestamp: Date.now() });
+        await db.qzonePosts.update(postId, { comments: post.comments });
+        for (const chatId in state.chats) {
+            const chat = state.chats[chatId];
+            if (!chat.isGroup) {
+                chat.history.push({ role: 'system', content: `[系统提示：'${state.qzoneSettings.nickname}' 在ID为${postId}的动态下发表了评论：“${commentText}”]`, timestamp: Date.now(), isHidden: true });
+                await db.chats.put(chat);
+            }
+        }
+        commentInput.value = '';
+        await renderQzonePosts();
+        return;
     }
 });
-
-// ▼▼▼ 继续在 init() 函数中添加以下事件监听器 ▼▼▼
-
-// 5. 图片查看器的控制事件
-document.getElementById('photo-viewer-close-btn').addEventListener('click', closePhotoViewer);
-document.getElementById('photo-viewer-next-btn').addEventListener('click', showNextPhoto);
-document.getElementById('photo-viewer-prev-btn').addEventListener('click', showPrevPhoto);
-
-// (可选，但推荐) 添加键盘左右箭头切换图片的功能
-document.addEventListener('keydown', (e) => {
-    if (!photoViewerState.isOpen) return; // 仅当查看器打开时生效
-
-    if (e.key === 'ArrowRight') {
-        showNextPhoto();
-    } else if (e.key === 'ArrowLeft') {
-        showPrevPhoto();
-    } else if (e.key === 'Escape') {
-        closePhotoViewer();
-    }
-});           
-
-            // 为动态列表的交互元素添加统一的事件委托 (已合并)
-            document.getElementById('qzone-posts-list').addEventListener('click', async (e) => {
-                const target = e.target;
-
-                // 1. 【新增】处理文字图点击
-                if (target.tagName === 'IMG' && target.dataset.hiddenText) {
-                    const hiddenText = target.dataset.hiddenText;
-                    showCustomAlert("图片内容", hiddenText.replace(/<br>/g, '\n'));
-                    return; // 处理完就退出
-                }
-
-                // 2. 处理点赞/收藏图标点击
-                const icon = target.closest('.action-icon');
-                if (icon) {
-                    const postContainer = icon.closest('.qzone-post-container');
-                    if (!postContainer) return;
-                    const postId = parseInt(postContainer.dataset.postId);
-                    if (isNaN(postId)) return;
-
-                    // 处理点赞
-                    if (icon.classList.contains('like')) {
-                        const post = await db.qzonePosts.get(postId);
-                        if (!post) return;
-                        if (!post.likes) post.likes = [];
-                        const userNickname = state.qzoneSettings.nickname;
-                        const userLikeIndex = post.likes.indexOf(userNickname);
-                        if (userLikeIndex > -1) {
-                            post.likes.splice(userLikeIndex, 1);
-                        } else {
-                            post.likes.push(userNickname);
-                            icon.classList.add('animate-like');
-                            icon.addEventListener('animationend', () => icon.classList.remove('animate-like'), { once: true });
-                        }
-                        await db.qzonePosts.update(postId, { likes: post.likes });
-                    }
-                    // 处理收藏
-                    if (icon.classList.contains('favorite')) {
-                        const existingFavorite = await db.favorites.where({ type: 'qzone_post', 'content.id': postId }).first();
-                        if (existingFavorite) {
-                            await db.favorites.delete(existingFavorite.id);
-                            await showCustomAlert('提示', '已取消收藏');
-                        } else {
-                            const postToSave = await db.qzonePosts.get(postId);
-                            if (postToSave) {
-                                await db.favorites.add({ type: 'qzone_post', content: postToSave, timestamp: Date.now() });
-                                await showCustomAlert('提示', '收藏成功！');
-                            }
-                        }
-                    }
-                    await renderQzonePosts();
-                    return; // 处理完就退出
-                }
-
-                // 3. 处理评论发送按钮点击
-                const sendBtn = target.closest('.comment-send-btn');
-                if (sendBtn) {
-                    const postContainer = sendBtn.closest('.qzone-post-container');
-                    if (!postContainer) return;
-                    const postId = parseInt(postContainer.dataset.postId);
-                    const commentInput = postContainer.querySelector('.comment-input');
-                    const commentText = commentInput.value.trim();
-                    if (!commentText) return alert('评论内容不能为空哦！');
-                    const post = await db.qzonePosts.get(postId);
-                    if (!post) return;
-                    if (!post.comments) post.comments = [];
-                    post.comments.push({ commenterName: state.qzoneSettings.nickname, text: commentText, timestamp: Date.now() });
-                    await db.qzonePosts.update(postId, { comments: post.comments });
-                    for (const chatId in state.chats) {
-                        const chat = state.chats[chatId];
-                        if (!chat.isGroup) {
-                            chat.history.push({ role: 'system', content: `[系统提示：'${state.qzoneSettings.nickname}' 在ID为${postId}的动态下发表了评论：“${commentText}”]`, timestamp: Date.now(), isHidden: true });
-                            await db.chats.put(chat);
-                        }
-                    }
-                    commentInput.value = '';
-                    await renderQzonePosts();
-                    return; // 处理完就退出
-                }
-            });
+// ▲▲▲ 修复结束 ▲▲▲
 
             // ▼▼▼ 在 init() 函数的事件监听器区域，粘贴下面这两行 ▼▼▼
 
@@ -4685,6 +6019,126 @@ if (state.globalSettings.enableBackgroundActivity) {
     console.log("后台活动模拟已自动启动。");
 }
 // ▲▲▲ 添加结束 ▲▲▲
+
+// ▼▼▼ 【这是最终的正确代码】请粘贴这段代码到 init() 的事件监听器区域末尾 ▼▼▼
+
+// --- 统一处理所有影响预览的控件的事件 ---
+
+// 1. 监听主题选择
+document.querySelectorAll('input[name="theme-select"]').forEach(radio => {
+    radio.addEventListener('change', updateSettingsPreview);
+});
+
+// 2. 监听字体大小滑块
+const fontSizeSlider = document.getElementById('font-size-slider');
+fontSizeSlider.addEventListener('input', () => {
+    // a. 实时更新数值显示
+    document.getElementById('font-size-value').textContent = `${fontSizeSlider.value}px`;
+    // b. 更新预览
+    updateSettingsPreview();
+});
+
+// 3. 监听自定义CSS输入框
+const customCssInputForPreview = document.getElementById('custom-css-input');
+customCssInputForPreview.addEventListener('input', updateSettingsPreview);
+
+// 4. 监听重置按钮
+document.getElementById('reset-theme-btn').addEventListener('click', () => {
+    document.getElementById('theme-default').checked = true;
+    updateSettingsPreview();
+});
+
+document.getElementById('reset-custom-css-btn').addEventListener('click', () => {
+    document.getElementById('custom-css-input').value = '';
+    updateSettingsPreview();
+});
+
+// ▲▲▲ 粘贴结束 ▲▲▲
+
+// ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
+document.querySelectorAll('input[name="visibility"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const groupsContainer = document.getElementById('post-visibility-groups');
+        if (this.value === 'include' || this.value === 'exclude') {
+            groupsContainer.style.display = 'block';
+        } else {
+            groupsContainer.style.display = 'none';
+        }
+    });
+});
+// ▲▲▲ 新代码粘贴结束 ▲▲▲
+
+// ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
+document.getElementById('manage-groups-btn').addEventListener('click', openGroupManager);
+document.getElementById('close-group-manager-btn').addEventListener('click', () => {
+    document.getElementById('group-management-modal').classList.remove('visible');
+    // 刷新聊天设置里的分组列表
+    const chatSettingsBtn = document.getElementById('chat-settings-btn');
+    if (document.getElementById('chat-settings-modal').classList.contains('visible')) {
+       chatSettingsBtn.click(); // 再次点击以重新打开
+    }
+});
+
+document.getElementById('add-new-group-btn').addEventListener('click', addNewGroup);
+document.getElementById('existing-groups-list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-group-btn')) {
+        const groupId = parseInt(e.target.dataset.id);
+        deleteGroup(groupId);
+    }
+});
+// ▲▲▲ 新代码粘贴结束 ▲▲▲
+
+// ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
+// 消息操作菜单的按钮事件
+document.getElementById('cancel-message-action-btn').addEventListener('click', hideMessageActions);
+document.getElementById('edit-message-btn').addEventListener('click', openMessageEditor);
+document.getElementById('copy-message-btn').addEventListener('click', copyMessageContent);
+
+// ▼▼▼ 请用这段【修正后】的代码替换旧的 select-message-btn 事件监听器 ▼▼▼
+document.getElementById('select-message-btn').addEventListener('click', () => {
+    // 【核心修复】在关闭菜单前，先捕获时间戳
+    const timestampToSelect = activeMessageTimestamp; 
+    hideMessageActions();
+    // 使用捕获到的值
+    if (timestampToSelect) {
+        enterSelectionMode(timestampToSelect);
+    }
+});
+// ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 在 init() 函数的事件监听器区域末尾添加 ▼▼▼
+
+// 动态操作菜单的按钮事件
+document.getElementById('edit-post-btn').addEventListener('click', openPostEditor);
+document.getElementById('copy-post-btn').addEventListener('click', copyPostContent);
+document.getElementById('cancel-post-action-btn').addEventListener('click', hidePostActions);
+
+// ▲▲▲ 添加结束 ▲▲▲
+
+// ▼▼▼ 将这段【失踪】的事件监听代码，粘贴到 init() 函数的事件监听器区域末尾 ▼▼▼
+
+// 头像框选择模态框的按钮事件
+document.getElementById('save-frame-settings-btn').addEventListener('click', saveSelectedFrames);
+document.getElementById('cancel-frame-settings-btn').addEventListener('click', () => {
+    frameModal.classList.remove('visible');
+    editingFrameForMember = false; // 确保重置状态
+});
+
+// 头像框 Tab 切换事件
+aiFrameTab.addEventListener('click', () => {
+    aiFrameTab.classList.add('active');
+    myFrameTab.classList.remove('active');
+    aiFrameContent.style.display = 'block';
+    myFrameContent.style.display = 'none';
+});
+myFrameTab.addEventListener('click', () => {
+    myFrameTab.classList.add('active');
+    aiFrameTab.classList.remove('active');
+    myFrameContent.style.display = 'block';
+    aiFrameContent.style.display = 'none';
+});
+
+// ▲▲▲ 修复代码粘贴结束 ▲▲▲
 
         // ===================================================================
         // 5. 启动！
