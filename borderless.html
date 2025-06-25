@@ -61,6 +61,16 @@ body {
 
 /* ▲▲▲ 替换结束 ▲▲▲ */
 
+        #status-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; color: white; z-index: 10; font-size: 14px; box-sizing: border-box; pointer-events: none; }
+        #status-bar-time { font-weight: 600; }
+        .battery-container { display: flex; align-items: center; gap: 5px; }
+        .battery-icon { width: 25px; height: 12px; border: 1px solid white; border-radius: 3px; position: relative; padding: 1px; }
+        .battery-icon::after { content: ''; position: absolute; right: -3px; top: 2px; width: 2px; height: 6px; background-color: white; border-radius: 0 1px 1px 0; }
+        .battery-level { height: 100%; background-color: white; border-radius: 1px; transition: width 0.5s ease; }
+        .battery-container.charging .battery-level { background-color: #4cd964; animation: charge-breath 2s infinite; }
+        .battery-container.charging .battery-text { color: #4cd964; }
+        @keyframes charge-breath { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
         @keyframes charge-breath { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .screen { width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         .screen.active { opacity: 1; visibility: visible; z-index: 1; }
@@ -1988,6 +1998,21 @@ body {
 
 /* ▲▲▲ 替换结束 ▲▲▲ */
 
+/* ▼▼▼ 这是新增的样式，用于修正所有头部标题的居中问题 ▼▼▼ */
+.header > span:nth-child(2),
+#chat-header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(calc(-50% - 2px)); /* 在-50%的基础上，再向左推2像素 */
+    
+    /* (可选但推荐) 防止长标题与两边按钮重叠 */
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* ▲▲▲ 粘贴结束 ▲▲▲ */
+
     </style>
 </head>
 <body>
@@ -3414,7 +3439,8 @@ state.globalSettings = globalSettings || { id: 'main', wallpaper: 'linear-gradie
 
         function showNotification(chatId, messageContent) { clearTimeout(notificationTimeout); const chat = state.chats[chatId]; if (!chat) return; const bar = document.getElementById('notification-bar'); document.getElementById('notification-avatar').src = chat.settings.aiAvatar || chat.settings.groupAvatar || defaultAvatar; document.getElementById('notification-content').querySelector('.name').textContent = chat.name; document.getElementById('notification-content').querySelector('.message').textContent = messageContent; const newBar = bar.cloneNode(true); bar.parentNode.replaceChild(newBar, bar); newBar.addEventListener('click', () => { openChat(chatId); newBar.classList.remove('visible'); }); newBar.classList.add('visible'); notificationTimeout = setTimeout(() => { newBar.classList.remove('visible'); }, 4000); }
 
-        function updateClock() { const now = new Date(); const timeString = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); const dateString = now.toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' }); document.getElementById('main-time').textContent = timeString; document.getElementById('status-bar-time').textContent = timeString; document.getElementById('main-date').textContent = dateString; }
+        function updateClock() { const now = new Date(); const timeString = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); const dateString = now.toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' }); document.getElementById('main-time').textContent = timeString; document.getElementById('status-bar-time').textContent = timeString; 
+document.getElementById('main-date').textContent = dateString; }
 
         function parseAiResponse(content) {
             const trimmedContent = content.trim();
