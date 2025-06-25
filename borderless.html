@@ -1458,12 +1458,13 @@ body {
 
 /* === 收藏列表样式 (修正后) === */
 #favorites-list {
-    flex-grow: 1; /* 关键：让列表占据所有剩余的垂直空间 */
-    overflow-y: auto; /* 关键：当内容超出时，允许列表自身滚动 */
-    padding: 15px; /* 在列表四周都留出一些空白，更好看 */
+    flex-grow: 1; 
+    overflow-y: auto; 
+    overflow-x: hidden; /* <-- 新增这行，禁止水平滚动 */
+    padding: 15px; 
     display: flex;
     flex-direction: column;
-    gap: 15px; /* 卡片之间的间距 */
+    gap: 15px; 
 }
 
 /* ▲▲▲ 替换结束 ▲▲▲ */
@@ -3413,7 +3414,7 @@ state.globalSettings = globalSettings || { id: 'main', wallpaper: 'linear-gradie
 
         function showNotification(chatId, messageContent) { clearTimeout(notificationTimeout); const chat = state.chats[chatId]; if (!chat) return; const bar = document.getElementById('notification-bar'); document.getElementById('notification-avatar').src = chat.settings.aiAvatar || chat.settings.groupAvatar || defaultAvatar; document.getElementById('notification-content').querySelector('.name').textContent = chat.name; document.getElementById('notification-content').querySelector('.message').textContent = messageContent; const newBar = bar.cloneNode(true); bar.parentNode.replaceChild(newBar, bar); newBar.addEventListener('click', () => { openChat(chatId); newBar.classList.remove('visible'); }); newBar.classList.add('visible'); notificationTimeout = setTimeout(() => { newBar.classList.remove('visible'); }, 4000); }
 
-        function updateClock() { const now = new Date(); const timeString = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); const dateString = now.toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' }); document.getElementById('main-time').textContent = timeString; document.getElementById('main-date').textContent = dateString; }
+        function updateClock() { const now = new Date(); const timeString = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); const dateString = now.toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' }); document.getElementById('main-time').textContent = timeString; document.getElementById('status-bar-time').textContent = timeString; document.getElementById('main-date').textContent = dateString; }
 
         function parseAiResponse(content) {
             const trimmedContent = content.trim();
@@ -4311,7 +4312,7 @@ ${aiVoiceInstructions}
             }
         }
 
-// ▼▼▼ 请将这些新的函数粘贴到 JS 功能函数定义区 ▼▼▼
+// --- ↓↓↓ 从这里开始复制 ↓↓↓ ---
 
 /**
  * 打开图片查看器
@@ -4392,6 +4393,7 @@ function closePhotoViewer() {
     document.getElementById('photo-viewer-image').src = '';
 }
 
+// --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
         // ▼▼▼ 请将这个新函数粘贴到你的JS功能函数定义区 ▼▼▼
         
         /**
@@ -5166,7 +5168,7 @@ async function copyPostContent() {
             updateClock();
             setInterval(updateClock, 1000 * 30);
             applyGlobalWallpaper();
-            
+            initBatteryManager(); 
 
             // ==========================================================
             // --- 各种事件监听器 ---
@@ -5571,9 +5573,12 @@ document.getElementById('create-post-btn').addEventListener('click', async () =>
     // 2. 设置为“复杂动态”模式
     modal.dataset.mode = 'complex';
     
-    // 3. 确保与图片/文字图相关的部分是可见的
-    modal.querySelector('.post-mode-switcher').style.display = 'flex'; // 用flex恢复
-    modal.querySelector('#image-mode-content').style.display = 'block';
+// 3. 确保与图片/文字图相关的部分是可见的
+modal.querySelector('.post-mode-switcher').style.display = 'flex';
+// 显式激活“上传图片”模式...
+modal.querySelector('#image-mode-content').classList.add('active');
+// ...同时确保“文字图”模式是隐藏的
+modal.querySelector('#text-image-mode-content').classList.remove('active');
     
     // 4. 恢复主输入框的默认提示语
     modal.querySelector('#post-public-text').placeholder = '分享新鲜事...（非必填的公开文字）';
@@ -5596,7 +5601,113 @@ document.getElementById('create-post-btn').addEventListener('click', async () =>
 });
             document.getElementById('open-album-btn').addEventListener('click', async () => { await renderAlbumList(); showScreen('album-screen'); });
             document.getElementById('album-back-btn').addEventListener('click', () => { showScreen('chat-list-screen'); switchToChatListView('qzone-screen'); });
-            document.getElementById('create-album-btn-page').addEventListener('click', async () => { const albumName = await showCustomPrompt("创建新相册", "请输入相册名称"); if (albumName && albumName.trim()) { const newAlbum = { name: albumName.trim(), coverUrl: 'https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png', photoCount: 0, createdAt: Date.now() }; await db.qzoneAlbums.add(newAlbum); await renderAlbumList(); alert(`相册 "${albumName}" 创建成功！`); } else if (albumName !== null) { alert("相册名称不能为空！"); } });
+
+// --- ↓↓↓ 从这里开始复制 ↓↓↓ ---
+
+document.getElementById('album-photos-back-btn').addEventListener('click', () => {
+    state.activeAlbumId = null;
+    showScreen('album-screen');
+});
+
+document.getElementById('album-upload-photo-btn').addEventListener('click', () => document.getElementById('album-photo-input').click());
+
+document.getElementById('album-photo-input').addEventListener('change', async (event) => {
+    if (!state.activeAlbumId) return;
+    const files = event.target.files;
+    if (!files.length) return;
+
+    const album = await db.qzoneAlbums.get(state.activeAlbumId);
+    
+    for (const file of files) {
+        const dataUrl = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+        });
+        await db.qzonePhotos.add({ albumId: state.activeAlbumId, url: dataUrl, createdAt: Date.now() });
+    }
+
+    const photoCount = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).count();
+    const updateData = { photoCount };
+    
+    if (!album.photoCount || album.coverUrl.includes('placeholder')) {
+        const firstPhoto = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).first();
+        if(firstPhoto) updateData.coverUrl = firstPhoto.url;
+    }
+
+    await db.qzoneAlbums.update(state.activeAlbumId, updateData);
+    await renderAlbumPhotosScreen();
+    await renderAlbumList();
+    
+    event.target.value = null;
+    alert('照片上传成功！');
+});
+
+// --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
+
+// --- ↓↓↓ 从这里开始复制，完整替换掉旧的 photos-grid-page 监听器 ↓↓↓ ---
+
+document.getElementById('photos-grid-page').addEventListener('click', async (e) => {
+    const deleteBtn = e.target.closest('.photo-delete-btn');
+    const photoThumb = e.target.closest('.photo-thumb');
+
+    if (deleteBtn) {
+        e.stopPropagation(); // 阻止事件冒泡到图片上
+        const photoId = parseInt(deleteBtn.dataset.photoId);
+        const confirmed = await showCustomConfirm(
+            '删除照片',
+            '确定要删除这张照片吗？此操作不可恢复。',
+            { confirmButtonClass: 'btn-danger' }
+        );
+
+        if (confirmed) {
+            const deletedPhoto = await db.qzonePhotos.get(photoId);
+            if (!deletedPhoto) return;
+            
+            await db.qzonePhotos.delete(photoId);
+
+            const album = await db.qzoneAlbums.get(state.activeAlbumId);
+            const photoCount = (album.photoCount || 1) - 1;
+            const updateData = { photoCount };
+            
+            if (album.coverUrl === deletedPhoto.url) {
+                const nextPhoto = await db.qzonePhotos.where('albumId').equals(state.activeAlbumId).first();
+                updateData.coverUrl = nextPhoto ? nextPhoto.url : 'https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png';
+            }
+            
+            await db.qzoneAlbums.update(state.activeAlbumId, updateData);
+            await renderAlbumPhotosScreen();
+            await renderAlbumList();
+            alert('照片已删除。');
+        }
+    } 
+    else if (photoThumb) {
+        // 这就是恢复的图片点击放大功能！
+        openPhotoViewer(photoThumb.src);
+    }
+});
+
+// 恢复图片查看器的控制事件
+document.getElementById('photo-viewer-close-btn').addEventListener('click', closePhotoViewer);
+document.getElementById('photo-viewer-next-btn').addEventListener('click', showNextPhoto);
+document.getElementById('photo-viewer-prev-btn').addEventListener('click', showPrevPhoto);
+
+// 恢复键盘左右箭头和ESC键的功能
+document.addEventListener('keydown', (e) => {
+    if (!photoViewerState.isOpen) return; 
+
+    if (e.key === 'ArrowRight') {
+        showNextPhoto();
+    } else if (e.key === 'ArrowLeft') {
+        showPrevPhoto();
+    } else if (e.key === 'Escape') {
+        closePhotoViewer();
+    }
+});
+
+// --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
+         
+document.getElementById('create-album-btn-page').addEventListener('click', async () => { const albumName = await showCustomPrompt("创建新相册", "请输入相册名称"); if (albumName && albumName.trim()) { const newAlbum = { name: albumName.trim(), coverUrl: 'https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png', photoCount: 0, createdAt: Date.now() }; await db.qzoneAlbums.add(newAlbum); await renderAlbumList(); alert(`相册 "${albumName}" 创建成功！`); } else if (albumName !== null) { alert("相册名称不能为空！"); } });
 
             document.getElementById('cancel-create-post-btn').addEventListener('click', () => document.getElementById('create-post-modal').classList.remove('visible'));
             document.getElementById('post-upload-local-btn').addEventListener('click', () => document.getElementById('post-local-image-input').click());
