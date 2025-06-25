@@ -1948,6 +1948,21 @@
 
 /* ▲▲▲ 替换结束 ▲▲▲ */
 
+/* ▼▼▼ 这是新增的样式，用于修正所有头部标题的居中问题 ▼▼▼ */
+.header > span:nth-child(2),
+#chat-header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(calc(-50% - 2px)); /* 在-50%的基础上，再向左推2像素 */
+    
+    /* (可选但推荐) 防止长标题与两边按钮重叠 */
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* ▲▲▲ 粘贴结束 ▲▲▲ */
+
     </style>
 </head>
 <body>
