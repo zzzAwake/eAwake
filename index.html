@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>选择版本</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 60px;
+      text-align: center;
+    }
+
+    .button {
+      width: 90vw;
+      max-width: 380px;
+      padding: 24px 0;
+      margin: 20px 0;
+      font-size: 22px;
+      border: none;
+      border-radius: 12px;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>请选择你想使用的版本</h1>
+  <h1>两版只在边框上有变化，只要你访问的是同一域名（也就是这个链接）以及同一浏览器打开，两个版本的数据都是互通的哦，以后的更新也是一样</h1>
+  <button class="button" onclick="location.href='bordered.html'">📱 有边框版本</button>
+  <button class="button" onclick="location.href='borderless.html'">📲 无边框版本</button>
+</body>
+</html>
