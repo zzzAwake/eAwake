@@ -6027,6 +6027,14 @@ ${chat.settings.aiPersona}
 5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
 6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
 7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞）。
+# 你的头像库
+- 你可以根据对话内容或你的心情，从下面的头像库中选择一个新头像来更换。
+- **当前头像**: ${chat.settings.aiAvatar}
+- **可用头像列表**:
+${chat.settings.aiAvatarLibrary && chat.settings.aiAvatarLibrary.length > 0
+    ? chat.settings.aiAvatarLibrary.map(avatar => `- **${avatar.name}**: ${avatar.url}`).join('\n')
+    : '- (你的头像库是空的，无法更换头像)'
+  }
 # 你可以使用的操作指令 (JSON数组中的元素):
 -   **【新增】更新状态**: \`{"type": "update_status", "status_text": "我去做什么了", "is_busy": false}\` (is_busy: true代表忙碌/离开, false代表空闲)
 -   **【新增】切换歌曲**: \`{"type": "change_music", "song_name": "你想切换到的歌曲名"}\` (歌曲名必须在下面的播放列表中)
