@@ -5096,6 +5096,14 @@ async function loadAllDataFromDB() {
         }
         // --- ▲▲▲ 修复结束 ▲▲▲
 
+    // ▼▼▼ 在这里添加 ▼▼▼
+    if (!chat.isGroup && (!chat.settings || !chat.settings.aiAvatarLibrary)) {
+        if (!chat.settings) chat.settings = {}; // 以防万一连settings都没有
+        chat.settings.aiAvatarLibrary = [];
+        console.log(`为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`);
+    }
+    // ▲▲▲ 添加结束 ▲▲▲
+
         if (!chat.musicData) chat.musicData = { totalTime: 0 };
         if (chat.settings && chat.settings.linkedWorldBookId && !chat.settings.linkedWorldBookIds) {
             chat.settings.linkedWorldBookIds = [chat.settings.linkedWorldBookId];
@@ -9775,6 +9783,7 @@ const newChat = {
     fontSize: 13, 
     customCss: '', // <--- 新增这行
     linkedWorldBookIds: [], 
+    aiAvatarLibrary: [],
     aiAvatarFrame: '', 
         myAvatarFrame: '' 
     }, 
