@@ -6201,10 +6201,20 @@ ${contextSummaryForApproval}
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
             body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.8, stream: false })
         });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API Error: ${response.status} - ${errorData.error.message}`);
-        }
+if (!response.ok) {
+    let errorMsg = `API Error: ${response.status}`;
+    try {
+        // 尝试解析错误信息体为JSON
+        const errorData = await response.json();
+        // 安全地获取错误信息，如果结构不符合预期，就将整个错误对象转为字符串
+        errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
+    } catch (jsonError) {
+        // 如果连JSON都不是，就直接读取文本
+        errorMsg += ` - ${await response.text()}`;
+    }
+    // 抛出一个包含了详细信息的错误，这样就不会在catch块里再次出错了
+    throw new Error(errorMsg);
+}
         const data = await response.json();
         const aiResponseContent = data.choices[0].message.content;
         console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
