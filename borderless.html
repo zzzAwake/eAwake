@@ -6104,6 +6104,7 @@ ${chat.settings.aiAvatarLibrary && chat.settings.aiAvatarLibrary.length > 0
 -   **拍一拍用户**: \`{"type": "pat_user", "suffix": "(可选)你想加的后缀，如“的脑袋”"}\`
 -   **【新增】拉黑用户**: \`{"type": "block_user"}\`
 -   **【【【全新】】】回应好友申请**: \`{"type": "friend_request_response", "decision": "accept" or "reject"}\`
+-   **【全新】更换头像**: \`{"type": "change_avatar", "name": "头像名"}\` (头像名必须从上面的“可用头像列表”中选择)
 
 # 关于“记录回忆”的特别说明：
 -   在对话中，如果发生了对你而言意义非凡的事件（比如用户向你表白、你们达成了某个约定、或者你度过了一个特别开心的时刻），你可以使用\`create_memory\`指令来“写日记”。
@@ -6597,10 +6598,6 @@ case 'open_red_packet':
         }
     }
     continue;
-    case 'system_message':
-        aiMessage = { role: 'system', type: 'pat_message', content: msgData.content, timestamp: Date.now() };
-        break;
-
   // ▼▼▼ 在这里新增 ▼▼▼
 case 'change_avatar':
     const avatarName = msgData.name;
@@ -6630,6 +6627,9 @@ case 'change_avatar':
     // 处理完后，继续处理AI可能返回的其他消息
     continue;
 // ▲▲▲ 新增结束 ▲▲▲
+    case 'system_message':
+        aiMessage = { role: 'system', type: 'pat_message', content: msgData.content, timestamp: Date.now() };
+        break;
                 
                 case 'text':
                     aiMessage = { ...baseMessage, content: String(msgData.content || msgData.message) };
