@@ -9,6 +9,58 @@
         @font-face { font-family: 'bulangni'; src: url('') format('truetype'); font-weight: normal; font-style: normal; font-display: swap; }
         :root { --screen-width: 350px; --screen-height: 650px; --secondary-bg: #ffffff; --border-color: #e0e0e0; --text-primary: #1f1f1f; --text-secondary: #8a8a8a; --accent-color: #007bff; }
         html { height: 100%; overflow: hidden; }
+
+/* ▼▼▼ 请用下面这【一整块】全新的代码，替换掉所有旧的 body, phone-frame, phone-screen 等样式 ▼▼▼ */
+
+/* 1. 重置 body，使其成为一个干净的画布 */
+body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    font-family: 'bulangni', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    /* 背景色可以根据喜好设定，这里用一个柔和的颜色 */
+    background-color: #f0f2f5; 
+}
+
+/* 2. 让 #phone-screen 成为新的“根”容器，撑满整个浏览器窗口 */
+#phone-screen {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: #000; /* 保留一个默认的黑色背景 */
+}
+
+/* 3. 【核心】隐藏掉模拟器的状态栏 */
+#status-bar {
+    display: none;
+}
+
+/* 4. 【核心】让所有页面的头部自动适应iPhone的“刘海”安全区 */
+.header, .qzone-header {
+    /* 使用 env(safe-area-inset-top) 自动获取顶部安全距离 */
+    padding-top: calc(15px + env(safe-area-inset-top));
+}
+
+/* 5. 【核心】让聊天输入框和底部导航栏自动适应iPhone底部的“小黑条”安全区 */
+#chat-input-area {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+}
+
+#chat-list-bottom-nav {
+     padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 6. 修正模态框的 z-index，确保它在最顶层 */
+.modal {
+    z-index: 1000; /* 提高 z-index 以确保它覆盖所有内容 */
+}
+
+/* ▲▲▲ 替换结束 ▲▲▲ */
+
         #status-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; color: white; z-index: 10; font-size: 14px; box-sizing: border-box; pointer-events: none; }
         #status-bar-time { font-weight: 600; }
         .battery-container { display: flex; align-items: center; gap: 5px; }
