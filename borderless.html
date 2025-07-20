@@ -6992,19 +6992,19 @@ if (msg.quote) {
     addLongPressListener(wrapper, () => showMessageActions(msg.timestamp));
         wrapper.addEventListener('click', () => { if (isSelectionMode) toggleMessageSelection(msg.timestamp); });
 
-    if (!isUser) {
-        const avatarContainer = wrapper.querySelector('.avatar-group');
-        if (avatarContainer) {
-            avatarContainer.style.cursor = 'pointer';
-            avatarContainer.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const characterName = chat.isGroup ? msg.senderName : chat.name;
-                handleUserPat(chat.id, characterName);
-            });
-        }
+if (!isUser) {
+    const avatarEl = wrapper.querySelector('.avatar'); //  <-- 1. 把查找目标改成 '.avatar'
+    if (avatarEl) {
+        avatarEl.style.cursor = 'pointer';
+        avatarEl.addEventListener('click', (e) => {    //  <-- 2. 确保这里也用新变量
+            e.stopPropagation();
+            const characterName = chat.isGroup ? msg.senderName : chat.name;
+            handleUserPat(chat.id, characterName);
+        });
     }
+}
 
-    return wrapper;
+return wrapper;
 }
 // ▲▲▲ 替换结束 ▲▲▲
 
