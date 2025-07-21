@@ -4058,6 +4058,45 @@ input:checked + .slider:before {
 
 /* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
 
+/* ▼▼▼ 【全新】世界书分类列表样式 ▼▼▼ */
+.world-book-group-container {
+    border-bottom: 1px solid var(--border-color);
+}
+.world-book-group-container:first-child {
+    border-top: 1px solid var(--border-color);
+}
+.world-book-group-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    background-color: #f7f7f7;
+}
+.world-book-group-header .arrow {
+    font-size: 14px;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+}
+.world-book-group-header.collapsed .arrow {
+    transform: rotate(-90deg);
+}
+.world-book-group-header .group-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+.world-book-group-content {
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+.world-book-group-content.collapsed {
+    max-height: 0;
+}
+#phone-screen.dark-mode .world-book-group-header {
+    background-color: #1c1c1e;
+}
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
     </style>
 </head>
 <body>
@@ -4124,7 +4163,17 @@ input:checked + .slider:before {
 <!-- ▲▲▲ 替换结束 ▲▲▲ -->
             </div>
           
-            <div id="world-book-screen" class="screen"><div class="header"><span class="back-btn" onclick="showScreen('home-screen')">‹</span><span>世界书</span><span class="action-btn" id="add-world-book-btn">+</span></div><div id="world-book-list"></div></div>
+<div id="world-book-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
+        <span>世界书</span>
+        <div class="header-actions"> <!-- 【推荐】用一个容器把按钮包起来 -->
+            <span class="action-btn" id="manage-world-book-categories-btn">管理分类</span>
+            <span class="action-btn" id="add-world-book-btn">+</span>
+        </div>
+    </div>
+    <div id="world-book-list"></div>
+</div>
             <div id="world-book-editor-screen" class="screen">
                 <div class="header">
                     <span class="back-btn" onclick="showScreen('world-book-screen')">‹</span>
@@ -4136,6 +4185,16 @@ input:checked + .slider:before {
                         <label for="world-book-name-input">书名</label>
                         <input type="text" id="world-book-name-input" placeholder="请输入世界书的名称...">
                     </div>
+
+        <!-- ▼▼▼ 【全新】在这里添加分类选择 ▼▼▼ -->
+        <div class="form-group">
+            <label for="world-book-category-select">分类</label>
+            <select id="world-book-category-select">
+                <!-- 选项将由JS动态生成 -->
+            </select>
+        </div>
+        <!-- ▲▲▲ 添加结束 ▲▲▲ -->
+
                     <div class="form-group" style="height: 100%;">
                         <label for="world-book-content-input">内容</label>
                         <textarea id="world-book-content-input" placeholder="在此处输入详细的世界观设定..."></textarea>
@@ -5263,7 +5322,101 @@ input:checked + .slider:before {
     </div>
 </div>
 
+<!-- ▼▼▼ 【全新】世界书分类管理模态框 ▼▼▼ -->
+<div id="world-book-category-manager-modal" class="modal">
+    <div class="modal-content" style="height: 60%;">
+        <div class="modal-header">
+            <span>管理世界书分类</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>新建分类</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="new-category-name-input" placeholder="输入分类名..." style="flex-grow: 1;">
+                    <button id="add-new-category-btn" class="form-button" style="width: auto; margin-top: 0; padding: 0 15px;">添加</button>
+                </div>
+            </div>
+            <hr style="opacity: 0.2;">
+            <div id="existing-categories-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- 分类列表将由JS动态生成 -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="save" id="close-category-manager-btn" style="width: 100%;">完成</button>
+        </div>
+    </div>
+</div>
+<!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+
 <script>
+
+        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models'
+    // gemini如果是多个密钥, 那么随机获取一个
+    function getRandomValue(str) {
+        // 检查字符串是否包含逗号
+        if (str.includes(',')) {
+            // 用逗号分隔字符串并移除多余空格
+            const arr = str.split(',').map(item => item.trim());
+            // 生成随机索引 (0 到 arr.length-1)
+            const randomIndex = Math.floor(Math.random() * arr.length);
+            // 返回随机元素
+            return arr[randomIndex];
+        }
+        // 没有逗号则直接返回原字符串
+        return str;
+    }
+    function isImage(content) {
+        if(content.image_url && content.image_url.url){
+            let currentImageData = content.image_url.url
+            // 提取Base64数据（去掉前缀）
+            const base64Data = currentImageData.split(',')[1];
+            // 根据图片类型获取MIME类型
+            const mimeType = currentImageData.match(/^data:(.*);base64/)[1];
+            return [
+                {text: '用户向你发送了一张图片'},
+                {
+                    inline_data: {
+                        mime_type: mimeType,
+                        data: base64Data
+                    }
+                }
+            ]
+        }
+        return []
+    }
+    function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision) {
+        // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
+        let roleType = {
+            user: 'user',
+            assistant: 'model',
+            system: 'user' // <--- 新增这一行
+        }
+        return {
+            url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(apiKey)}`,
+            data: {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: messagesForDecision.map((item) => {
+                        return {
+                            role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
+                            parts: Array.isArray(item.content) && item.content.length > 0 && item.content[0].type === 'image_url' ? isImage(item.content[0]) : [{ text: String(item.content) }] // 增加 String() 转换以防万一
+                        }
+                    }),
+                    generationConfig: {
+                        temperature: 0.8,
+                    },
+                    "systemInstruction": {
+                        "parts": [{
+                            "text": systemInstruction
+                        }]
+                    }
+                })
+            }
+        }
+    }
     document.addEventListener('DOMContentLoaded', () => {
 
         // ===================================================================
@@ -5431,12 +5584,13 @@ function showCustomPrompt(title, placeholder, initialValue = '', type = 'text', 
         // 2. 数据库结构定义
         // ===================================================================
 
-db.version(22).stores({ 
+db.version(23).stores({ 
     chats: '&id, isGroup, groupId', 
     apiConfig: '&id', 
     globalSettings: '&id', 
     userStickers: '&id, url, name',
-    worldBooks: '&id, name',
+    worldBooks: '&id, name, categoryId', // <-- 【核心修改1】在这里添加 categoryId
+    worldBookCategories: '++id, name',    // <-- 【核心修改2】新增这个表
     musicLibrary: '&id', 
     personaPresets: '&id',
     qzoneSettings: '&id',
@@ -5897,7 +6051,8 @@ async function exportBackup() {
             chats, worldBooks, userStickers, apiConfig, globalSettings,
             personaPresets, musicLibrary, qzoneSettings, qzonePosts,
             qzoneAlbums, qzonePhotos, favorites, qzoneGroups,
-            memories // 【核心修正】新增
+            memories,
+            worldBookCategories // <-- 【核心修改1】在这里添加新变量
         ] = await Promise.all([
             db.chats.toArray(),
             db.worldBooks.toArray(),
@@ -5912,14 +6067,16 @@ async function exportBackup() {
             db.qzonePhotos.toArray(),
             db.favorites.toArray(),
             db.qzoneGroups.toArray(),
-            db.memories.toArray() // 【核心修正】新增
+                        db.memories.toArray(),
+            db.worldBookCategories.toArray() // <-- 【核心修改2】在这里添加对新表的读取
         ]);
 
         Object.assign(backupData, {
             chats, worldBooks, userStickers, apiConfig, globalSettings,
             personaPresets, musicLibrary, qzoneSettings, qzonePosts,
             qzoneAlbums, qzonePhotos, favorites, qzoneGroups,
-            memories // 【核心修正】新增
+            memories,
+            worldBookCategories // <-- 【核心修改3】将新数据添加到备份对象中
         });
         
         const blob = new Blob(
@@ -5965,6 +6122,7 @@ async function importBackup(file) {
 
             if (Array.isArray(data.chats)) await db.chats.bulkPut(data.chats);
             if (Array.isArray(data.worldBooks)) await db.worldBooks.bulkPut(data.worldBooks);
+            if (Array.isArray(data.worldBookCategories)) await db.worldBookCategories.bulkPut(data.worldBookCategories);
             if (Array.isArray(data.userStickers)) await db.userStickers.bulkPut(data.userStickers);
             if (Array.isArray(data.personaPresets)) await db.personaPresets.bulkPut(data.personaPresets);
             if (Array.isArray(data.qzonePosts)) await db.qzonePosts.bulkPut(data.qzonePosts);
@@ -6521,10 +6679,118 @@ function renderWallpaperScreen() {
 
         function applyGlobalWallpaper() { const homeScreen = document.getElementById('home-screen'); const wallpaper = state.globalSettings.wallpaper; if (wallpaper && wallpaper.startsWith('data:image')) homeScreen.style.backgroundImage = `url(${wallpaper})`; else if (wallpaper) homeScreen.style.backgroundImage = wallpaper; }
 
-        function renderWorldBookScreen() { const listEl = document.getElementById('world-book-list'); listEl.innerHTML = ''; if (state.worldBooks.length === 0) { listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">点击右上角 "+" 创建你的第一本世界书</p>'; return; } state.worldBooks.forEach(book => { const item = document.createElement('div'); item.className = 'list-item'; item.dataset.bookId = book.id; item.innerHTML = `<div class="item-title">${book.name}</div><div class="item-content">${(book.content || '暂无内容...').substring(0, 50)}</div>`; item.addEventListener('click', () => openWorldBookEditor(book.id)); addLongPressListener(item, async () => { const confirmed = await showCustomConfirm('删除世界书', `确定要删除《${book.name}》吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.worldBooks.delete(book.id); state.worldBooks = state.worldBooks.filter(wb => wb.id !== book.id); renderWorldBookScreen(); } }); listEl.appendChild(item); }); }
+async function renderWorldBookScreen() {
+    const listEl = document.getElementById('world-book-list');
+    listEl.innerHTML = '';
+
+    // 1. 同时获取所有书籍和所有分类
+    const [books, categories] = await Promise.all([
+        db.worldBooks.toArray(),
+        db.worldBookCategories.orderBy('name').toArray()
+    ]);
+
+    state.worldBooks = books; // 确保内存中的数据是同步的
+
+    if (books.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">点击右上角 "+" 创建你的第一本世界书</p>';
+        return;
+    }
+
+    // 2. 将书籍按 categoryId 分组
+    const groupedBooks = books.reduce((acc, book) => {
+        const key = book.categoryId || 'uncategorized';
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(book);
+        return acc;
+    }, {});
+
+    // 3. 优先渲染已分类的书籍
+    categories.forEach(category => {
+        const booksInCategory = groupedBooks[category.id];
+        if (booksInCategory && booksInCategory.length > 0) {
+            const groupContainer = createWorldBookGroup(category.name, booksInCategory);
+            listEl.appendChild(groupContainer);
+        }
+    });
+
+    // 4. 最后渲染未分类的书籍
+    const uncategorizedBooks = groupedBooks['uncategorized'];
+    if (uncategorizedBooks && uncategorizedBooks.length > 0) {
+        const groupContainer = createWorldBookGroup('未分类', uncategorizedBooks);
+        listEl.appendChild(groupContainer);
+    }
+    
+    // 5. 为所有分组标题添加折叠事件
+    document.querySelectorAll('.world-book-group-header').forEach(header => {
+        header.addEventListener('click', () => {
+            header.classList.toggle('collapsed');
+            header.nextElementSibling.classList.toggle('collapsed');
+        });
+    });
+}
+
+/**
+ * 【辅助函数】创建一个分类的分组DOM
+ * @param {string} groupName - 分类名称
+ * @param {Array} books - 该分类下的书籍数组
+ * @returns {HTMLElement} - 创建好的分组容器
+ */
+function createWorldBookGroup(groupName, books) {
+    const groupContainer = document.createElement('div');
+    groupContainer.className = 'world-book-group-container';
+    
+    groupContainer.innerHTML = `
+        <div class="world-book-group-header">
+            <span class="arrow">▼</span>
+            <span class="group-name">${groupName}</span>
+        </div>
+        <div class="world-book-group-content"></div>
+    `;
+
+    const contentEl = groupContainer.querySelector('.world-book-group-content');
+    books.sort((a,b) => a.name.localeCompare(b.name, 'zh-CN')); // 按书名排序
+    books.forEach(book => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.dataset.bookId = book.id;
+        item.innerHTML = `<div class="item-title">${book.name}</div><div class="item-content">${(book.content || '暂无内容...').substring(0, 50)}</div>`;
+        item.addEventListener('click', () => openWorldBookEditor(book.id));
+        addLongPressListener(item, async () => { const confirmed = await showCustomConfirm('删除世界书', `确定要删除《${book.name}》吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.worldBooks.delete(book.id); state.worldBooks = state.worldBooks.filter(wb => wb.id !== book.id); renderWorldBookScreen(); } });         contentEl.appendChild(item);
+    });
+
+    return groupContainer;
+}
         window.renderWorldBookScreenProxy = renderWorldBookScreen;
 
-        function openWorldBookEditor(bookId) { editingWorldBookId = bookId; const book = state.worldBooks.find(wb => wb.id === bookId); if (!book) return; document.getElementById('world-book-editor-title').textContent = book.name; document.getElementById('world-book-name-input').value = book.name; document.getElementById('world-book-content-input').value = book.content; showScreen('world-book-editor-screen'); }
+async function openWorldBookEditor(bookId) {
+    editingWorldBookId = bookId;
+    const [book, categories] = await Promise.all([
+        db.worldBooks.get(bookId),
+        db.worldBookCategories.toArray()
+    ]);
+    if (!book) return;
+
+    document.getElementById('world-book-editor-title').textContent = book.name;
+    document.getElementById('world-book-name-input').value = book.name;
+    document.getElementById('world-book-content-input').value = book.content;
+
+    // 【核心修改】填充分类下拉菜单
+    const selectEl = document.getElementById('world-book-category-select');
+    selectEl.innerHTML = '<option value="">-- 未分类 --</option>'; // 默认选项
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        if (book.categoryId === cat.id) {
+            option.selected = true; // 选中当前分类
+        }
+        selectEl.appendChild(option);
+    });
+
+    showScreen('world-book-editor-screen');
+}
 
         function renderStickerPanel() { const grid = document.getElementById('sticker-grid'); grid.innerHTML = ''; if (state.userStickers.length === 0) { grid.innerHTML = '<p style="text-align:center; color: var(--text-secondary); grid-column: 1 / -1;">大人请点击右上角“添加”或“上传”来添加你的第一个表情吧！</p>'; return; } state.userStickers.forEach(sticker => { const item = document.createElement('div'); item.className = 'sticker-item'; item.style.backgroundImage = `url(${sticker.url})`; item.title = sticker.name; item.addEventListener('click', () => sendSticker(sticker)); addLongPressListener(item, () => { if (isSelectionMode) return; const existingDeleteBtn = item.querySelector('.delete-btn'); if (existingDeleteBtn) return; const deleteBtn = document.createElement('div'); deleteBtn.className = 'delete-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.onclick = async (e) => { e.stopPropagation(); const confirmed = await showCustomConfirm('删除表情', `确定要删除表情 "${sticker.name}" 吗？`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.userStickers.delete(sticker.id); state.userStickers = state.userStickers.filter(s => s.id !== sticker.id); renderStickerPanel(); } }; item.appendChild(deleteBtn); deleteBtn.style.display = 'block'; setTimeout(() => item.addEventListener('mouseleave', () => deleteBtn.remove(), { once: true }), 3000); }); grid.appendChild(item); }); }
 
@@ -7104,24 +7370,26 @@ ${contextSummary || "（无有效对话记录）"}
 或
 {"decision": "reject", "reason": "（在这里写下你拒绝的理由，比如：抱歉，我还没准备好，再给我一点时间吧。）"}
 `;
-            const messagesForDecision = [{ role: 'user', content: decisionPrompt }];
+                const messagesForDecision = [{role: 'user', content: decisionPrompt}];
 
-            try {
-                // 3. 发送请求
-                const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ model: model, messages: messagesForDecision, temperature: 0.8 })
-                });
+                try {
+                    // 3. 发送请求
+                    let geminiConfig = toGeminiRequestData(proxyUrl, model,decisionPrompt, messagesForDecision)
+                    let  isGemini = proxyUrl === GEMINI_API_URL;
+                    const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                        body: JSON.stringify({model: model, messages: messagesForDecision, temperature: 0.8})
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`API失败: ${(await response.json()).error.message}`);
-                }
-                const data = await response.json();
-                
-                // 净化并解析AI的回复
-                const rawContent = data.choices[0].message.content.replace(/^```json\s*/, '').replace(/```$/, '').trim();
-                const decisionObj = JSON.parse(rawContent);
+                    if (!response.ok) {
+                        throw new Error(`API失败: ${(await response.json()).error.message}`);
+                    }
+                    const data = await response.json();
+
+                    // 净化并解析AI的回复
+                    const rawContent = data.choices[0].message.content.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+                    const decisionObj = JSON.parse(rawContent);
 
                 // 4. 根据AI的决策和理由，更新状态并发送消息
                 if (decisionObj.decision === 'accept') {
@@ -7571,29 +7839,35 @@ if (visiblePosts.length > 0 && !chat.isGroup) {
             }
             messagesPayload.push({ role: 'system', content: postsContext });
         }
-    
-        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.8, stream: false })
-        });
-if (!response.ok) {
-    let errorMsg = `API Error: ${response.status}`;
-    try {
-        // 尝试解析错误信息体为JSON
-        const errorData = await response.json();
-        // 安全地获取错误信息，如果结构不符合预期，就将整个错误对象转为字符串
-        errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
-    } catch (jsonError) {
-        // 如果连JSON都不是，就直接读取文本
-        errorMsg += ` - ${await response.text()}`;
-    }
-    // 抛出一个包含了详细信息的错误，这样就不会在catch块里再次出错了
-    throw new Error(errorMsg);
-}
-        const data = await response.json();
-        const aiResponseContent = data.choices[0].message.content;
-        console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
+            let  isGemini = proxyUrl === GEMINI_API_URL;
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload)
+            const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{role: 'system', content: systemPrompt}, ...messagesPayload],
+                    temperature: 0.8,
+                    stream: false
+                })
+            });
+            if (!response.ok) {
+                let errorMsg = `API Error: ${response.status}`;
+                try {
+                    // 尝试解析错误信息体为JSON
+                    const errorData = await response.json();
+                    // 安全地获取错误信息，如果结构不符合预期，就将整个错误对象转为字符串
+                    errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
+                } catch (jsonError) {
+                    // 如果连JSON都不是，就直接读取文本
+                    errorMsg += ` - ${await response.text()}`;
+                }
+                // 抛出一个包含了详细信息的错误，这样就不会在catch块里再次出错了
+                throw new Error(errorMsg);
+            }
+            const data = await response.json();
+            const aiResponseContent = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+            console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
 
         chat.history = chat.history.filter(msg => !msg.isTemporary);
 
@@ -8903,28 +9177,30 @@ try {
         
         console.log("正在为后台活动发送API请求，Payload:", JSON.stringify(messagesPayload, null, 2)); // 添加日志，方便调试
 
-        // 发送请求
-        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({
-                model: model,
-                messages: messagesPayload,
-                temperature: 0.9,
-            })
-        });
+            // 发送请求
+            let  isGemini = proxyUrl === GEMINI_API_URL;
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload)
+            const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model,
+                    messages: messagesPayload,
+                    temperature: 0.9,
+                })
+            });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API请求失败: ${response.status} - ${JSON.stringify(errorData)}`);
-        }
-        const data = await response.json();
-        // 检查是否有有效回复
-        if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
-            console.warn(`API为空回或格式不正确，角色 "${chat.name}" 的本次后台活动跳过。`);
-            return;
-        }
-        const responseArray = parseAiResponse(data.choices[0].message.content);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API请求失败: ${response.status} - ${JSON.stringify(errorData)}`);
+            }
+            const data = await response.json();
+            // 检查是否有有效回复
+            if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
+                console.warn(`API为空回或格式不正确，角色 "${chat.name}" 的本次后台活动跳过。`);
+                return;
+            }
+            const responseArray = parseAiResponse(isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content);
         
         // 后续处理AI返回指令的逻辑保持不变...
         for (const action of responseArray) {
@@ -8939,6 +9215,8 @@ try {
             }
             if (action.type === 'text' && action.content) {
                 const aiMessage = { role: 'assistant', content: String(action.content), timestamp: Date.now() };
+
+chat.unreadCount = (chat.unreadCount || 0) + 1;
                 chat.history.push(aiMessage);
                 await db.chats.put(chat);
                 showNotification(chatId, aiMessage.content);
@@ -9827,7 +10105,7 @@ async function removeMemberFromGroup(memberId) {
         return;
     }
     
-    const memberName = chat.members[memberIndex].name;
+const memberName = chat.members[memberIndex].groupNickname; // <-- 修复：使用 groupNickname
     const confirmed = await showCustomConfirm(
         '移出成员',
         `确定要将“${memberName}”移出群聊吗？`,
@@ -9893,13 +10171,14 @@ async function handleAddMembersToGroup() {
     for (const contactId of selectedContacts) {
         const contactChat = state.chats[contactId];
         if (contactChat) {
-            chat.members.push({
-                id: contactId,
-                name: contactChat.name,
-                avatar: contactChat.settings.aiAvatar || defaultAvatar,
-                persona: contactChat.settings.aiPersona,
-                avatarFrame: contactChat.settings.aiAvatarFrame || ''
-            });
+chat.members.push({
+    id: contactId,
+    originalName: contactChat.name,  // <-- 修复1：使用 'originalName' 存储本名
+    groupNickname: contactChat.name, // <-- 修复2：同时创建一个初始的 'groupNickname'
+    avatar: contactChat.settings.aiAvatar || defaultAvatar,
+    persona: contactChat.settings.aiPersona,
+    avatarFrame: contactChat.settings.aiAvatarFrame || ''
+});
         }
     }
 
@@ -10217,10 +10496,11 @@ function updateParticipantAvatars() {
         const wrapper = document.createElement('div');
         wrapper.className = 'participant-avatar-wrapper';
         wrapper.dataset.participantId = p.id;
-        wrapper.innerHTML = `
-            <img src="${p.avatar}" class="participant-avatar" alt="${p.name}">
-            <div class="participant-name">${p.name}</div>
-        `;
+const displayName = p.groupNickname || p.name; // <-- 核心修复在这里
+wrapper.innerHTML = `
+    <img src="${p.avatar}" class="participant-avatar" alt="${displayName}">
+    <div class="participant-name">${displayName}</div>
+`;
         grid.appendChild(wrapper);
     });
 }
@@ -10372,21 +10652,23 @@ ${videoCallState.preCallContext}
     }
     // --- 修复结束 ---
     
-    try {
-        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({
-                model: model, messages: messagesForApi, temperature: 0.8
-            })
-        });
-        if (!response.ok) throw new Error((await response.json()).error.message);
-        
-        const data = await response.json();
-        const aiResponse = data.choices[0].message.content;
+        try {
+            let  isGemini = proxyUrl === GEMINI_API_URL;
+            let geminiConfig = toGeminiRequestData(model,apiKey,inCallPrompt, messagesForApi)
+            const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model, messages: messagesForApi, temperature: 0.8
+                })
+            });
+            if (!response.ok) throw new Error((await response.json()).error.message);
 
-        const connectingElement = callFeed.querySelector('em');
-        if (connectingElement) connectingElement.remove();
+            const data = await response.json();
+            const aiResponse = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+
+            const connectingElement = callFeed.querySelector('em');
+            if (connectingElement) connectingElement.remove();
 
         // 4. 处理AI返回的内容，并将其存入通话历史
         if (videoCallState.isGroupCall) {
@@ -10750,37 +11032,39 @@ ${contextSummary}
 \`\`\`
 `;
 
-    const messagesForApi = [
-        { role: 'user', content: systemPrompt }
-    ];
+        const messagesForApi = [
+            {role: 'user', content: systemPrompt}
+        ];
 
-    try {
-        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({
-                model: model,
-                messages: messagesForApi,
-                temperature: 0.9,
-            })
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API 请求失败: ${response.status} - ${errorData.error.message}`);
-        }
-        
-        const data = await response.json();
-        
-        // --- 【核心修正：在这里净化AI的回复】 ---
-        let rawContent = data.choices[0].message.content;
-        // 1. 移除头尾可能存在的 "```json" 和 "```"
-        rawContent = rawContent.replace(/^```json\s*/, '').replace(/```$/, '');
-        // 2. 移除所有换行符和多余的空格，确保是一个干净的JSON字符串
-        const cleanedContent = rawContent.trim();
-        
-        // 3. 使用净化后的内容进行解析
-        const responseObj = JSON.parse(cleanedContent);
-        // --- 【修正结束】 ---
+        try {
+            let  isGemini = proxyUrl === GEMINI_API_URL;
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesForApi)
+            const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model,
+                    messages: messagesForApi,
+                    temperature: 0.9,
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API 请求失败: ${response.status} - ${errorData.error.message}`);
+            }
+
+            const data = await response.json();
+
+            // --- 【核心修正：在这里净化AI的回复】 ---
+            let rawContent = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+            // 1. 移除头尾可能存在的 "```json" 和 "```"
+            rawContent = rawContent.replace(/^```json\s*/, '').replace(/```$/, '');
+            // 2. 移除所有换行符和多余的空格，确保是一个干净的JSON字符串
+            const cleanedContent = rawContent.trim();
+
+            // 3. 使用净化后的内容进行解析
+            const responseObj = JSON.parse(cleanedContent);
+            // --- 【修正结束】 ---
 
         if (responseObj.decision === 'apply' && responseObj.reason) {
             chat.relationship.status = 'pending_user_approval';
@@ -12153,6 +12437,84 @@ async function recallMessage(timestamp, isUserRecall) {
     if(isUserRecall) renderChatList(); // 用户撤回时，最后一条消息变了，需要刷新列表
 }
 
+// ▼▼▼ 【全新】将这些函数粘贴到你的JS功能函数定义区 ▼▼▼
+
+/**
+ * 打开分类管理模态框
+ */
+async function openCategoryManager() {
+    await renderCategoryListInManager();
+    document.getElementById('world-book-category-manager-modal').classList.add('visible');
+}
+
+/**
+ * 在模态框中渲染已存在的分类列表
+ */
+async function renderCategoryListInManager() {
+    const listEl = document.getElementById('existing-categories-list');
+    const categories = await db.worldBookCategories.toArray();
+    listEl.innerHTML = '';
+    if (categories.length === 0) {
+        listEl.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">还没有任何分类</p>';
+    }
+    categories.forEach(cat => {
+        // 复用好友分组的样式
+        const item = document.createElement('div');
+        item.className = 'existing-group-item'; 
+        item.innerHTML = `
+            <span class="group-name">${cat.name}</span>
+            <span class="delete-group-btn" data-id="${cat.id}">×</span>
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+/**
+ * 添加一个新的世界书分类
+ */
+async function addNewCategory() {
+    const input = document.getElementById('new-category-name-input');
+    const name = input.value.trim();
+    if (!name) {
+        alert('分类名不能为空！');
+        return;
+    }
+    const existing = await db.worldBookCategories.where('name').equals(name).first();
+    if (existing) {
+        alert(`分类 "${name}" 已经存在了！`);
+        return;
+    }
+    await db.worldBookCategories.add({ name });
+    input.value = '';
+    await renderCategoryListInManager();
+}
+
+/**
+ * 删除一个世界书分类
+ * @param {number} categoryId - 要删除的分类的ID
+ */
+async function deleteCategory(categoryId) {
+    const confirmed = await showCustomConfirm(
+        '确认删除', 
+        '删除分类后，该分类下的所有世界书将变为“未分类”。确定要删除吗？', 
+        { confirmButtonClass: 'btn-danger' }
+    );
+    if (confirmed) {
+        await db.worldBookCategories.delete(categoryId);
+        // 将属于该分类的世界书的 categoryId 设为 null
+        const booksToUpdate = await db.worldBooks.where('categoryId').equals(categoryId).toArray();
+        for (const book of booksToUpdate) {
+            book.categoryId = null;
+            await db.worldBooks.put(book);
+            const bookInState = state.worldBooks.find(wb => wb.id === book.id);
+            if(bookInState) bookInState.categoryId = null;
+        }
+        await renderCategoryListInManager();
+    }
+}
+
+// ▲▲▲ 新函数粘贴结束 ▲▲▲
+
         // ===================================================================
         // 4. 初始化函数 init()
         // ===================================================================
@@ -12384,10 +12746,60 @@ if (state.globalSettings.enableBackgroundActivity) {
 // ▲▲▲ 替换结束 ▲▲▲
 
 alert('API设置已保存!'); });
-            document.getElementById('fetch-models-btn').addEventListener('click', async () => { const url = document.getElementById('proxy-url').value.trim(); const key = document.getElementById('api-key').value.trim(); if (!url || !key) return alert('请先填写反代地址和密钥'); try { const response = await fetch(`${url}/v1/models`, { headers: { 'Authorization': `Bearer ${key}` } }); if (!response.ok) throw new Error('无法获取模型列表'); const data = await response.json(); const modelSelect = document.getElementById('model-select'); modelSelect.innerHTML = ''; data.data.forEach(model => { const option = document.createElement('option'); option.value = model.id; option.textContent = model.id; if(model.id === state.apiConfig.model) option.selected = true; modelSelect.appendChild(option); }); alert('模型列表已更新'); } catch (error) { alert(`拉取模型失败: ${error.message}`); } });
-            document.getElementById('add-world-book-btn').addEventListener('click', async () => { const name = await showCustomPrompt('创建世界书', '请输入书名'); if (name && name.trim()) { const newBook = { id: 'wb_' + Date.now(), name: name.trim(), content: '' }; await db.worldBooks.add(newBook); state.worldBooks.push(newBook); renderWorldBookScreen(); openWorldBookEditor(newBook.id); } });
-            document.getElementById('save-world-book-btn').addEventListener('click', async () => { if (!editingWorldBookId) return; const book = state.worldBooks.find(wb => wb.id === editingWorldBookId); if (book) { const newName = document.getElementById('world-book-name-input').value.trim(); if (!newName) { alert('书名不能为空！'); return; } book.name = newName; book.content = document.getElementById('world-book-content-input').value; await db.worldBooks.put(book); document.getElementById('world-book-editor-title').textContent = newName; editingWorldBookId = null; renderWorldBookScreen(); showScreen('world-book-screen'); } });
 
+                    // gemini 密钥聚焦的时候显示明文
+        const ApiKeyInput = document.getElementById('api-key')
+        ApiKeyInput.addEventListener('focus', (e) => {
+            e.target.setAttribute('type', 'text')
+        })
+        ApiKeyInput.addEventListener('blur', (e) => {
+            e.target.setAttribute('type', 'password')
+        })
+
+
+        document.getElementById('fetch-models-btn').addEventListener('click', async () => {
+            const url = document.getElementById('proxy-url').value.trim();
+            const key = document.getElementById('api-key').value.trim();
+            if (!url || !key) return alert('请先填写反代地址和密钥');
+            try {
+
+                let  isGemini = url === GEMINI_API_URL;
+                const response = await fetch(isGemini ? `${GEMINI_API_URL}?key=${getRandomValue(key)}` : `${url}/v1/models`,isGemini ? undefined : {headers: {'Authorization': `Bearer ${key}`}});
+                if (!response.ok) throw new Error('无法获取模型列表');
+                const data = await response.json();
+                let models = isGemini ? data.models : data.data;
+                if(isGemini){
+                    models = models.map((model)=>{
+                        const parts = model.name.split('/');
+                        return {
+                            id:parts.length > 1 ? parts[1] : model.name
+                        }
+                    })
+                }
+                const modelSelect = document.getElementById('model-select');
+                modelSelect.innerHTML = '';
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.id;
+                    if (model.id === state.apiConfig.model) option.selected = true;
+                    modelSelect.appendChild(option);
+                });
+                alert('模型列表已更新');
+            } catch (error) {
+                alert(`拉取模型失败: ${error.message}`);
+            }
+        });
+            document.getElementById('add-world-book-btn').addEventListener('click', async () => { const name = await showCustomPrompt('创建世界书', '请输入书名'); if (name && name.trim()) { const newBook = { id: 'wb_' + Date.now(), name: name.trim(), content: '' }; await db.worldBooks.add(newBook); state.worldBooks.push(newBook); renderWorldBookScreen(); openWorldBookEditor(newBook.id); } });
+            document.getElementById('save-world-book-btn').addEventListener('click', async () => { if (!editingWorldBookId) return; const book = state.worldBooks.find(wb => wb.id === editingWorldBookId); if (book) { const newName = document.getElementById('world-book-name-input').value.trim(); if (!newName) { alert('书名不能为空！'); return; } book.name = newName; book.content = document.getElementById('world-book-content-input').value; 
+
+        // ▼▼▼ 【核心修改】在这里保存分类ID ▼▼▼
+        const categoryId = document.getElementById('world-book-category-select').value;
+        // 如果选择了“未分类”，存入 null；否则存入数字ID
+        book.categoryId = categoryId ? parseInt(categoryId) : null; 
+        // ▲▲▲ 修改结束 ▲▲▲
+
+await db.worldBooks.put(book); document.getElementById('world-book-editor-title').textContent = newName; editingWorldBookId = null; renderWorldBookScreen(); showScreen('world-book-screen'); } });
             document.getElementById('chat-messages').addEventListener('click', (e) => { const aiImage = e.target.closest('.ai-generated-image'); if (aiImage) { const description = aiImage.dataset.description; if (description) showCustomAlert('照片描述', description); return; }  });
             
             const chatSettingsModal = document.getElementById('chat-settings-modal');
@@ -14407,6 +14819,21 @@ document.getElementById('chat-messages').addEventListener('click', (e) => {
     }
 });
 
+// ▲▲▲ 新代码粘贴结束 ▲▲▲
+
+// ▼▼▼ 在 init() 的事件监听器区域，粘贴这段新代码 ▼▼▼
+document.getElementById('manage-world-book-categories-btn').addEventListener('click', openCategoryManager);
+document.getElementById('close-category-manager-btn').addEventListener('click', () => {
+    document.getElementById('world-book-category-manager-modal').classList.remove('visible');
+    renderWorldBookScreen(); // 关闭后刷新主列表
+});
+document.getElementById('add-new-category-btn').addEventListener('click', addNewCategory);
+document.getElementById('existing-categories-list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-group-btn')) {
+        const categoryId = parseInt(e.target.dataset.id);
+        deleteCategory(categoryId);
+    }
+});
 // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
         // ===================================================================
