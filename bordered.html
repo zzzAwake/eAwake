@@ -252,6 +252,7 @@
     right: 0;
     max-height: 150px;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: #fff;
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -4097,9 +4098,88 @@ input:checked + .slider:before {
 }
 /* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
 
+/* ▼▼▼ 【全新】红包/转账模态框页签样式 ▼▼▼ */
+.frame-tabs {
+    display: flex;
+    background-color: #f0f0f0;
+    padding: 4px;
+    margin: 15px;
+    border-radius: 8px;
+}
+.frame-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+.frame-tab.active {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
+/* ▼▼▼ 请将这段全新的CSS粘贴到 <style> 的末尾 ▼▼▼ */
+
+/* 1. 分类文件夹的样式 */
+.wb-category-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    background-color: #f0f2f5; /* 给文件夹一个淡淡的背景色以区分 */
+    font-weight: 600; /* 加粗字体 */
+}
+#phone-screen.dark-mode .wb-category-header {
+    background-color: #2c2c2e; /* 夜间模式下的背景色 */
+}
+
+
+/* 2. 展开/收起的小箭头 */
+.wb-category-header .arrow {
+    font-size: 12px;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+}
+
+/* 3. 当文件夹收起时，箭头旋转 */
+.wb-category-header.collapsed .arrow {
+    transform: rotate(-90deg);
+}
+
+/* 4. 存放书籍条目的容器 */
+.wb-book-container {
+    padding-left: 20px; /* 核心：让书籍条目向内缩进，看起来像在文件夹里 */
+    max-height: 1000px; /* 一个足够大的值，用于动画 */
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+}
+
+/* 5. 当文件夹收起时，书籍容器的高度变为0，实现动画效果 */
+.wb-book-container.collapsed {
+    max-height: 0;
+}
+
+/* 6. 单个书籍条目（覆盖默认的label样式，微调间距） */
+.wb-book-container label {
+    padding: 8px 12px;
+}
+
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
     </style>
 </head>
 <body>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/kGYP6CQw/6.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <div id="phone-frame">
         <div class="notch"></div>
         <div id="phone-screen">
@@ -4202,7 +4282,7 @@ input:checked + .slider:before {
                 </div>
             </div>
 
-            <div id="api-settings-screen" class="screen"><div class="header"><span class="back-btn" onclick="showScreen('home-screen')">‹</span><span>API 设置</span><span style="width: 30px;"></span></div><div class="form-container"><p style="font-size: 14px; color: #666; background-color: #f0f0f0; padding: 10px; border-radius: 8px;">提示: 若要使用“发送图片”功能, 请务必选择支持Vision(视觉)的模型, 如<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4o</code>或<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4-vision-preview</code>。</p><div class="form-group"><label for="proxy-url">反代地址 (不需要添加/v1噢~)</label><input type="text" id="proxy-url" placeholder="例如: https://api.openai.com"></div><div class="form-group"><label for="api-key">密钥 (API Key)</label><input type="password" id="api-key" placeholder="sk-..."></div><div class="form-group"><label for="model-select">模型</label><select id="model-select"></select></div><button class="form-button" id="fetch-models-btn">拉取模型</button>
+            <div id="api-settings-screen" class="screen"><div class="header"><span class="back-btn" onclick="showScreen('home-screen')">‹</span><span>API 设置</span><span style="width: 30px;"></span></div><div class="form-container"><p style="font-size: 14px; color: #666; background-color: #f0f0f0; padding: 10px; border-radius: 8px;">提示: 若要使用“发送图片”功能, 请务必选择支持Vision(视觉)的模型, 如<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4o</code>或<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4-vision-preview</code>。</p><div class="form-group"><label for="proxy-url">反代地址 (不需要添加/v1噢~)</label><input type="text" id="proxy-url" placeholder="例如: https://api.openai.com"></div><div class="form-group"><label for="api-key">密钥 (直连轮询用英文逗号隔开)</label><input type="password" id="api-key" placeholder="sk-..."></div><div class="form-group"><label for="model-select">模型</label><select id="model-select"></select></div><button class="form-button" id="fetch-models-btn">拉取模型</button>
 
 <!-- ▼▼▼ 将这段代码粘贴到 API 设置页面的“保存设置”按钮上方 ▼▼▼ -->
 <hr style="margin:20px 0; opacity:.3">
@@ -5104,11 +5184,11 @@ input:checked + .slider:before {
             <span>发红包</span>
         </div>
         <div class="modal-body" style="padding: 0;">
-            <!-- 1. 页签切换 -->
-            <div class="frame-tabs">
-                <div id="rp-tab-group" class="frame-tab active">拼手气红包</div>
-                <div id="rp-tab-direct" class="frame-tab">专属红包</div>
-            </div>
+<!-- 1. 页签切换 -->
+<div class="frame-tabs">
+    <div id="rp-tab-group" class="frame-tab active">拼手气红包</div>
+    <div id="rp-tab-direct" class="frame-tab">专属红包</div>
+</div>
 
             <!-- 2. 拼手气红包内容区 -->
             <div id="rp-content-group" class="frame-content" style="padding: 20px 15px;">
@@ -5365,27 +5445,25 @@ input:checked + .slider:before {
         // 没有逗号则直接返回原字符串
         return str;
     }
-    function isImage(content) {
-        if(content.image_url && content.image_url.url){
-            let currentImageData = content.image_url.url
-            // 提取Base64数据（去掉前缀）
-            const base64Data = currentImageData.split(',')[1];
-            // 根据图片类型获取MIME类型
-            const mimeType = currentImageData.match(/^data:(.*);base64/)[1];
-            return [
-                {text: '用户向你发送了一张图片'},
-                {
-                    inline_data: {
-                        mime_type: mimeType,
-                        data: base64Data
-                    }
+    function isImage(text,content) {
+        let currentImageData = content.image_url.url
+        // 提取Base64数据（去掉前缀）
+        const base64Data = currentImageData.split(',')[1];
+        // 根据图片类型获取MIME类型
+        const mimeType = currentImageData.match(/^data:(.*);base64/)[1];
+        return [
+            {text: `${text.text}用户向你发送了一张图片`},
+            {
+                inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data
                 }
-            ]
-        }
-        return []
+            }
+        ]
     }
     function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision) {
         // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
+
         let roleType = {
             user: 'user',
             assistant: 'model',
@@ -5400,9 +5478,15 @@ input:checked + .slider:before {
                 },
                 body: JSON.stringify({
                     contents: messagesForDecision.map((item) => {
+                        let  includesImages = false;
+                        if(Array.isArray(item.content) && item.content.length === 2){
+                              includesImages =  item.content.some((sub)=>{
+                                return sub.type === 'image_url' && sub.image_url.url
+                            })
+                        }
                         return {
                             role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
-                            parts: Array.isArray(item.content) && item.content.length > 0 && item.content[0].type === 'image_url' ? isImage(item.content[0]) : [{ text: String(item.content) }] // 增加 String() 转换以防万一
+                            parts: includesImages ? isImage(item.content[0],item.content[1]) : [{ text: String(item.content) }] // 增加 String() 转换以防万一
                         }
                     }),
                     generationConfig: {
@@ -6749,15 +6833,24 @@ function createWorldBookGroup(groupName, books) {
         <div class="world-book-group-content"></div>
     `;
 
+    // ▼▼▼ 在这里添加新代码 ▼▼▼
+    const headerEl = groupContainer.querySelector('.world-book-group-header');
     const contentEl = groupContainer.querySelector('.world-book-group-content');
-    books.sort((a,b) => a.name.localeCompare(b.name, 'zh-CN')); // 按书名排序
+    
+    // 默认给头部和内容区都加上 collapsed 类
+    headerEl.classList.add('collapsed');
+    contentEl.classList.add('collapsed');
+    // ▲▲▲ 添加结束 ▲▲▲
+
+    books.sort((a,b) => a.name.localeCompare(b.name, 'zh-CN'));
     books.forEach(book => {
         const item = document.createElement('div');
         item.className = 'list-item';
         item.dataset.bookId = book.id;
         item.innerHTML = `<div class="item-title">${book.name}</div><div class="item-content">${(book.content || '暂无内容...').substring(0, 50)}</div>`;
         item.addEventListener('click', () => openWorldBookEditor(book.id));
-        addLongPressListener(item, async () => { const confirmed = await showCustomConfirm('删除世界书', `确定要删除《${book.name}》吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.worldBooks.delete(book.id); state.worldBooks = state.worldBooks.filter(wb => wb.id !== book.id); renderWorldBookScreen(); } });         contentEl.appendChild(item);
+        addLongPressListener(item, async () => { const confirmed = await showCustomConfirm('删除世界书', `确定要删除《${book.name}》吗？此操作不可撤销。`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await db.worldBooks.delete(book.id); state.worldBooks = state.worldBooks.filter(wb => wb.id !== book.id); renderWorldBookScreen(); } });
+        contentEl.appendChild(item); 
     });
 
     return groupContainer;
@@ -7012,7 +7105,15 @@ else if (msg.type === 'share_card') {
         if (msg.status === 'paid' || msg.status === 'rejected') {
             bubble.classList.add(`status-${msg.status}`);
         }
-        const requestTitle = `来自 ${msg.senderName} 的代付请求`;
+        // ▼▼▼ 在这里添加查找昵称的逻辑 ▼▼▼
+        // 1. 根据AI的本名(msg.senderName)去成员列表里找到完整的成员对象
+        const member = chat.members.find(m => m.originalName === msg.senderName);
+        // 2. 获取该成员当前的群昵称，如果找不到，则备用其本名
+        const displayName = member ? member.groupNickname : msg.senderName;
+        // ▲▲▲ 添加结束 ▲▲▲
+
+        // 【核心修改】使用我们刚刚查找到的 displayName
+        const requestTitle = `来自 ${displayName} 的代付请求`;
         let actionButtonsHtml = '';
         if (msg.status === 'pending' && !isUser) {
             actionButtonsHtml = `
@@ -7388,7 +7489,8 @@ ${contextSummary || "（无有效对话记录）"}
                     const data = await response.json();
 
                     // 净化并解析AI的回复
-                    const rawContent = data.choices[0].message.content.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+    let rawContent = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+     rawContent = rawContent.replace(/^```json\s*/, '').replace(/```$/, '').trim()
                     const decisionObj = JSON.parse(rawContent);
 
                 // 4. 根据AI的决策和理由，更新状态并发送消息
@@ -7734,6 +7836,8 @@ ${sharedContext}
 messagesPayload = historySlice.map(msg => {
     // 过滤掉不应发送给AI的消息
     if (msg.isHidden) return null;
+
+    if (msg.type === 'share_card') return null;
     
     // 1. 如果是AI自己的消息，我们将其转换为AI能理解的JSON字符串格式
     if (msg.role === 'assistant') {
@@ -7794,6 +7898,15 @@ if (Array.isArray(msg.content) && msg.content[0]?.type === 'image_url') {
 
 }).filter(Boolean);
 // ▲▲▲ 替换结束 ▲▲▲
+
+// 检查 sharedContext 是否有内容（即，用户是否分享了聊天记录）
+if (sharedContext) {
+    // 如果有，就把它包装成一条全新的、高优先级的用户消息，追加到历史记录的末尾
+    messagesPayload.push({
+        role: 'user',
+        content: sharedContext 
+    });
+}
 
             if (!chat.isGroup && chat.relationship?.status === 'pending_ai_approval') {
                 const contextSummaryForApproval = chat.history
@@ -8189,9 +8302,15 @@ case 'qzone_post':
                         if (!pollToVote.votes[msgData.choice]) {
                             pollToVote.votes[msgData.choice] = [];
                         }
-                        if (!pollToVote.votes[msgData.choice].includes(msgData.name)) {
-                            pollToVote.votes[msgData.choice].push(msgData.name);
-                        }                        
+
+// ▼▼▼ 在这里添加新代码 ▼▼▼
+const member = chat.members.find(m => m.originalName === msgData.name);
+const displayName = member ? member.groupNickname : msgData.name;
+// ▲▲▲ 添加结束 ▲▲▲
+
+if (!pollToVote.votes[msgData.choice].includes(displayName)) { // 【核心修改】
+    pollToVote.votes[msgData.choice].push(displayName); // 【核心修改】
+}                     
                         
                         if (isViewingThisChat) {
                             renderChatInterface(chatId);
@@ -8215,6 +8334,11 @@ case 'qzone_post':
 case 'open_red_packet':
     const packetToOpen = chat.history.find(m => m.timestamp === msgData.packet_timestamp);
     if (packetToOpen && !packetToOpen.isFullyClaimed && !(packetToOpen.claimedBy && packetToOpen.claimedBy[msgData.name])) {
+
+        // 1. 根据AI的本名(msgData.name)去成员列表里找到完整的成员对象
+        const member = chat.members.find(m => m.originalName === msgData.name);
+        // 2. 获取该成员当前的群昵称，如果找不到（异常情况），则备用其本名
+        const displayName = member ? member.groupNickname : msgData.name;
         
         let claimedAmountAI = 0;
         const remainingAmount = packetToOpen.totalAmount - Object.values(packetToOpen.claimedBy || {}).reduce((sum, val) => sum + val, 0);
@@ -8230,17 +8354,19 @@ case 'open_red_packet':
             claimedAmountAI = parseFloat(claimedAmountAI.toFixed(2));
             
             if (!packetToOpen.claimedBy) packetToOpen.claimedBy = {};
-            packetToOpen.claimedBy[msgData.name] = claimedAmountAI;
+            // 【核心修改】使用我们刚刚查找到的 displayName 作为记录的key
+            packetToOpen.claimedBy[displayName] = claimedAmountAI;
             
             const aiClaimedMessage = {
                 role: 'system',
                 type: 'pat_message',
-                content: `${msgData.name} 领取了 ${packetToOpen.senderName} 的红包`,
+                // 【核心修改】系统消息里也使用 displayName
+                content: `${displayName} 领取了 ${packetToOpen.senderName} 的红包`,
                 timestamp: Date.now()
             };
             chat.history.push(aiClaimedMessage);
 
-            let hiddenContentForAI = `[系统提示：你 (${msgData.name}) 成功抢到了 ${claimedAmountAI.toFixed(2)} 元。`;
+            let hiddenContentForAI = `[系统提示：你 (${displayName}) 成功抢到了 ${claimedAmountAI.toFixed(2)} 元。`; // 【核心修改】
 
             if (Object.keys(packetToOpen.claimedBy).length >= packetToOpen.count) {
                 packetToOpen.isFullyClaimed = true;
@@ -11125,12 +11251,14 @@ function openRedPacketModal() {
     // 填充专属红包的接收人列表
     const receiverSelect = document.getElementById('rp-direct-receiver');
     receiverSelect.innerHTML = '';
-    chat.members.forEach(member => {
-        const option = document.createElement('option');
-        option.value = member.name;
-        option.textContent = member.name;
-        receiverSelect.appendChild(option);
-    });
+chat.members.forEach(member => {
+    const option = document.createElement('option');
+    // 【核心】使用 originalName 作为提交给AI的值，因为它独一无二
+    option.value = member.originalName; 
+    // 【核心】使用 groupNickname 作为显示给用户看的值
+    option.textContent = member.groupNickname; 
+    receiverSelect.appendChild(option);
+});
     
     // 默认显示拼手气红包页签
     document.getElementById('rp-tab-group').click();
@@ -12871,18 +12999,139 @@ document.getElementById('chat-settings-btn').addEventListener('click', async () 
     }
     
     // 加载世界书
-    const worldBookCheckboxesContainer = document.getElementById('world-book-checkboxes-container');
-    worldBookCheckboxesContainer.innerHTML = '';
-    const linkedIds = chat.settings.linkedWorldBookIds || [];
-    if (state.worldBooks.length > 0) {
-        state.worldBooks.forEach(book => {
-            const isChecked = linkedIds.includes(book.id);
-            const label = document.createElement('label');
-            label.innerHTML = `<input type="checkbox" value="${book.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
-            worldBookCheckboxesContainer.appendChild(label);
-        });
+// ▼▼▼ 用下面这段【全新逻辑】替换掉原来简单的 forEach 循环 ▼▼▼
+
+const worldBookCheckboxesContainer = document.getElementById('world-book-checkboxes-container');
+worldBookCheckboxesContainer.innerHTML = '';
+const linkedIds = new Set(chat.settings.linkedWorldBookIds || []);
+
+// 1. 获取所有分类和世界书
+const categories = await db.worldBookCategories.toArray();
+const books = state.worldBooks;
+
+// 2. 将书籍按分类ID进行分组
+const booksByCategoryId = books.reduce((acc, book) => {
+    const categoryId = book.categoryId || 'uncategorized';
+    if (!acc[categoryId]) {
+        acc[categoryId] = [];
     }
+    acc[categoryId].push(book);
+    return acc;
+}, {});
+
+// 3. 遍历分类，创建带折叠功能的列表
+categories.forEach(category => {
+    const booksInCategory = booksByCategoryId[category.id] || [];
+    if (booksInCategory.length > 0) {
+        const allInCategoryChecked = booksInCategory.every(book => linkedIds.has(book.id));
+        
+        const header = document.createElement('div');
+        header.className = 'wb-category-header';
+        header.innerHTML = `
+            <span class="arrow">▼</span>
+            <input type="checkbox" class="wb-category-checkbox" data-category-id="${category.id}" ${allInCategoryChecked ? 'checked' : ''}>
+            <span>${category.name}</span>
+        `;
+        
+        const bookContainer = document.createElement('div');
+        bookContainer.className = 'wb-book-container';
+        bookContainer.dataset.containerFor = category.id;
+
+        booksInCategory.forEach(book => {
+            const isChecked = linkedIds.has(book.id);
+            const label = document.createElement('label');
+            label.innerHTML = `<input type="checkbox" class="wb-book-checkbox" value="${book.id}" data-parent-category="${category.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
+            bookContainer.appendChild(label);
+        });
+
+        // --- ★ 核心修改 #1 在这里 ★ ---
+        // 默认将分类设置为折叠状态
+        header.classList.add('collapsed');
+        bookContainer.classList.add('collapsed');
+        // --- ★ 修改结束 ★ ---
+
+        worldBookCheckboxesContainer.appendChild(header);
+        worldBookCheckboxesContainer.appendChild(bookContainer);
+    }
+});
+
+// 4. 处理 "未分类" 的书籍
+const uncategorizedBooks = booksByCategoryId['uncategorized'] || [];
+if (uncategorizedBooks && uncategorizedBooks.length > 0) {
+    const uncategorizedHeader = document.createElement('div');
+    uncategorizedHeader.className = 'wb-category-header';
+    uncategorizedHeader.innerHTML = `<span style="width: 22px;"></span><span>未分类</span>`;
+    
+    const uncategorizedContainer = document.createElement('div');
+    uncategorizedContainer.className = 'wb-book-container';
+    uncategorizedBooks.forEach(book => {
+        const isChecked = linkedIds.has(book.id);
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" class="wb-book-checkbox" value="${book.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
+        uncategorizedContainer.appendChild(label);
+    });
+
+    // --- ★ 核心修改 #2 在这里 ★ ---
+    // "未分类"也默认折叠
+    uncategorizedHeader.classList.add('collapsed');
+    uncategorizedContainer.classList.add('collapsed');
+    // --- ★ 修改结束 ★ ---
+
+    worldBookCheckboxesContainer.appendChild(uncategorizedHeader);
+    worldBookCheckboxesContainer.appendChild(uncategorizedContainer);
+}
+
+updateWorldBookSelectionDisplay(); // 更新顶部的已选数量显示
+
+// ▲▲▲ 替换结束 ▲▲▲
+
+// ▼▼▼ 在 updateWorldBookSelectionDisplay(); 的下一行，粘贴这整块新代码 ▼▼▼
+
+// 使用事件委托来处理所有点击和勾选事件，效率更高
+worldBookCheckboxesContainer.addEventListener('click', (e) => {
+    const header = e.target.closest('.wb-category-header');
+    if (header && !e.target.matches('input[type="checkbox"]')) { // 点击的不是复选框，而是标题区域
+        const categoryId = header.querySelector('.wb-category-checkbox')?.dataset.categoryId;
+        if (!categoryId) return; // 未分类的标题没有ID，不可折叠
+
+        const bookContainer = worldBookCheckboxesContainer.querySelector(`.wb-book-container[data-container-for="${categoryId}"]`);
+        if (bookContainer) {
+            header.classList.toggle('collapsed');
+            bookContainer.classList.toggle('collapsed');
+        }
+    }
+});
+
+worldBookCheckboxesContainer.addEventListener('change', (e) => {
+    const target = e.target;
+    
+    // 如果点击的是分类的“全选”复选框
+    if (target.classList.contains('wb-category-checkbox')) {
+        const categoryId = target.dataset.categoryId;
+        const isChecked = target.checked;
+        // 找到这个分类下的所有书籍复选框，并将它们的状态设置为与分类复选框一致
+        const bookCheckboxes = worldBookCheckboxesContainer.querySelectorAll(`input.wb-book-checkbox[data-parent-category="${categoryId}"]`);
+        bookCheckboxes.forEach(cb => cb.checked = isChecked);
+    }
+    
+    // 如果点击的是单个书籍的复选框
+    if (target.classList.contains('wb-book-checkbox')) {
+        const categoryId = target.dataset.parentCategory;
+        if (categoryId) { // 检查它是否属于一个分类
+            const categoryCheckbox = worldBookCheckboxesContainer.querySelector(`input.wb-category-checkbox[data-category-id="${categoryId}"]`);
+            const allBookCheckboxes = worldBookCheckboxesContainer.querySelectorAll(`input.wb-book-checkbox[data-parent-category="${categoryId}"]`);
+            // 检查该分类下是否所有书籍都被选中了
+            const allChecked = Array.from(allBookCheckboxes).every(cb => cb.checked);
+            // 同步分类“全选”复选框的状态
+            categoryCheckbox.checked = allChecked;
+        }
+    }
+    
+    // 每次变更后都更新顶部的已选数量显示
     updateWorldBookSelectionDisplay();
+});
+
+// ▲▲▲ 粘贴结束 ▲▲▲
 
     // 加载并更新所有预览相关控件
     const themeRadio = document.querySelector(`input[name="theme-select"][value="${chat.settings.theme || 'default'}"]`);
@@ -12958,7 +13207,7 @@ document.getElementById('save-chat-settings-btn').addEventListener('click', asyn
 
     chat.settings.myPersona = document.getElementById('my-persona').value;
     chat.settings.myAvatar = document.getElementById('my-avatar-preview').src;
-    const checkedBooks = document.querySelectorAll('#world-book-checkboxes-container input[type="checkbox"]:checked');
+const checkedBooks = document.querySelectorAll('#world-book-checkboxes-container input.wb-book-checkbox:checked');
     chat.settings.linkedWorldBookIds = Array.from(checkedBooks).map(cb => cb.value);
 
     if (chat.isGroup) {
@@ -14612,7 +14861,7 @@ document.getElementById('chat-messages').addEventListener('click', (e) => {
                 transcriptEl.style.display = 'block';// 显示文字
                 bubble.dataset.state = 'expanded';     // 进入展开状态
             }
-        }, 1500);
+        }, 500);
     }
 });
 
