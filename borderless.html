@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/kGYP6CQw/6.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <title>EPhone</title>
     <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
     <style>
@@ -4209,14 +4214,28 @@ input:checked + .slider:before {
 
 /* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
 
+/* ▼▼▼ 【全新】世界书关联选择器 - 视觉优化 ▼▼▼ */
+
+/* 1. 让分类标题更突出 */
+.wb-category-header > span:last-of-type {
+    font-size: 14px;
+    font-weight: 700; /* 加粗 */
+    color: var(--text-primary);
+}
+
+/* 2. 为箭头设置一个漂亮的颜色循环 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+1) .arrow { color: #007bff; } /* 蓝色 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+2) .arrow { color: #28a745; } /* 绿色 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+3) .arrow { color: #fd7e14; } /* 橙色 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+4) .arrow { color: #6f42c1; } /* 紫色 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+5) .arrow { color: #dc3545; } /* 红色 */
+#world-book-checkboxes-container .wb-category-header:nth-of-type(6n+6) .arrow { color: #ffc107; } /* 黄色 */
+
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+
     </style>
 </head>
 <body>
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/kGYP6CQw/6.png">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
         <div id="phone-screen">
             <div id="status-bar">
                 <span id="status-bar-time">12:00</span>
@@ -12968,6 +12987,7 @@ await db.worldBooks.put(book); document.getElementById('world-book-editor-title'
             const chatSettingsModal = document.getElementById('chat-settings-modal');
             const worldBookSelectBox = document.querySelector('.custom-multiselect .select-box');
             const worldBookCheckboxesContainer = document.getElementById('world-book-checkboxes-container');
+
 function updateWorldBookSelectionDisplay() { const checkedBoxes = worldBookCheckboxesContainer.querySelectorAll('input:checked'); const displayText = document.querySelector('.selected-options-text'); if (checkedBoxes.length === 0) { displayText.textContent = '-- 点击选择 --'; } else if (checkedBoxes.length > 2) { displayText.textContent = `已选择 ${checkedBoxes.length} 项`; } else { displayText.textContent = Array.from(checkedBoxes).map(cb => cb.parentElement.textContent.trim()).join(', '); } }        
             
             worldBookSelectBox.addEventListener('click', (e) => { e.stopPropagation(); worldBookCheckboxesContainer.classList.toggle('visible'); worldBookSelectBox.classList.toggle('expanded'); });
@@ -13044,6 +13064,12 @@ const linkedIds = new Set(chat.settings.linkedWorldBookIds || []);
 const categories = await db.worldBookCategories.toArray();
 const books = state.worldBooks;
 
+// 【核心改造】如果存在未分类的书籍，就创建一个“虚拟分类”
+const hasUncategorized = books.some(book => !book.categoryId);
+if (hasUncategorized) {
+    categories.push({ id: 'uncategorized', name: '未分类' });
+}
+
 // 2. 将书籍按分类ID进行分组
 const booksByCategoryId = books.reduce((acc, book) => {
     const categoryId = book.categoryId || 'uncategorized';
@@ -13075,9 +13101,9 @@ categories.forEach(category => {
         booksInCategory.forEach(book => {
             const isChecked = linkedIds.has(book.id);
             const label = document.createElement('label');
-            label.innerHTML = `<input type="checkbox" class="wb-book-checkbox" value="${book.id}" data-parent-category="${category.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
-            bookContainer.appendChild(label);
-        });
+    label.innerHTML = `<input type="checkbox" class="wb-book-checkbox" value="${book.id}" data-parent-category="${category.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
+    bookContainer.appendChild(label);
+});
 
         // --- ★ 核心修改 #1 在这里 ★ ---
         // 默认将分类设置为折叠状态
@@ -13090,32 +13116,6 @@ categories.forEach(category => {
     }
 });
 
-// 4. 处理 "未分类" 的书籍
-const uncategorizedBooks = booksByCategoryId['uncategorized'] || [];
-if (uncategorizedBooks && uncategorizedBooks.length > 0) {
-    const uncategorizedHeader = document.createElement('div');
-    uncategorizedHeader.className = 'wb-category-header';
-    uncategorizedHeader.innerHTML = `<span style="width: 22px;"></span><span>未分类</span>`;
-    
-    const uncategorizedContainer = document.createElement('div');
-    uncategorizedContainer.className = 'wb-book-container';
-    uncategorizedBooks.forEach(book => {
-        const isChecked = linkedIds.has(book.id);
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" class="wb-book-checkbox" value="${book.id}" ${isChecked ? 'checked' : ''}> ${book.name}`;
-        uncategorizedContainer.appendChild(label);
-    });
-
-    // --- ★ 核心修改 #2 在这里 ★ ---
-    // "未分类"也默认折叠
-    uncategorizedHeader.classList.add('collapsed');
-    uncategorizedContainer.classList.add('collapsed');
-    // --- ★ 修改结束 ★ ---
-
-    worldBookCheckboxesContainer.appendChild(uncategorizedHeader);
-    worldBookCheckboxesContainer.appendChild(uncategorizedContainer);
-}
-
 updateWorldBookSelectionDisplay(); // 更新顶部的已选数量显示
 
 // ▲▲▲ 替换结束 ▲▲▲
@@ -13125,14 +13125,15 @@ updateWorldBookSelectionDisplay(); // 更新顶部的已选数量显示
 // 使用事件委托来处理所有点击和勾选事件，效率更高
 worldBookCheckboxesContainer.addEventListener('click', (e) => {
     const header = e.target.closest('.wb-category-header');
-    if (header && !e.target.matches('input[type="checkbox"]')) { // 点击的不是复选框，而是标题区域
+    if (header && !e.target.matches('input[type="checkbox"]')) {
         const categoryId = header.querySelector('.wb-category-checkbox')?.dataset.categoryId;
-        if (!categoryId) return; // 未分类的标题没有ID，不可折叠
-
-        const bookContainer = worldBookCheckboxesContainer.querySelector(`.wb-book-container[data-container-for="${categoryId}"]`);
-        if (bookContainer) {
-            header.classList.toggle('collapsed');
-            bookContainer.classList.toggle('collapsed');
+        // 【修改】现在 categoryId 可能是数字，也可能是 "uncategorized" 字符串，所以这个判断能通过了！
+        if (categoryId) { // <-- 把原来的 !categoryId return; 改成这样
+            const bookContainer = worldBookCheckboxesContainer.querySelector(`.wb-book-container[data-container-for="${categoryId}"]`);
+            if (bookContainer) {
+                header.classList.toggle('collapsed');
+                bookContainer.classList.toggle('collapsed');
+            }
         }
     }
 });
