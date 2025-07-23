@@ -7124,13 +7124,16 @@ else if (msg.type === 'share_card') {
         if (msg.status === 'paid' || msg.status === 'rejected') {
             bubble.classList.add(`status-${msg.status}`);
         }
-        // ▼▼▼ 在这里添加查找昵称的逻辑 ▼▼▼
-        // 1. 根据AI的本名(msg.senderName)去成员列表里找到完整的成员对象
-        const member = chat.members.find(m => m.originalName === msg.senderName);
-        // 2. 获取该成员当前的群昵称，如果找不到，则备用其本名
-        const displayName = member ? member.groupNickname : msg.senderName;
-        // ▲▲▲ 添加结束 ▲▲▲
-
+        let displayName;
+        // 如果是群聊
+        if (chat.isGroup) {
+            // 就执行原来的逻辑：在成员列表里查找昵称
+            const member = chat.members.find(m => m.originalName === msg.senderName);
+            displayName = member ? member.groupNickname : msg.senderName;
+        } else {
+            // 否则（是单聊），直接使用聊天对象的名称
+            displayName = chat.name;
+        }
         // 【核心修改】使用我们刚刚查找到的 displayName
         const requestTitle = `来自 ${displayName} 的代付请求`;
         let actionButtonsHtml = '';
