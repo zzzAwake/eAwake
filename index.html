@@ -40,12 +40,29 @@
     .button:hover {
       background-color: #666;
     }
+
+    .note {
+      margin-top: 24px;
+      font-size: 16px;
+      color: #666;
+      text-align: center;
+      padding: 0 20px;
+      font-weight: bold;
+    }
+
+    .note.warning {
+      color: #b30000;
+    }
   </style>
 </head>
 <body>
   <h1>请选择你想使用的版本</h1>
-  <h1>两版只在边框上有变化，只要你访问的是同一域名（也就是这个链接）以及同一浏览器打开，两个版本的数据都是互通的哦，以后的更新也是一样</h1>
+
   <button class="button" onclick="location.href='bordered.html'">📱 有边框版本</button>
   <button class="button" onclick="location.href='borderless.html'">📲 无边框版本</button>
+  <button class="button" onclick="location.href='fullscreen.html'">🧷 iOS全屏版本</button>
+
+  <p class="note">💾 三个版本数据互通，只要你访问的是同一域名以及同一浏览器打开即可</p>
+  <p class="note warning">⚠️ iOS全屏用户请记得先备份导出数据，再重新导入</p>
 </body>
 </html>
