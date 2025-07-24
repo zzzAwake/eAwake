@@ -5603,10 +5603,20 @@ input:checked + .slider:before {
                     return [{text:`${time}${obj.content}`}]
                 }
             }
+
+if(Array.isArray(res) && res.length > 1) {
+	res = `${res[0]}${res[1].content}`
+}
+
         return [{text:res}]
     }
 
-    function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision) {
+    function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision,isGemini) {
+
+	if(!isGemini){
+		return undefined
+	}
+
         // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
 
         let roleType = {
@@ -7623,7 +7633,7 @@ ${contextSummary || "（无有效对话记录）"}
 
                 try {
                     // 3. 发送请求
-                    let geminiConfig = toGeminiRequestData(proxyUrl, model,decisionPrompt, messagesForDecision)
+                    let geminiConfig = toGeminiRequestData(proxyUrl, model,decisionPrompt, messagesForDecision,isGemini)
                     let  isGemini = proxyUrl === GEMINI_API_URL;
                     const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
                         method: 'POST',
@@ -8101,7 +8111,7 @@ if (visiblePosts.length > 0 && !chat.isGroup) {
             messagesPayload.push({ role: 'system', content: postsContext });
         }
             let  isGemini = proxyUrl === GEMINI_API_URL;
-            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload)
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload,isGemini)
             const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
@@ -9453,7 +9463,7 @@ try {
 
             // 发送请求
             let  isGemini = proxyUrl === GEMINI_API_URL;
-            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload)
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload,isGemini)
             const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
@@ -10928,7 +10938,7 @@ ${videoCallState.preCallContext}
     
         try {
             let  isGemini = proxyUrl === GEMINI_API_URL;
-            let geminiConfig = toGeminiRequestData(model,apiKey,inCallPrompt, messagesForApi)
+            let geminiConfig = toGeminiRequestData(model,apiKey,inCallPrompt, messagesForApi,isGemini)
             const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) : await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
@@ -11312,7 +11322,7 @@ ${contextSummary}
 
         try {
             let  isGemini = proxyUrl === GEMINI_API_URL;
-            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesForApi)
+            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesForApi,isGemini)
             const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) : await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
