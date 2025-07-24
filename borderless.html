@@ -5539,7 +5539,7 @@ input:checked + .slider:before {
         // 不匹配格式或解析失败时返回原值
         return text;
     }
-    function transformChatData(item,role) {
+    function transformChatData(item) {
         let type = {
             send_and_recall:'撤回了消息',
             update_status:'更新了状态',
@@ -5665,7 +5665,7 @@ input:checked + .slider:before {
                         }
                         return {
                             role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
-                            parts: includesImages ? isImage(item.content[0],item.content[1]) : transformChatData(item,role)
+                            parts: includesImages ? isImage(item.content[0],item.content[1]) : transformChatData(item)
                         }
                     }),
                     generationConfig: {
