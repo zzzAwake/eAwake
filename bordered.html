@@ -7633,8 +7633,8 @@ ${contextSummary || "（无有效对话记录）"}
 
                 try {
                     // 3. 发送请求
-                    let geminiConfig = toGeminiRequestData(proxyUrl, model,decisionPrompt, messagesForDecision,isGemini)
-                    let  isGemini = proxyUrl === GEMINI_API_URL;
+                    let isGemini = proxyUrl === GEMINI_API_URL;
+let geminiConfig = toGeminiRequestData(model,apiKey,'', messagesForDecision,isGemini);
                     const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
