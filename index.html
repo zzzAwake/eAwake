@@ -4303,6 +4303,18 @@ input:checked + .slider:before {
 
             <div id="api-settings-screen" class="screen"><div class="header"><span class="back-btn" onclick="showScreen('home-screen')">‹</span><span>API 设置</span><span style="width: 30px;"></span></div><div class="form-container"><p style="font-size: 14px; color: #666; background-color: #f0f0f0; padding: 10px; border-radius: 8px;">提示: 若要使用“发送图片”功能, 请务必选择支持Vision(视觉)的模型, 如<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4o</code>或<code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">gpt-4-vision-preview</code>。</p><div class="form-group"><label for="proxy-url">反代地址 (不需要添加/v1噢~)</label><input type="text" id="proxy-url" placeholder="例如: https://api.openai.com"></div><div class="form-group"><label for="api-key">密钥 (直连轮询用英文逗号隔开)</label><input type="password" id="api-key" placeholder="sk-..."></div><div class="form-group"><label for="model-select">模型</label><select id="model-select"></select></div><button class="form-button" id="fetch-models-btn">拉取模型</button>
 
+<!-- ▼▼▼ 新增：真流式请求开关 ▼▼▼ -->
+<div class="form-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+    <label for="stream-request-switch" style="margin-bottom: 0;">
+        启用真流式请求 (Stream)
+        <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px;">
+            开启后将以流式接收数据，可避免长文本超时。显示逻辑保持不变。
+        </p>
+    </label>
+    <input type="checkbox" id="stream-request-switch" style="width: auto; height: 20px;">
+</div>
+<!-- ▲▲▲ 新增结束 ▲▲▲ -->
+
 <!-- ▼▼▼ 将这段代码粘贴到 API 设置页面的“保存设置”按钮上方 ▼▼▼ -->
 <hr style="margin:20px 0; opacity:.3">
 <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
@@ -6602,8 +6614,9 @@ function parseAiResponse(content) {
     return [{ type: 'text', content: content }];
 }
 
-        function renderApiSettings() { document.getElementById('proxy-url').value = state.apiConfig.proxyUrl || ''; document.getElementById('api-key').value = state.apiConfig.apiKey || ''; 
+        function renderApiSettings() { document.getElementById('proxy-url').value = state.apiConfig.proxyUrl || ''; document.getElementById('api-key').value = state.apiConfig.apiKey || ''; document.getElementById('model-select').value = state.apiConfig.model || ''; // 确保模型也被还原
     // ▼▼▼ 新增这行 ▼▼▼
+    document.getElementById('stream-request-switch').checked = state.apiConfig.enableStreaming || false;
     document.getElementById('background-activity-switch').checked = state.globalSettings.enableBackgroundActivity || false;
     document.getElementById('background-interval-input').value = state.globalSettings.backgroundActivityInterval || 60;
     document.getElementById('block-cooldown-input').value = state.globalSettings.blockCooldownHours || 1;
@@ -8111,33 +8124,88 @@ if (visiblePosts.length > 0 && !chat.isGroup) {
             messagesPayload.push({ role: 'system', content: postsContext });
         }
             let  isGemini = proxyUrl === GEMINI_API_URL;
-            let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload,isGemini)
-            const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
-                body: JSON.stringify({
-                    model: model,
-                    messages: [{role: 'system', content: systemPrompt}, ...messagesPayload],
-                    temperature: 0.8,
-                    stream: false
-                })
-            });
-            if (!response.ok) {
-                let errorMsg = `API Error: ${response.status}`;
-                try {
-                    // 尝试解析错误信息体为JSON
-                    const errorData = await response.json();
-                    // 安全地获取错误信息，如果结构不符合预期，就将整个错误对象转为字符串
-                    errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
-                } catch (jsonError) {
-                    // 如果连JSON都不是，就直接读取文本
-                    errorMsg += ` - ${await response.text()}`;
+            let aiResponseContent = '';
+
+            // --- 【核心修改】检查是否开启流式请求 (仅限非原生Gemini渠道) ---
+            if (state.apiConfig.enableStreaming && !isGemini) {
+                console.log("正在使用流式请求 (OpenAI兼容模式)...");
+                const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{role: 'system', content: systemPrompt}, ...messagesPayload],
+                        temperature: 0.8,
+                        stream: true // <--- 开启流式
+                    })
+                });
+
+                if (!response.ok) {
+                     let errorMsg = `API Error: ${response.status}`;
+                     try {
+                         const errorData = await response.json();
+                         errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
+                     } catch (e) { errorMsg += ` - ${await response.text()}`; }
+                     throw new Error(errorMsg);
                 }
-                // 抛出一个包含了详细信息的错误，这样就不会在catch块里再次出错了
-                throw new Error(errorMsg);
+
+                // --- 处理流式响应 ---
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    buffer += chunk;
+                    
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // 保留最后一个可能不完整的行
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (trimmed.startsWith('data: ')) {
+                            const dataStr = trimmed.slice(6);
+                            if (dataStr === '[DONE]') continue;
+                            try {
+                                const dataObj = JSON.parse(dataStr);
+                                const delta = dataObj.choices[0].delta?.content || '';
+                                aiResponseContent += delta;
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+            } else {
+                // --- 原有的非流式逻辑 (包含原生Gemini支持) ---
+                let geminiConfig = toGeminiRequestData(model,apiKey,systemPrompt, messagesPayload,isGemini);
+                const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) :  await fetch(`${proxyUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{role: 'system', content: systemPrompt}, ...messagesPayload],
+                        temperature: 0.8,
+                        stream: false
+                    })
+                });
+                if (!response.ok) {
+                    let errorMsg = `API Error: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg += ` - ${errorData?.error?.message || JSON.stringify(errorData)}`;
+                    } catch (jsonError) {
+                        errorMsg += ` - ${await response.text()}`;
+                    }
+                    throw new Error(errorMsg);
+                }
+                const data = await response.json();
+                aiResponseContent = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
             }
-            const data = await response.json();
-            const aiResponseContent = isGemini? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+
             console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
 
         chat.history = chat.history.filter(msg => !msg.isTemporary);
@@ -12990,7 +13058,10 @@ document.getElementById('save-wallpaper-btn').addEventListener('click', async ()
     showScreen('home-screen');
 });
 // ▲▲▲ 替换结束 ▲▲▲
-            document.getElementById('save-api-settings-btn').addEventListener('click', async () => { state.apiConfig.proxyUrl = document.getElementById('proxy-url').value.trim(); state.apiConfig.apiKey = document.getElementById('api-key').value.trim(); state.apiConfig.model = document.getElementById('model-select').value; await db.apiConfig.put(state.apiConfig); 
+            document.getElementById('save-api-settings-btn').addEventListener('click', async () => { state.apiConfig.proxyUrl = document.getElementById('proxy-url').value.trim(); state.apiConfig.apiKey = document.getElementById('api-key').value.trim(); state.apiConfig.model = document.getElementById('model-select').value; 
+    // 保存流式请求设置
+    state.apiConfig.enableStreaming = document.getElementById('stream-request-switch').checked;
+    await db.apiConfig.put(state.apiConfig); 
 
 // 在 'save-api-settings-btn' 的 click 事件监听器内部
 // await db.apiConfig.put(state.apiConfig); 这行之后
