@@ -5855,6 +5855,7 @@
               ><select id="model-select"></select>
             </div>
             <button class="form-button" id="fetch-models-btn">拉取模型</button>
+            <button class="form-button form-button-secondary" id="manage-api-presets-btn" style="margin-top: 10px;">配置管理</button>
 
             <!-- ▼▼▼ 新增：真流式请求开关 ▼▼▼ -->
             <div
@@ -8070,7 +8071,31 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+    
+    <!-- ▼▼▼ 新增：API配置管理模态框 ▼▼▼ -->
+    <div id="api-presets-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>API 配置管理</span>
+                <button class="action-button" id="close-api-presets-modal-btn">关闭</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                    <label>保存当前配置为:</label>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <input type="text" id="save-preset-name-input" placeholder="配置名称 (如: DeepSeek-V3)" style="flex-grow: 1;">
+                        <button class="form-button" id="save-preset-btn" style="width: auto; margin-top: 0;">保存</button>
+                    </div>
+                </div>
+                <label>已保存的配置:</label>
+                <div id="api-presets-list" class="list-container" style="max-height: 300px; padding: 0;">
+                    <!-- JS生成列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ▲▲▲ 新增结束 ▲▲▲ -->
+
 
     <script>
       const GEMINI_API_URL =
@@ -21471,6 +21496,134 @@ ${contextSummary}
               }
             });
           // ▲▲▲ 新代码粘贴结束 ▲▲▲
+
+          // ▼▼▼ API配置管理相关逻辑 ▼▼▼
+          const manageApiPresetsBtn = document.getElementById('manage-api-presets-btn');
+          const apiPresetsModal = document.getElementById('api-presets-modal');
+          const apiPresetsList = document.getElementById('api-presets-list');
+          const savePresetNameInput = document.getElementById('save-preset-name-input');
+          const savePresetBtn = document.getElementById('save-preset-btn');
+          const closeApiPresetsModalBtn = document.getElementById('close-api-presets-modal-btn');
+
+          if (manageApiPresetsBtn) {
+              manageApiPresetsBtn.addEventListener('click', () => {
+                  renderApiPresetsList();
+                  apiPresetsModal.classList.add('visible');
+              });
+          }
+
+          if (closeApiPresetsModalBtn) {
+              closeApiPresetsModalBtn.addEventListener('click', () => {
+                  apiPresetsModal.classList.remove('visible');
+              });
+          }
+
+          if (savePresetBtn) {
+              savePresetBtn.addEventListener('click', async () => {
+                  const name = savePresetNameInput.value.trim();
+                  if (!name) return alert('请输入配置名称');
+
+                  const newPreset = {
+                      name,
+                      proxyUrl: document.getElementById('proxy-url').value.trim(),
+                      apiKey: document.getElementById('api-key').value.trim(),
+                      model: document.getElementById('model-select').value,
+                      enableStreaming: document.getElementById('stream-request-switch').checked
+                  };
+
+                  if (!state.globalSettings.apiPresets) {
+                      state.globalSettings.apiPresets = [];
+                  }
+
+                  // Check for duplicate name and overwrite
+                  const existingIndex = state.globalSettings.apiPresets.findIndex(p => p.name === name);
+                  if (existingIndex > -1) {
+                      if(!confirm(`配置 "${name}" 已存在，是否覆盖？`)) return;
+                      state.globalSettings.apiPresets[existingIndex] = newPreset;
+                  } else {
+                      state.globalSettings.apiPresets.push(newPreset);
+                  }
+
+                  await db.globalSettings.put(state.globalSettings);
+                  renderApiPresetsList();
+                  savePresetNameInput.value = '';
+                  alert('配置已保存');
+              });
+          }
+
+          function renderApiPresetsList() {
+              apiPresetsList.innerHTML = '';
+              const presets = state.globalSettings.apiPresets || [];
+              if (presets.length === 0) {
+                  apiPresetsList.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">暂无保存的配置</div>';
+                  return;
+              }
+
+              presets.forEach((preset, index) => {
+                  const item = document.createElement('div');
+                  item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;';
+                  
+                  const info = document.createElement('div');
+                  info.innerHTML = `<strong>${preset.name}</strong><br><span style="font-size:12px; color:#666;">${preset.model} | ${preset.proxyUrl ? 'Proxy' : 'Direct'}</span>`;
+                  
+                  const actions = document.createElement('div');
+                  actions.style.display = 'flex';
+                  actions.style.gap = '5px';
+
+                  const loadBtn = document.createElement('button');
+                  loadBtn.textContent = '加载';
+                  loadBtn.className = 'form-button';
+                  loadBtn.style.cssText = 'padding:5px 10px; font-size:12px; width:auto;';
+                  loadBtn.onclick = () => loadApiPreset(preset);
+
+                  const deleteBtn = document.createElement('button');
+                  deleteBtn.textContent = '删除';
+                  deleteBtn.className = 'form-button'; 
+                  deleteBtn.style.cssText = 'padding:5px 10px; font-size:12px; width:auto; background-color:#ff3b30;';
+                  deleteBtn.onclick = () => deleteApiPreset(index);
+
+                  actions.appendChild(loadBtn);
+                  actions.appendChild(deleteBtn);
+                  item.appendChild(info);
+                  item.appendChild(actions);
+                  apiPresetsList.appendChild(item);
+              });
+          }
+
+          function loadApiPreset(preset) {
+              document.getElementById('proxy-url').value = preset.proxyUrl || '';
+              document.getElementById('api-key').value = preset.apiKey || '';
+              document.getElementById('stream-request-switch').checked = preset.enableStreaming || false;
+              
+              const modelSelect = document.getElementById('model-select');
+              if (preset.model) {
+                   let optionExists = false;
+                   for (let i = 0; i < modelSelect.options.length; i++) {
+                       if (modelSelect.options[i].value === preset.model) {
+                           optionExists = true;
+                           break;
+                       }
+                   }
+                   if (!optionExists) {
+                       const opt = document.createElement('option');
+                       opt.value = preset.model;
+                       opt.textContent = preset.model + " (来自配置)";
+                       modelSelect.appendChild(opt);
+                   }
+                   modelSelect.value = preset.model;
+              }
+
+              apiPresetsModal.classList.remove('visible');
+              alert(`已加载配置 "${preset.name}"，请点击“保存设置”以应用。`);
+          }
+
+          async function deleteApiPreset(index) {
+              if (!confirm('确定删除此配置吗？')) return;
+              state.globalSettings.apiPresets.splice(index, 1);
+              await db.globalSettings.put(state.globalSettings);
+              renderApiPresetsList();
+          }
+          // ▲▲▲ API配置管理相关逻辑结束 ▲▲▲
 
           // ===================================================================
           // 5. 启动！
