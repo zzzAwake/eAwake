@@ -12957,6 +12957,9 @@ document.getElementById('send-btn').addEventListener('click', async () => {
     
     // --- 【核心修改】发送后，取消引用模式 ---
     cancelReplyMode(); 
+
+    // 触发AI回复
+    triggerAiResponse();
 });
             document.getElementById('wait-reply-btn').addEventListener('click', triggerAiResponse);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('send-btn').click(); } });
