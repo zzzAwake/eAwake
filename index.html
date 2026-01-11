@@ -10495,7 +10495,9 @@
               1,
               Math.round((msg.content || "").length / 5)
             );
-            const durationFormatted = `0:${String(duration).padStart(
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            const durationFormatted = `${minutes}:${String(seconds).padStart(
               2,
               "0"
             )}''`;
@@ -12464,14 +12466,14 @@ ${contextSummaryForApproval}
                     };
                     aiMessage = {
                       ...baseMessage,
-                      content: msgData.reply_content,
+                      content: String(msgData.reply_content || "").trim(),
                       quote: quoteContext, // 核心：在这里附加引用对象
                     };
                   } else {
                     // 如果找不到被引用的消息，就当作普通消息发送
                     aiMessage = {
                       ...baseMessage,
-                      content: msgData.reply_content,
+                      content: String(msgData.reply_content || "").trim(),
                     };
                   }
                   break;
@@ -12482,10 +12484,12 @@ ${contextSummaryForApproval}
                   // 这是一个纯动画指令，我们需要手动“演”出整个过程
                   if (!isViewingThisChat) continue; // 如果不在当前聊天界面，就直接跳过这个动画
 
+                  const cleanedContent = String(msgData.content || "").trim();
+
                   // 1. 创建一个临时的、看起来像真消息的气泡
                   const tempMessageData = {
                     ...baseMessage,
-                    content: msgData.content,
+                    content: cleanedContent,
                   };
                   const tempMessageElement = createMessageElement(
                     tempMessageData,
@@ -12521,7 +12525,7 @@ ${contextSummaryForApproval}
                       timestamp: tempMessageData.timestamp, // 使用临时消息的时间戳，保证顺序
                       recalledData: {
                         originalType: "text",
-                        originalContent: msgData.content,
+                        originalContent: cleanedContent,
                       },
                     };
 
@@ -12555,29 +12559,29 @@ ${contextSummaryForApproval}
                 case "text":
                   aiMessage = {
                     ...baseMessage,
-                    content: String(msgData.content || msgData.message),
+                    content: String(msgData.content || msgData.message || "").trim(),
                   };
                   break;
                 case "sticker":
                   aiMessage = {
                     ...baseMessage,
                     type: "sticker",
-                    content: msgData.url,
-                    meaning: msgData.meaning || "",
+                    content: String(msgData.url || "").trim(),
+                    meaning: String(msgData.meaning || "").trim(),
                   };
                   break;
                 case "ai_image":
                   aiMessage = {
                     ...baseMessage,
                     type: "ai_image",
-                    content: msgData.description,
+                    content: String(msgData.description || "").trim(),
                   };
                   break;
                 case "voice_message":
                   aiMessage = {
                     ...baseMessage,
                     type: "voice_message",
-                    content: msgData.content,
+                    content: String(msgData.content || "").trim(),
                   };
                   break;
                 case "transfer":
@@ -12585,7 +12589,7 @@ ${contextSummaryForApproval}
                     ...baseMessage,
                     type: "transfer",
                     amount: msgData.amount,
-                    note: msgData.note,
+                    note: String(msgData.note || "").trim(),
                     receiverName: msgData.receiver || "我",
                   };
                   break;
@@ -12594,7 +12598,7 @@ ${contextSummaryForApproval}
                   aiMessage = {
                     ...baseMessage,
                     type: "waimai_request",
-                    productInfo: msgData.productInfo,
+                    productInfo: String(msgData.productInfo || "").trim(),
                     amount: msgData.amount,
                     status: "pending",
                     countdownEndTime: Date.now() + 15 * 60 * 1000,
@@ -13958,7 +13962,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
               if (action.type === "text" && action.content) {
                 const aiMessage = {
                   role: "assistant",
-                  content: String(action.content),
+                  content: String(action.content).trim(),
                   timestamp: Date.now(),
                 };
 
@@ -13974,9 +13978,9 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
               if (action.type === "qzone_post") {
                 const newPost = {
                   type: action.postType,
-                  content: action.content || "",
-                  publicText: action.publicText || "",
-                  hiddenContent: action.hiddenContent || "",
+                  content: String(action.content || "").trim(),
+                  publicText: String(action.publicText || "").trim(),
+                  hiddenContent: String(action.hiddenContent || "").trim(),
                   timestamp: Date.now(),
                   authorId: chatId,
                   authorGroupId: chat.groupId, // 【核心新增】记录作者的分组ID
@@ -13991,7 +13995,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
                   if (!post.comments) post.comments = [];
                   post.comments.push({
                     commenterName: chat.name,
-                    text: action.commentText,
+                    text: String(action.commentText || "").trim(),
                     timestamp: Date.now(),
                   });
                   await db.qzonePosts.update(post.id, {
