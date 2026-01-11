@@ -3660,7 +3660,8 @@
 
       /* 3. 参与者头像显示区 (保持不变) */
       .video-call-avatar-area {
-        flex-grow: 1;
+        height: 35%; /* 修改：固定高度比例，给下方留出更多空间 */
+        flex-shrink: 0;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -3709,8 +3710,8 @@
 
       /* 7. 【最终版】对话框区域 */
       #video-call-main {
-        flex-shrink: 0;
-        height: 30%; /* ★ 核心修改：高度从35%减小到30% */
+        flex-grow: 1; /* 修改：自动占据剩余空间 */
+        /* height: 30%;  已移除固定高度 */
         margin: 15px 15px 130px 15px; /* ★ 核心修改：底部边距从120px增加到130px，创造明显空隙 */
         overflow-y: auto;
         padding: 15px;
