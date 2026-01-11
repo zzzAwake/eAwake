@@ -5657,6 +5657,28 @@
       } /* 黄色 */
 
       /* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+      #video-call-floating-bubble {
+        position: absolute;
+        right: 20px;
+        top: 150px;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 999;
+        cursor: pointer;
+        border: 3px solid white;
+        transition: transform 0.2s;
+      }
+      #video-call-floating-bubble:active {
+        transform: scale(0.95);
+      }
+      #video-floating-avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     </style>
   </head>
   <body>
@@ -5672,6 +5694,15 @@
             </div>
           </div>
         </div>
+      <div id="video-call-floating-bubble" style="display: none">
+        <img id="video-floating-avatar" src="" />
+      </div>
+      <div id="video-call-floating-bubble" style="display: none">
+        <img id="video-floating-avatar" src="" />
+      </div>
+      <div id="video-call-floating-bubble" style="display: none">
+        <img id="video-floating-avatar" src="" />
+      </div>
         <div id="notification-bar">
           <img id="notification-avatar" src="" />
           <div id="notification-content">
@@ -6843,34 +6874,56 @@
 
         <!-- ▼▼▼ 请用这段【全新群聊兼容结构】的代码，完整替换你旧的 #video-call-screen ▼▼▼ -->
         <div id="video-call-screen" class="screen">
-          <!-- 1. 顶部栏 (保持不变) -->
-          <div class="video-call-top-bar">
-            <span id="call-timer">00:00</span>
-          </div>
+          <!-- ▼▼▼ Visual Interface (Video Mode) ▼▼▼ -->
+          <div id="visual-call-interface" style="display: none; width: 100%; height: 100%; position: relative;">
+              <!-- Visual Timer -->
+              <div style="position: absolute; top: 40px; left: 0; width: 100%; text-align: center; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.8); z-index: 10; pointer-events: none;">
+                  <span id="visual-call-timer">00:00</span>
+              </div>
 
-          <!-- 2. 【升级】参与者头像网格区域 -->
-          <div class="video-call-avatar-area">
-            <div id="participant-avatars-grid">
-              <!-- JS会在这里动态生成头像 -->
-            </div>
+              <div id="video-main-view" style="width: 100%; height: 100%;"><img src="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>
+              <div id="video-pip-view" style="position: absolute; top: 60px; right: 20px; width: 90px; height: 120px; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden;"><img src="" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>
+              <div id="video-call-messages-visual" style="position: absolute; bottom: 100px; left: 0; width: 100%; padding: 15px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none; text-align: center;"></div>
+              
+              <!-- Visual Mode Controls (Simplified) -->
+              <div class="video-call-controls" style="position: absolute; bottom: 30px; left: 0; width: 100%; background: transparent; pointer-events: auto;">
+                  <button onclick="endVideoCall()" class="control-btn hangup-btn" style="margin: 0 auto; display: block;"></button>
+              </div>
           </div>
+          <!-- ▲▲▲ Visual Interface End ▲▲▲ -->
 
-          <!-- 3. 对话框区域 (保持不变) -->
-          <div id="video-call-main" class="video-call-main">
-            <!-- 对话内容会动态生成在这里 -->
-          </div>
+          <!-- ▼▼▼ Text Interface (Classic Mode) ▼▼▼ -->
+          <div id="text-call-interface" style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+              <!-- 1. 顶部栏 (保持不变) -->
+              <div class="video-call-top-bar">
+                <span id="call-timer">00:00</span>
+              </div>
 
-          <!-- 4. 【升级】底部控制栏，现在包含一个“加入”按钮 -->
-          <div class="video-call-controls">
-            <button id="user-speak-btn" class="control-btn speak-btn"></button>
-            <button id="hang-up-btn" class="control-btn hangup-btn"></button>
-            <!-- 这个按钮默认隐藏，只在用户“旁观”时显示 -->
-            <button
-              id="join-call-btn"
-              class="control-btn join-btn"
-              style="display: none"
-            ></button>
+              <!-- 2. 【升级】参与者头像网格区域 -->
+              <div class="video-call-avatar-area">
+                <div id="participant-avatars-grid">
+                  <!-- JS会在这里动态生成头像 -->
+                </div>
+              </div>
+
+              <!-- 3. 对话框区域 (保持不变) -->
+              <div id="video-call-main" class="video-call-main">
+                <!-- 对话内容会动态生成在这里 -->
+              </div>
+
+              <!-- 4. 【升级】底部控制栏，现在包含一个“加入”按钮 -->
+              <div class="video-call-controls">
+                <button id="user-speak-btn" class="control-btn speak-btn"></button>
+                <button id="hang-up-btn" class="control-btn hangup-btn"></button>
+                <!-- 这个按钮默认隐藏，只在用户“旁观”时显示 -->
+                <button
+                  id="join-call-btn"
+                  class="control-btn join-btn"
+                  style="display: none"
+                ></button>
+              </div>
           </div>
+          <!-- ▲▲▲ Text Interface End ▲▲▲ -->
         </div>
         <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
@@ -6989,6 +7042,38 @@
               ><button id="manage-ai-avatar-library-btn">管理头像库</button>
               <input type="file" id="ai-avatar-input" accept="image/*" />
             </div>
+          </div>
+
+          <div class="form-group" id="video-call-settings-group">
+            <hr style="opacity: 0.2; margin: 15px 0;">
+            <label style="display: flex; align-items: center; justify-content: space-between; font-weight: bold;">
+              <span>可视视频通话</span>
+              <input type="checkbox" id="visual-video-call-switch" style="width: auto;">
+            </label>
+
+            <div id="video-call-image-uploads" style="display: none; margin-top: 10px; background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-around;">
+                <div style="text-align: center;">
+                  <label style="font-size: 12px;">对方画面</label>
+                  <div onclick="document.getElementById('char-video-image-input').click()" style="cursor: pointer; margin-top: 5px;">
+                    <img id="char-video-image-preview" src="https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px dashed #ccc;">
+                  </div>
+                  <input type="file" id="char-video-image-input" accept="image/*" hidden />
+                </div>
+                <div style="text-align: center;">
+                  <label style="font-size: 12px;">我的画面</label>
+                  <div onclick="document.getElementById('user-video-image-input').click()" style="cursor: pointer; margin-top: 5px;">
+                    <img id="user-video-image-preview" src="https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px dashed #ccc;">
+                  </div>
+                  <input type="file" id="user-video-image-input" accept="image/*" hidden />
+                </div>
+              </div>
+            </div>
+
+            <label style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
+              <span>语音接入 (Minimax)</span>
+              <input type="checkbox" id="video-call-voice-access-switch" style="width: auto;">
+            </label>
           </div>
           <div class="form-group" id="my-persona-group">
             <label for="my-persona">我的人设 (My Persona)</label
@@ -15163,7 +15248,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           startTime: null,
           participants: [],
           isUserParticipating: true,
-          // --- 【核心新增】---
+
           callHistory: [], // 用于存储通话中的对话历史
           preCallContext: "", // 用于存储通话前的聊天摘要
         };
@@ -15171,7 +15256,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
         let callTimerInterval = null; // 用于存储计时器的ID
 
         /**
-         * 【总入口】用户点击“发起视频通话”或“发起群视频”按钮
+         * 用户点击“发起视频通话”或“发起群视频”按钮
          */
         async function handleInitiateCall() {
           if (
@@ -15186,9 +15271,9 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           videoCallState.isAwaitingResponse = true;
           videoCallState.initiator = "user";
           videoCallState.activeChatId = chat.id;
-          videoCallState.isUserParticipating = true; // 用户自己发起的，当然是参与者
+          videoCallState.isUserParticipating = true;
 
-          // 根据是单聊还是群聊，显示不同的呼叫界面
+          // 1. 显示“正在呼叫”界面
           if (chat.isGroup) {
             document.getElementById("outgoing-call-avatar").src =
               chat.settings.myAvatar || defaultMyGroupAvatar;
@@ -15205,70 +15290,252 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           ).textContent = chat.isGroup ? "正在呼叫所有成员..." : "正在呼叫...";
           showScreen("outgoing-call-screen");
 
-          // 准备并发送系统消息给AI
-          const requestMessage = {
-            role: "system",
-            content: chat.isGroup
-              ? `[系统提示：用户 (${
-                  chat.settings.myNickname || "我"
-                }) 发起了群视频通话请求。请你们各自决策，并使用 "group_call_response" 指令，设置 "decision" 为 "join" 或 "decline" 来回应。]`
-              : `[系统提示：用户向你发起了视频通话请求。请根据你的人设，使用 "video_call_response" 指令，并设置 "decision" 为 "accept" 或 "reject" 来回应。]`,
-            timestamp: Date.now(),
-            isHidden: true,
-          };
-          chat.history.push(requestMessage);
-          await db.chats.put(chat);
+          // 在发起通话时，提前准备好通话前的聊天记录上下文
+          videoCallState.preCallContext = chat.history
+            .slice(-20) // 获取最近20条消息
+            .map(
+              (msg) =>
+                `${
+                  msg.role === "user"
+                    ? chat.settings.myNickname || "我"
+                    : msg.senderName || chat.name
+                }: ${String(msg.content).substring(0, 50)}...`
+            )
+            .join("\n");
 
-          // 触发AI响应
-          await triggerAiResponse();
+          // 2. 重新构建一个信息更丰富、指令更明确的API请求
+          try {
+            const { proxyUrl, apiKey, model } = state.apiConfig;
+            if (!proxyUrl || !apiKey || !model) {
+              throw new Error("API未配置，无法发起通话。");
+            }
+
+            let systemPromptForCall;
+            if (chat.isGroup) {
+              systemPromptForCall = `
+			# 你的任务
+			你是一个群聊AI，负责扮演【除了用户以外】的所有角色。
+			用户 (${chat.settings.myNickname || "我"}) 刚刚发起了群视频通话。
+			你的任务是根据每个角色的性格和最近的聊天内容，决定他们是否要加入通话。
+
+			# 核心规则
+			1.  **决策**: 每个角色都必须独立决策。
+			2.  **格式**: 你的回复【必须】是一个JSON数组，每个对象代表一个角色的决策，格式为：\`{"type": "group_call_response", "name": "【角色的本名】", "decision": "join"}\` 或 \`{"type": "group_call_response", "name": "【角色的本名】", "decision": "decline"}\`。
+			3.  **倾向性**: 在没有特殊理由的情况下，你的角色们通常乐于加入群聊。
+
+			# 角色列表与人设
+			${chat.members.map((m) => `- **${m.originalName}**: ${m.persona}`).join("\n")}
+
+			# 通话前的聊天摘要
+			${videoCallState.preCallContext}
+			`;
+            } else {
+              systemPromptForCall = `
+			# 你的任务
+			你正在扮演角色 "${chat.name}"。用户 (${
+                chat.settings.myNickname || "我"
+              }) 刚刚向你发起了视频通话请求。
+			你的任务是根据你的人设和我们最近的聊天内容，决定是否接受。
+
+			# 核心规则
+			1.  **决策**: 你必须做出 "accept" (接受) 或 "reject" (拒绝) 的决定。
+			2.  **格式**: 你的回复【必须且只能】是一个JSON数组，其中包含一个对象，格式为：\`[{"type": "video_call_response", "decision": "accept"}]\` 或 \`[{"type": "video_call_response", "decision": "reject"}]\`。
+			3.  **倾向性**: 作为一个友好的AI伴侣，在没有特殊理由（比如在之前的对话中明确表示了不想被打扰或正在忙）的情况下，你【应该优先选择接受】通话。
+
+			# 你的人设
+			${chat.settings.aiPersona}
+
+			# 通话前的聊天摘要
+			${videoCallState.preCallContext}
+			`;
+            }
+
+            const messagesForApi = [
+              {
+                role: "user",
+                content: "请根据你在系统指令中读到的规则，立即做出你的决策。",
+              },
+            ];
+
+            let isGemini = proxyUrl === GEMINI_API_URL;
+            let geminiConfig = toGeminiRequestData(
+              model,
+              apiKey,
+              systemPromptForCall,
+              messagesForApi,
+              isGemini
+            );
+
+            const response = isGemini
+              ? await fetch(geminiConfig.url, geminiConfig.data)
+              : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${apiKey}`,
+                  },
+                  body: JSON.stringify({
+                    model: model,
+                    messages: [
+                      { role: "system", content: systemPromptForCall },
+                      ...messagesForApi,
+                    ],
+                    temperature: parseFloat(state.apiConfig.temperature) || 0.8,
+                  }),
+                });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`API 错误 (${response.status}): ${errorText}`);
+            }
+
+            const data = await response.json();
+            const aiResponseContent = (
+              isGemini
+                ? data.candidates[0].content.parts[0].text
+                : data.choices[0].message.content
+            ).replace(/^```json\s*|```$/g, "");
+            const responseArray = JSON.parse(aiResponseContent);
+
+            if (chat.isGroup) {
+              responseArray.forEach((action) => {
+                if (
+                  action.type === "group_call_response" &&
+                  action.decision === "join"
+                ) {
+                  const member = chat.members.find(
+                    (m) => m.originalName === action.name
+                  );
+                  if (member) videoCallState.participants.push(member);
+                }
+              });
+              if (videoCallState.participants.length > 0) {
+                startVideoCall();
+              } else {
+                throw new Error("群里没有人接听你的通话邀请。");
+              }
+            } else {
+              const decision = responseArray[0];
+              if (
+                decision.type === "video_call_response" &&
+                decision.decision === "accept"
+              ) {
+                startVideoCall();
+              } else {
+                throw new Error("对方拒绝了你的视频通话请求。");
+              }
+            }
+          } catch (error) {
+            console.error("发起通话失败:", error);
+            await showCustomAlert("呼叫失败", error.message);
+            videoCallState.isAwaitingResponse = false;
+            showScreen("chat-interface-screen");
+          }
         }
 
         function startVideoCall() {
           const chat = state.chats[videoCallState.activeChatId];
           if (!chat) return;
 
-          videoCallState.isActive = true;
-          videoCallState.isAwaitingResponse = false;
-          videoCallState.startTime = Date.now();
-          videoCallState.callHistory = []; // 【新增】清空上一次通话的历史
-
-          // --- 【核心新增：抓取通话前上下文】---
-          const preCallHistory = chat.history.slice(-10); // 取最后10条作为上下文
-          videoCallState.preCallContext = preCallHistory
-            .map((msg) => {
-              const sender =
-                msg.role === "user"
-                  ? chat.settings.myNickname || "我"
-                  : msg.senderName || chat.name;
-              return `${sender}: ${String(msg.content).substring(0, 50)}...`;
-            })
+          // 提取通话前的最后20条消息作为上下文
+          videoCallState.preCallContext = chat.history
+            .slice(-20)
+            .map(
+              (msg) =>
+                `${
+                  msg.role === "user"
+                    ? chat.settings.myNickname || "我"
+                    : msg.senderName || chat.name
+                }: ${String(msg.content).substring(0, 50)}...`
+            )
             .join("\n");
-          // --- 新增结束 ---
 
-          updateParticipantAvatars();
+          // 1. 检查是否启用了可视化界面
+          if (chat.settings.visualVideoCallEnabled) {
+            // --- 启动【新】的可视化界面 ---
+            videoCallState.isActive = true;
+            videoCallState.isAwaitingResponse = false;
+            videoCallState.startTime = Date.now();
+            videoCallState.callHistory = [];
 
-          document.getElementById("video-call-main").innerHTML = `<em>${
-            videoCallState.isGroupCall ? "群聊已建立..." : "正在接通..."
-          }</em>`;
-          showScreen("video-call-screen");
+            const visualInterface = document.getElementById(
+              "visual-call-interface"
+            );
+            const textInterface = document.getElementById(
+              "text-call-interface"
+            );
 
-          document.getElementById("user-speak-btn").style.display =
-            videoCallState.isUserParticipating ? "block" : "none";
-          document.getElementById("join-call-btn").style.display =
-            videoCallState.isUserParticipating ? "none" : "block";
+            // 显示新界面，隐藏旧界面
+            visualInterface.style.display = "flex";
+            textInterface.style.display = "none";
 
-          if (callTimerInterval) clearInterval(callTimerInterval);
-          callTimerInterval = setInterval(updateCallTimer, 1000);
-          updateCallTimer();
+            // 加载图片
+            document.querySelector("#video-main-view img").src =
+              chat.settings.charVideoImage || defaultAvatar;
+            document.querySelector("#video-pip-view img").src =
+              chat.settings.userVideoImage || defaultAvatar;
 
-          triggerAiInCallAction();
+            // 清空旧的聊天气泡
+            document.getElementById(
+              "video-call-messages-visual"
+            ).innerHTML = `<em>正在接通...</em>`;
+            showScreen("video-call-screen");
+
+            // 启动计时器
+            if (callTimerInterval) clearInterval(callTimerInterval);
+            callTimerInterval = setInterval(updateCallTimer, 1000);
+            updateCallTimer(); // 立即更新一次
+
+            // 触发AI在通话中的第一句话
+            triggerAiInCallAction();
+          } else {
+            // --- 启动【旧】的纯文字界面 ---
+            videoCallState.isActive = true;
+            videoCallState.isAwaitingResponse = false;
+            videoCallState.startTime = Date.now();
+            videoCallState.callHistory = [];
+
+            const visualInterface = document.getElementById(
+              "visual-call-interface"
+            );
+            const textInterface = document.getElementById(
+              "text-call-interface"
+            );
+
+            // 显示旧界面，隐藏新界面
+            visualInterface.style.display = "none";
+            textInterface.style.display = "flex"; // 旧界面用flex
+
+            updateParticipantAvatars();
+
+            document.getElementById("video-call-main").innerHTML = `<em>${
+              videoCallState.isGroupCall ? "群聊已建立..." : "正在接通..."
+            }</em>`;
+            showScreen("video-call-screen");
+
+            document.getElementById("user-speak-btn").style.display =
+              videoCallState.isUserParticipating ? "block" : "none";
+            document.getElementById("join-call-btn").style.display =
+              videoCallState.isUserParticipating ? "none" : "block";
+
+            if (callTimerInterval) clearInterval(callTimerInterval);
+            callTimerInterval = setInterval(updateCallTimer, 1000);
+            updateCallTimer();
+
+            triggerAiInCallAction();
+          }
         }
 
         /**
-         * 【核心】结束视频通话
+         * 结束视频通话
          */
-        // ▼▼▼ 用这整块代码替换旧的 endVideoCall 函数 ▼▼▼
+
         async function endVideoCall() {
+          document.getElementById("visual-call-interface").style.display =
+            "none";
+
+          document.getElementById("video-call-floating-bubble").style.display =
+            "none";
           if (!videoCallState.isActive) return;
 
           const duration = Math.floor(
@@ -15319,13 +15586,11 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
 
             // 2. 在聊天记录里添加对用户可见的“通话结束”消息
             let summaryMessage = {
-              // 【核心修正1】role 由 videoCallState.initiator 决定
               role: videoCallState.initiator === "user" ? "user" : "assistant",
               content: endCallText,
               timestamp: Date.now(),
             };
 
-            // 【核心修正2】为群聊的 assistant 消息补充 senderName
             if (chat.isGroup && summaryMessage.role === "assistant") {
               // 在群聊中，通话结束的消息应该由“发起者”来说
               // videoCallState.callRequester 保存了最初发起通话的那个AI的名字
@@ -15334,10 +15599,10 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
                 chat.members[0]?.originalName ||
                 chat.name;
             }
-            // ▲▲▲ 替换结束 ▲▲▲
+
             chat.history.push(summaryMessage);
 
-            // 3. 【核心变革】创建并添加对用户隐藏的“通话后汇报”指令
+            // 3. 创建并添加对用户隐藏的“通话后汇报”指令
             const callTranscriptForAI = videoCallState.callHistory
               .map(
                 (h) =>
@@ -15383,10 +15648,144 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
             triggerAiResponse(); // 关键一步！
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
-         * 【全新】更新通话界面的参与者头像网格
+         * 最小化视频通话
+         */
+        function minimizeVideoCall() {
+          // 访问内部变量 videoCallState
+          if (!videoCallState.isActive) return;
+
+          const chat = state.chats[videoCallState.activeChatId];
+          const bubble = document.getElementById("video-call-floating-bubble");
+          const avatarImg = document.getElementById("video-floating-avatar");
+
+          // 1. 设置悬浮球头像
+          if (chat) {
+            const avatarUrl = chat.isGroup
+              ? chat.settings.groupAvatar || defaultGroupAvatar
+              : chat.settings.aiAvatar || defaultAvatar;
+            avatarImg.src = avatarUrl;
+          }
+
+          // 2. 隐藏视频界面，显示悬浮球
+          document
+            .getElementById("video-call-screen")
+            .classList.remove("active");
+          bubble.style.display = "block";
+
+          // 3. 返回聊天界面
+          showScreen("chat-interface-screen");
+        }
+
+        window.minimizeVideoCall = minimizeVideoCall;
+
+        /**
+         * 恢复视频通话界面
+         */
+        function restoreVideoCall() {
+          const bubble = document.getElementById("video-call-floating-bubble");
+
+          // 1. 隐藏悬浮球
+          bubble.style.display = "none";
+
+          // 2. 显示视频界面
+          showScreen("video-call-screen");
+        }
+
+        window.restoreVideoCall = restoreVideoCall;
+
+        /**
+         * 初始化悬浮球的拖拽功能
+         */
+        function initVideoBubbleDrag() {
+          const bubble = document.getElementById("video-call-floating-bubble");
+          let isDragging = false;
+          let startX, startY, initialLeft, initialTop;
+          let hasMoved = false; // 用于区分点击和拖拽
+
+          const onStart = (e) => {
+            isDragging = true;
+            hasMoved = false;
+
+            // 获取点击坐标
+            const clientX = e.type.includes("mouse")
+              ? e.clientX
+              : e.touches[0].clientX;
+            const clientY = e.type.includes("mouse")
+              ? e.clientY
+              : e.touches[0].clientY;
+
+            startX = clientX;
+            startY = clientY;
+
+            // 获取当前位置
+            const rect = bubble.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
+
+            // 阻止默认事件防止滚动
+            if (e.type === "touchstart") {
+              // e.preventDefault(); // 可能会阻止点击，视情况而定
+            }
+          };
+
+          const onMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault(); // 阻止页面滚动
+
+            const clientX = e.type.includes("mouse")
+              ? e.clientX
+              : e.touches[0].clientX;
+            const clientY = e.type.includes("mouse")
+              ? e.clientY
+              : e.touches[0].clientY;
+
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+
+            // 如果移动距离超过 5px，视为拖拽
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+              hasMoved = true;
+            }
+
+            let newLeft = initialLeft + deltaX;
+            let newTop = initialTop + deltaY;
+
+            // 边界限制
+            const maxLeft = window.innerWidth - bubble.offsetWidth;
+            const maxTop = window.innerHeight - bubble.offsetHeight;
+
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+
+            bubble.style.left = `${newLeft}px`;
+            bubble.style.top = `${newTop}px`;
+            bubble.style.right = "auto"; // 清除 right 属性
+          };
+
+          const onEnd = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            // 如果没有移动（是点击），则恢复视频
+            if (!hasMoved) {
+              restoreVideoCall();
+            }
+          };
+
+          // 绑定事件
+          bubble.addEventListener("mousedown", onStart);
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onEnd);
+
+          bubble.addEventListener("touchstart", onStart, { passive: false });
+          document.addEventListener("touchmove", onMove, { passive: false });
+          document.addEventListener("touchend", onEnd);
+        }
+
+        /**
+         * 更新通话界面的参与者头像网格
          */
         function updateParticipantAvatars() {
           const grid = document.getElementById("participant-avatars-grid");
@@ -15396,7 +15795,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
 
           let participantsToRender = [];
 
-          // ★ 核心修正：区分群聊和单聊
+          // 区分群聊和单聊
           if (videoCallState.isGroupCall) {
             // 群聊逻辑：显示所有已加入的AI成员
             participantsToRender = [...videoCallState.participants];
@@ -15421,17 +15820,17 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
             const wrapper = document.createElement("div");
             wrapper.className = "participant-avatar-wrapper";
             wrapper.dataset.participantId = p.id;
-            const displayName = p.groupNickname || p.name; // <-- 核心修复在这里
+            const displayName = p.groupNickname || p.name;
             wrapper.innerHTML = `
-    <img src="${p.avatar}" class="participant-avatar" alt="${displayName}">
-    <div class="participant-name">${displayName}</div>
-`;
+			    <img src="${p.avatar}" class="participant-avatar" alt="${displayName}">
+			    <div class="participant-name">${displayName}</div>
+			`;
             grid.appendChild(wrapper);
           });
         }
 
         /**
-         * 【全新】处理用户加入/重新加入通话
+         * 处理用户加入/重新加入通话
          */
         function handleUserJoinCall() {
           if (!videoCallState.isActive || videoCallState.isUserParticipating)
@@ -15449,8 +15848,9 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
         }
 
         /**
-         * 更新通话计时器显示 (保持不变)
+         * 更新通话计时器显示
          */
+
         function updateCallTimer() {
           if (!videoCallState.isActive) return;
           const elapsed = Math.floor(
@@ -15458,14 +15858,18 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           );
           const minutes = Math.floor(elapsed / 60);
           const seconds = elapsed % 60;
-          document.getElementById("call-timer").textContent = `${String(
-            minutes
-          ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+          const timeString = `${String(minutes).padStart(2, "0")}:${String(
+            seconds
+          ).padStart(2, "0")}`;
+
+          // 同时更新两个界面的计时器
+          document.getElementById("call-timer").textContent = timeString;
+          document.getElementById("visual-call-timer").textContent = timeString;
         }
 
-        // ▼▼▼ 用这个完整函数替换旧的 showIncomingCallModal ▼▼▼
-        function showIncomingCallModal() {
-          const chat = state.chats[state.activeChatId];
+        function showIncomingCallModal(chatId) {
+          // <--- 在括号里添加 chatId
+          const chat = state.chats[chatId]; // <--- 把 state.activeChatId 修改为 chatId
           if (!chat) return;
 
           // 根据是否群聊显示不同信息
@@ -15494,8 +15898,8 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           document
             .getElementById("incoming-call-modal")
             .classList.add("visible");
+          playRingtone();
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 隐藏AI发起的通话请求模态框 (保持不变)
@@ -15504,6 +15908,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           document
             .getElementById("incoming-call-modal")
             .classList.remove("visible");
+          stopRingtone();
         }
 
         async function triggerAiInCallAction(userInput = null) {
@@ -15511,10 +15916,14 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
 
           const chat = state.chats[videoCallState.activeChatId];
           const { proxyUrl, apiKey, model } = state.apiConfig;
-          const callFeed = document.getElementById("video-call-main");
+
+          const isVisualMode = chat.settings.visualVideoCallEnabled;
+          const callFeed = isVisualMode
+            ? document.getElementById("video-call-messages-visual")
+            : document.getElementById("video-call-main");
+
           const userNickname = chat.settings.myNickname || "我";
 
-          // ▼▼▼ 在这里添加世界书读取逻辑 ▼▼▼
           let worldBookContent = "";
           if (
             chat.settings.linkedWorldBookIds &&
@@ -15535,14 +15944,19 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
               worldBookContent = `\n\n# 核心世界观设定 (你必须严格遵守)\n${linkedContents}\n`;
             }
           }
-          // ▲▲▲ 添加结束 ▲▲▲
 
-          // 1. 如果用户有输入，先渲染并存入通话历史
           if (userInput && videoCallState.isUserParticipating) {
-            const userBubble = document.createElement("div");
-            userBubble.className = "call-message-bubble user-speech";
-            userBubble.textContent = userInput;
-            callFeed.appendChild(userBubble);
+            if (isVisualMode) {
+              const userBubble = document.createElement("div");
+              userBubble.className = "visual-call-bubble user";
+              userBubble.textContent = userInput;
+              callFeed.appendChild(userBubble);
+            } else {
+              const userBubble = document.createElement("div");
+              userBubble.className = "call-message-bubble user-speech";
+              userBubble.textContent = userInput;
+              callFeed.appendChild(userBubble);
+            }
             callFeed.scrollTop = callFeed.scrollHeight;
             videoCallState.callHistory.push({
               role: "user",
@@ -15550,63 +15964,69 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
             });
           }
 
-          // 2. 构建全新的、包含完整上下文的 System Prompt
           let inCallPrompt;
           if (videoCallState.isGroupCall) {
             const participantNames = videoCallState.participants.map(
-              (p) => p.name
+              (p) => p.originalName
             );
             if (videoCallState.isUserParticipating) {
               participantNames.unshift(userNickname);
             }
+
             inCallPrompt = `
-# 你的任务
-你是一个群聊视频通话的导演。你的任务是扮演所有【除了用户以外】的AI角色，并以【第三人称旁观视角】来描述他们在通话中的所有动作和语言。
-# 核心规则
-1.  **【【【身份铁律】】】**: 用户的身份是【${userNickname}】。你【绝对不能】生成 \`name\` 字段为 **"${userNickname}"** 的发言。
-2.  **【【【视角铁律】】】**: 你的回复【绝对不能】使用第一人称“我”。
-3.  **格式**: 你的回复【必须】是一个JSON数组，每个对象代表一个角色的发言，格式为：\`{"name": "角色名", "speech": "*他笑了笑* 大家好啊！"}\`。
-4.  **角色扮演**: 严格遵守每个角色的设定。
-# 当前情景
-你们正在一个群视频通话中。
-**通话前的聊天摘要**:
-${videoCallState.preCallContext}
-**当前参与者**: ${participantNames.join("、 ")}。
-**通话刚刚开始...**
-${worldBookContent} // <-- 【核心】注入世界书
-现在，请根据【通话前摘要】和下面的【通话实时记录】，继续进行对话。
-`;
+			# 你的任务
+			你是一个群聊AI，负责扮演所有【除了用户以外】的AI角色。你们正在进行一场群聊视频通话。
+			你的任务是根据每个角色的性格，生成他们在通话中会说的【第一人称对话】，注意是在视频通话，绝对不能以为是在现实！每次回复的字数多些，50字以上。
+
+			# 核心规则
+			1.  **【【【语言铁律】】】**: 无论角色人设是什么国籍或说什么语言，在本次视频通话中，所有角色【必须】全程使用【中文】进行交流。
+			2.  **【【【格式铁律】】】**: 你的回复【必须】是一个JSON数组，每个对象代表一个角色的发言，格式为：\`{"name": "【角色的本名】", "speech": "【在这里加入带动作的对话】"}\`。
+			3.  **【【【表现力铁律】】】**: 在 "speech" 字段中，你【必须】为角色的对话加入【动作、表情或心理活动】，并用【】符号包裹。这非常重要！
+			4.  **示例**: \`{"name": "张三", "speech": "【挠了挠头】啊？我刚刚走神了，你们说到哪了？"}\`
+			5.  **身份铁律**: 用户的身份是【${userNickname}】。你【绝对不能】生成 \`name\` 字段为 **"${userNickname}"** 的发言。
+			6.  **角色扮演**: 严格遵守每个角色的设定，用他们的口吻说话。
+
+			# 当前情景
+			你们正在一个群视频通话中。
+			**通话前的聊天摘要**:
+			${videoCallState.preCallContext}
+			**当前参与者**: ${participantNames.join("、 ")}。
+			${worldBookContent}
+			现在，请根据【通话前摘要】和下面的【通话实时记录】，继续进行对话。
+			`;
           } else {
             let openingContext =
               videoCallState.initiator === "user"
                 ? `你刚刚接听了用户的视频通话请求。`
                 : `用户刚刚接听了你主动发起的视频通话。`;
+
             inCallPrompt = `
-# 你的任务
-你现在是一个场景描述引擎。你的任务是扮演 ${chat.name} (${chat.settings.aiPersona})，并以【第三人称旁观视角】来描述TA在视频通话中的所有动作和语言。
-# 核心规则
-1.  **【【【视角铁律】】】**: 你的回复【绝对不能】使用第一人称“我”。必须使用第三人称，如“他”、“她”、或直接使用角色名“${chat.name}”。
-2.  **格式**: 你的回复【必须】是一段描述性的文本。
-# 当前情景
-你正在和用户（${userNickname}，人设: ${chat.settings.myPersona}）进行视频通话。
-**${openingContext}**
-**通话前的聊天摘要 (这是你们通话的原因，至关重要！)**:
-${videoCallState.preCallContext}
-现在，请根据【通话前摘要】和下面的【通话实时记录】，继续进行对话。
-`;
+			# 你的任务
+			你正在扮演角色 "${chat.name}"。你正在和用户 (${userNickname}) 进行一对一视频通话。
+			${openingContext}
+			你的任务是根据你的人设和我们的聊天情景，生成你在通话中会说的【第一人称对话】。
+
+			# 核心规则
+			1.  **【【【格式铁律】】】**: 你的回复【必须且只能】是一段纯文本字符串，代表你的发言。绝对不要输出JSON格式。
+			2.  **【【【表现力铁律】】】**: 在你的对话中，你【必须】加入【动作、表情或心理活动】，并用【】符号包裹。
+			3.  **示例**: "【歪了歪头，好奇地看着你】真的吗？快跟我说说看！"
+			4.  **禁止出戏**: 绝不能透露你是AI或模型。
+
+			# 当前情景
+			**通话前的聊天摘要**:
+			${videoCallState.preCallContext}
+			${worldBookContent}
+			现在，请根据【通话前摘要】和下面的【通话实时记录】，继续进行对话。
+			`;
           }
 
-          // 3. 构建发送给API的 messages 数组
           const messagesForApi = [
-            { role: "system", content: inCallPrompt },
-            // 将已有的通话历史加进去
             ...videoCallState.callHistory.map((h) => ({
               role: h.role,
               content: h.content,
             })),
           ];
 
-          // --- 【核心修复：确保第一次调用时有内容】---
           if (videoCallState.callHistory.length === 0) {
             const firstLineTrigger =
               videoCallState.initiator === "user"
@@ -15614,7 +16034,6 @@ ${videoCallState.preCallContext}
                 : `*对方按下了接听键...*`;
             messagesForApi.push({ role: "user", content: firstLineTrigger });
           }
-          // --- 修复结束 ---
 
           try {
             let isGemini = proxyUrl === GEMINI_API_URL;
@@ -15635,8 +16054,11 @@ ${videoCallState.preCallContext}
                   },
                   body: JSON.stringify({
                     model: model,
-                    messages: messagesForApi,
-                    temperature: 0.8,
+                    messages: [
+                      { role: "system", content: inCallPrompt },
+                      ...messagesForApi,
+                    ],
+                    temperature: parseFloat(state.apiConfig.temperature) || 0.8,
                   }),
                 });
             if (!response.ok)
@@ -15646,69 +16068,77 @@ ${videoCallState.preCallContext}
             const aiResponse = isGemini
               ? data.candidates[0].content.parts[0].text
               : data.choices[0].message.content;
+            const sanitizedResponse = aiResponse
+              .replace(/!\[.*?\]\(.*?\)|https?:\/\/\S+/gi, "")
+              .trim();
 
             const connectingElement = callFeed.querySelector("em");
             if (connectingElement) connectingElement.remove();
 
-            // 4. 处理AI返回的内容，并将其存入通话历史
-            if (videoCallState.isGroupCall) {
-              const speechArray = parseAiResponse(aiResponse);
-              speechArray.forEach((turn) => {
-                if (!turn.name || turn.name === userNickname || !turn.speech)
-                  return;
-                const aiBubble = document.createElement("div");
-                aiBubble.className = "call-message-bubble ai-speech";
-                aiBubble.innerHTML = `<strong>${turn.name}:</strong> ${turn.speech}`;
-                callFeed.appendChild(aiBubble);
-                videoCallState.callHistory.push({
-                  role: "assistant",
-                  content: `${turn.name}: ${turn.speech}`,
-                });
+            let bubble; // 先声明一个 bubble 变量
 
-                const speaker = videoCallState.participants.find(
-                  (p) => p.name === turn.name
-                );
-                if (speaker) {
-                  const speakingAvatar = document.querySelector(
-                    `.participant-avatar-wrapper[data-participant-id="${speaker.id}"] .participant-avatar`
-                  );
-                  if (speakingAvatar) {
-                    speakingAvatar.classList.add("speaking");
-                    setTimeout(
-                      () => speakingAvatar.classList.remove("speaking"),
-                      2000
-                    );
-                  }
-                }
-              });
+            // 根据通话模式创建对应的气泡元素
+            if (isVisualMode) {
+              bubble = document.createElement("div");
+              bubble.className = "visual-call-bubble ai";
             } else {
-              const aiBubble = document.createElement("div");
-              aiBubble.className = "call-message-bubble ai-speech";
-              aiBubble.textContent = aiResponse;
-              callFeed.appendChild(aiBubble);
+              bubble = document.createElement("div");
+              bubble.className = "call-message-bubble ai-speech";
+              if (videoCallState.isGroupCall && turn.name) {
+                bubble.innerHTML = `<strong>${turn.name}:</strong> `;
+              }
+            }
+            // 将AI的文本内容填充到气泡中
+            bubble.appendChild(document.createTextNode(sanitizedResponse));
+
+            // 挂载到通话界面
+            callFeed.appendChild(bubble);
+
+            // 检查：是否是单人通话、语音接入是否开启、Minimax是否配置、角色语音ID是否存在、并且AI确实返回了内容
+            if (
+              !chat.isGroup &&
+              chat.settings.videoCallVoiceAccess &&
+              state.apiConfig.minimaxGroupId &&
+              state.apiConfig.minimaxApiKey &&
+              chat.settings.minimaxVoiceId &&
+              sanitizedResponse
+            ) {
+              console.log(
+                `[视频通话] 检测到语音接入已开启，为“${chat.name}”合成语音...`
+              );
+              // 调用你已有的 playMinimaxAudio 函数来播放语音
+              playMinimaxAudio(
+                sanitizedResponse,
+                chat.settings.minimaxVoiceId,
+                [bubble]
+              );
+            }
+
+            // 将这条消息记录到通话历史中，这部分逻辑不变
+            if (videoCallState.isGroupCall && turn.name) {
               videoCallState.callHistory.push({
                 role: "assistant",
-                content: aiResponse,
+                content: `${turn.name}: ${sanitizedResponse}`,
               });
-
-              const speakingAvatar = document.querySelector(
-                `.participant-avatar-wrapper .participant-avatar`
-              );
-              if (speakingAvatar) {
-                speakingAvatar.classList.add("speaking");
-                setTimeout(
-                  () => speakingAvatar.classList.remove("speaking"),
-                  2000
-                );
-              }
+            } else {
+              videoCallState.callHistory.push({
+                role: "assistant",
+                content: sanitizedResponse,
+              });
             }
 
             callFeed.scrollTop = callFeed.scrollHeight;
           } catch (error) {
             const errorBubble = document.createElement("div");
-            errorBubble.className = "call-message-bubble ai-speech";
             errorBubble.style.color = "#ff8a80";
             errorBubble.textContent = `[ERROR: ${error.message}]`;
+
+            if (isVisualMode) {
+              errorBubble.className = "visual-call-bubble ai";
+            } else {
+              errorBubble.className = "call-message-bubble ai-speech";
+            }
+
             callFeed.appendChild(errorBubble);
             callFeed.scrollTop = callFeed.scrollHeight;
             videoCallState.callHistory.push({
@@ -15718,7 +16148,6 @@ ${videoCallState.preCallContext}
           }
         }
 
-        // ▼▼▼ 将这个【全新函数】粘贴到JS功能函数定义区 ▼▼▼
         function toggleCallButtons(isGroup) {
           document.getElementById("video-call-btn").style.display = isGroup
             ? "none"
@@ -15726,9 +16155,7 @@ ${videoCallState.preCallContext}
           document.getElementById("group-video-call-btn").style.display =
             isGroup ? "flex" : "none";
         }
-        // ▲▲▲ 粘贴结束 ▲▲▲
 
-        // ▼▼▼ 【全新】这个函数是本次修复的核心，请粘贴到你的JS功能区 ▼▼▼
         async function handleWaimaiResponse(originalTimestamp, choice) {
           const chat = state.chats[state.activeChatId];
           if (!chat) return;
