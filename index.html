@@ -53,6 +53,10 @@
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
+        transition: background-color 0.3s ease;
+      }
+      body.dark-mode {
+        background-color: #121212;
       }
       #phone-frame {
         padding: 12px;
@@ -3900,6 +3904,45 @@
         font-size: 12px;
         padding: 4px 12px;
         border-radius: 10px;
+      }
+
+      /* === 修复：特定消息类型的包裹气泡移除 === */
+      .message-bubble.is-sticker .content,
+      .message-bubble.is-transfer .content,
+      .message-bubble.is-waimai-request .content,
+      .message-bubble.has-image .content,
+      .message-bubble.is-ai-image .content {
+        background-color: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      /* 移除特定消息气泡的小尾巴 */
+      .message-bubble.is-sticker::after,
+      .message-bubble.has-image::after,
+      .message-bubble.is-ai-image::after,
+      .message-bubble.is-transfer::after,
+      .message-bubble.is-waimai-request::after {
+        display: none !important;
+      }
+
+      /* 确保正在输入状态也显示为淡灰色气泡 */
+      #typing-indicator {
+        align-self: center;
+        margin: 5px 0;
+        display: none;
+      }
+      #typing-indicator .system-bubble {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: var(--text-secondary);
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 10px;
+        display: inline-block;
       }
 
       /* ▼▼▼ 请将这段新CSS粘贴到 <style> 的末尾 ▼▼▼ */
@@ -10058,7 +10101,7 @@
           const typingIndicator = document.createElement("div");
           typingIndicator.id = "typing-indicator";
           typingIndicator.style.display = "none";
-          typingIndicator.textContent = "对方正在输入...";
+          typingIndicator.innerHTML = '<div class="system-bubble">对方正在输入...</div>';
           messagesContainer.appendChild(typingIndicator);
           setTimeout(
             () =>
@@ -10952,7 +10995,8 @@
           if (chat.isGroup) {
             // 如果是群聊，显示输入框上方的提示条
             if (typingIndicator) {
-              typingIndicator.textContent = "成员们正在输入...";
+              const bubble = typingIndicator.querySelector(".system-bubble");
+              if (bubble) bubble.textContent = "成员们正在输入...";
               typingIndicator.style.display = "block";
             }
           } else {
@@ -17553,6 +17597,7 @@ ${contextSummary}
           const isDark = theme === "dark";
 
           phoneScreen.classList.toggle("dark-mode", isDark);
+          document.body.classList.toggle("dark-mode", isDark);
 
           // 如果开关存在，就同步它的状态
           if (toggleSwitch) {
