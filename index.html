@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -18770,78 +18770,81 @@ ${contextSummary}
               showScreen("home-screen");
             });
           // ▲▲▲ 替换结束 ▲▲▲
+          async function saveApiSettings(silent = false) {
+            state.apiConfig.proxyUrl = document
+              .getElementById("proxy-url")
+              .value.trim();
+            state.apiConfig.apiKey = document
+              .getElementById("api-key")
+              .value.trim();
+            state.apiConfig.model =
+              document.getElementById("model-select").value;
+            // 保存流式请求设置
+            state.apiConfig.enableStreaming = document.getElementById(
+              "stream-request-switch"
+            ).checked;
+            await db.apiConfig.put(state.apiConfig);
+
+            const backgroundSwitch = document.getElementById(
+              "background-activity-switch"
+            );
+            const intervalInput = document.getElementById(
+              "background-interval-input"
+            );
+            const newEnableState = backgroundSwitch.checked;
+            const oldEnableState =
+              state.globalSettings.enableBackgroundActivity || false;
+
+            // 只有在用户“从关到开”时，才弹出警告
+            if (newEnableState && !oldEnableState) {
+              const userConfirmed = confirm(
+                "【高费用警告】\n\n" +
+                  "您正在启用“后台角色活动”功能。\n\n" +
+                  "这会使您的AI角色们在您不和他们聊天时，也能“独立思考”并主动给您发消息或进行社交互动，极大地增强沉浸感。\n\n" +
+                  "但请注意：\n" +
+                  "这会【在后台自动、定期地调用API】，即使您不进行任何操作。根据您的角色数量和检测间隔，这可能会导致您的API费用显著增加。\n\n" +
+                  "您确定要开启吗？"
+              );
+
+              if (!userConfirmed) {
+                backgroundSwitch.checked = false; // 用户取消，把开关拨回去
+                return; // 阻止后续逻辑
+              }
+            }
+
+            state.globalSettings.enableBackgroundActivity = newEnableState;
+            state.globalSettings.backgroundActivityInterval =
+              parseInt(intervalInput.value) || 60;
+            state.globalSettings.blockCooldownHours =
+              parseFloat(document.getElementById("block-cooldown-input").value) ||
+              1;
+            await db.globalSettings.put(state.globalSettings);
+
+            // 动态启动或停止模拟器
+            stopBackgroundSimulation();
+            if (state.globalSettings.enableBackgroundActivity) {
+              startBackgroundSimulation();
+              console.log(
+                `后台活动模拟已启动，间隔: ${state.globalSettings.backgroundActivityInterval}秒`
+              );
+            } else {
+              console.log("后台活动模拟已停止。");
+            }
+
+            if (!silent) alert("设置已保存!");
+          }
+
           document
             .getElementById("save-api-settings-btn")
-            .addEventListener("click", async () => {
-              state.apiConfig.proxyUrl = document
-                .getElementById("proxy-url")
-                .value.trim();
-              state.apiConfig.apiKey = document
-                .getElementById("api-key")
-                .value.trim();
-              state.apiConfig.model =
-                document.getElementById("model-select").value;
-              // 保存流式请求设置
-              state.apiConfig.enableStreaming = document.getElementById(
-                "stream-request-switch"
-              ).checked;
-              await db.apiConfig.put(state.apiConfig);
+            .addEventListener("click", () => saveApiSettings(false));
 
-              // 在 'save-api-settings-btn' 的 click 事件监听器内部
-              // await db.apiConfig.put(state.apiConfig); 这行之后
-
-              // ▼▼▼ 将之前那段保存后台活动设置的逻辑，替换为下面这个增强版 ▼▼▼
-
-              const backgroundSwitch = document.getElementById(
-                "background-activity-switch"
-              );
-              const intervalInput = document.getElementById(
-                "background-interval-input"
-              );
-              const newEnableState = backgroundSwitch.checked;
-              const oldEnableState =
-                state.globalSettings.enableBackgroundActivity || false;
-
-              // 只有在用户“从关到开”时，才弹出警告
-              if (newEnableState && !oldEnableState) {
-                const userConfirmed = confirm(
-                  "【高费用警告】\n\n" +
-                    "您正在启用“后台角色活动”功能。\n\n" +
-                    "这会使您的AI角色们在您不和他们聊天时，也能“独立思考”并主动给您发消息或进行社交互动，极大地增强沉浸感。\n\n" +
-                    "但请注意：\n" +
-                    "这会【在后台自动、定期地调用API】，即使您不进行任何操作。根据您的角色数量和检测间隔，这可能会导致您的API费用显著增加。\n\n" +
-                    "您确定要开启吗？"
-                );
-
-                if (!userConfirmed) {
-                  backgroundSwitch.checked = false; // 用户取消，把开关拨回去
-                  return; // 阻止后续逻辑
-                }
-              }
-
-              state.globalSettings.enableBackgroundActivity = newEnableState;
-              state.globalSettings.backgroundActivityInterval =
-                parseInt(intervalInput.value) || 60;
-              state.globalSettings.blockCooldownHours =
-                parseFloat(
-                  document.getElementById("block-cooldown-input").value
-                ) || 1;
-              await db.globalSettings.put(state.globalSettings);
-
-              // 动态启动或停止模拟器
-              stopBackgroundSimulation();
-              if (state.globalSettings.enableBackgroundActivity) {
-                startBackgroundSimulation();
-                console.log(
-                  `后台活动模拟已启动，间隔: ${state.globalSettings.backgroundActivityInterval}秒`
-                );
-              } else {
-                console.log("后台活动模拟已停止。");
-              }
-              // ▲▲▲ 替换结束 ▲▲▲
-
-              alert("API设置已保存!");
-            });
+          // 自动保存逻辑
+          ["proxy-url", "api-key"].forEach((id) => {
+            document.getElementById(id).addEventListener("change", () => saveApiSettings(true));
+          });
+          ["model-select", "stream-request-switch", "background-activity-switch", "background-interval-input", "block-cooldown-input"].forEach((id) => {
+            document.getElementById(id).addEventListener("change", () => saveApiSettings(true));
+          });
 
           // gemini 密钥聚焦的时候显示明文
           const ApiKeyInput = document.getElementById("api-key");
