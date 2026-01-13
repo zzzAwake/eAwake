@@ -1166,62 +1166,112 @@
       .voice-message-body {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         cursor: pointer;
-        padding: 8px 12px;
-        min-width: 80px;
-        max-width: 200px;
+        padding: 10px 14px;
+        min-width: 60px;
+        height: 22px;
+        border-radius: 4px;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        gap: 4px;
       }
       .message-bubble.user .voice-message-body {
-        color: #1a3d00;
-        flex-direction: row-reverse;
+        background-color: #2BA245;
+        color: #000;
       }
       .message-bubble.ai .voice-message-body {
-        color: var(--text-primary);
+        background-color: #FFFFFF;
+        color: #000;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
       }
-      .voice-waveform {
+      #phone-screen.dark-mode .message-bubble.ai .voice-message-body {
+        background-color: #2C2C2E;
+        color: #FFF;
+      }
+
+      .voice-message-body::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+      }
+      .message-bubble.user .voice-message-body::after {
+        right: -6px;
+        border-width: 6px 0 6px 8px;
+        border-color: transparent transparent transparent #2BA245;
+      }
+      .message-bubble.ai .voice-message-body::after {
+        left: -6px;
+        border-width: 6px 8px 6px 0;
+        border-color: transparent #FFFFFF transparent transparent;
+      }
+      #phone-screen.dark-mode .message-bubble.ai .voice-message-body::after {
+        border-color: transparent #2C2C2E transparent transparent;
+      }
+
+      .voice-duration {
+        font-size: 15px;
+        font-weight: 400;
+        color: inherit;
+        margin: 0 4px;
+      }
+
+      .wave-icon {
+        width: 20px;
+        height: 20px;
         display: flex;
         align-items: center;
-        height: 20px;
-        gap: 2px;
-        flex-grow: 1;
-        margin: 0 10px;
+        justify-content: center;
       }
-      .voice-waveform div {
-        width: 3px;
-        background-color: currentColor;
-        border-radius: 2px;
-        animation: wave-quiet 1.5s ease-in-out infinite;
+      .wave-icon svg {
+        stroke: currentColor;
+        fill: currentColor;
       }
-      @keyframes wave-quiet {
-        0%,
-        100% {
-          height: 2px;
-        }
-        50% {
-          height: 10px;
-        }
+      .message-bubble.ai .wave-icon {
+        transform: scaleX(-1);
       }
-      .voice-waveform div:nth-child(2) {
-        animation-delay: 0.2s;
+
+      .wave-icon.playing .wave-path-1 { animation: wave-fade 1s infinite 0.4s; }
+      .wave-icon.playing .wave-path-2 { animation: wave-fade 1s infinite 0.2s; }
+      .wave-icon.playing .wave-path-3 { animation: wave-fade 1s infinite 0s; }
+
+      @keyframes wave-fade {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
       }
-      .voice-waveform div:nth-child(3) {
-        animation-delay: 0.4s;
+
+      .voice-transcript {
+        background-color: #1A1A1A;
+        color: #FFFFFF;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 15px;
+        line-height: 1.5;
+        position: relative;
+        text-align: justify;
+        margin-top: 8px;
+        display: none;
+        word-break: break-word;
       }
-      .voice-waveform div:nth-child(4) {
-        animation-delay: 0.6s;
+      .voice-transcript::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 6px 8px 6px;
+        border-color: transparent transparent #1A1A1A transparent;
       }
-      .voice-waveform div:nth-child(5) {
-        animation-delay: 0.8s;
+      .message-bubble.user .voice-transcript::before {
+        right: 14px;
       }
-      .voice-duration {
-        /* --- 核心修正 --- */
-        font-size: var(--chat-font-size, 13px);
-        /* --- 修正结束 --- */
-        font-weight: 500;
-        color: var(--text-secondary);
-      }
-      .message-bubble.user .voice-duration {
-        color: #3e6224;
+      .message-bubble.ai .voice-transcript::before {
+        left: 14px;
       }
 
       /* ▼▼▼ 用这块代码替换掉你原来的 .message-bubble .content 样式 ▼▼▼ */
@@ -6788,6 +6838,39 @@
             </div>
             <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
+            <!-- ▼▼▼ 新增：手机边框颜色设置 ▼▼▼ -->
+            <div class="form-group">
+              <label for="frame-color-input">
+                手机边框颜色
+                <button
+                  id="reset-frame-color-btn"
+                  type="button"
+                  style="
+                    background: none;
+                    border: 1px solid #ccc;
+                    color: #555;
+                    font-size: 12px;
+                    padding: 2px 8px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-left: 10px;
+                  "
+                >
+                  重置
+                </button>
+              </label>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <input
+                  type="color"
+                  id="frame-color-input"
+                  value="#ffffff"
+                  style="width: 50px; height: 40px; padding: 0; border: none; cursor: pointer;"
+                />
+                <span id="frame-color-value" style="font-family: monospace;">#ffffff</span>
+              </div>
+            </div>
+            <!-- ▲▲▲ 新增结束 ▲▲▲ -->
+
             <!-- 【核心修改2】新增图标设置区域 -->
             <hr style="width: 80%; opacity: 0.3; margin: 30px 0" />
             <div style="width: 100%; text-align: left; margin-bottom: 15px">
@@ -10162,6 +10245,14 @@
           }
           // 【核心修改】在这里调用图标渲染函数
           renderIconSettings();
+
+          // ▼▼▼ 新增：回显边框颜色设置 ▼▼▼
+          const frameColorInput = document.getElementById("frame-color-input");
+          const frameColorValue = document.getElementById("frame-color-value");
+          const currentFrameColor = state.globalSettings.phoneFrameColor || "#ffffff";
+          frameColorInput.value = currentFrameColor;
+          frameColorValue.textContent = currentFrameColor;
+          // ▲▲▲ 新增结束 ▲▲▲
         }
         // ▲▲▲ 替换结束 ▲▲▲
         window.renderWallpaperScreenProxy = renderWallpaperScreen;
@@ -10172,6 +10263,18 @@
           if (wallpaper && wallpaper.startsWith("data:image"))
             homeScreen.style.backgroundImage = `url(${wallpaper})`;
           else if (wallpaper) homeScreen.style.backgroundImage = wallpaper;
+
+          // ▼▼▼ 新增：应用手机边框颜色 ▼▼▼
+          const phoneFrame = document.getElementById("phone-frame");
+          const customColor = state.globalSettings.phoneFrameColor;
+          
+          if (customColor) {
+            phoneFrame.style.backgroundColor = customColor;
+          } else {
+            // 如果没有自定义颜色，则清除内联样式，让CSS类（如.dark-mode）生效
+            phoneFrame.style.backgroundColor = "";
+          }
+          // ▲▲▲ 新增结束 ▲▲▲
         }
 
         async function renderWorldBookScreen() {
@@ -10548,17 +10651,25 @@
               2,
               "0"
             )}''`;
-            const waveformHTML =
-              "<div></div><div></div><div></div><div></div><div></div>";
+
+            // 使用 test.html 中的 SVG 图标
+            const waveIconSVG = `
+            <div class="wave-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="wave-path-1" d="M6 3.5C2.5 7 2.5 17 6 20.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="wave-path-2" d="M11 7C8.5 9.5 8.5 14.5 11 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="wave-path-3" d="M16 15 Q13.5 12 16 9 L19.5 12 Z" fill="currentColor"/>
+                </svg>
+            </div>`;
 
             // 【核心修正2】构建包含所有新元素的完整 HTML
+            // 注意：voice-message-body 现在对应 test.html 的 voice-bubble
             contentHtml = `
         <div class="voice-message-body">
-            <div class="voice-waveform">${waveformHTML}</div>
-            <div class="loading-spinner"></div>
             <span class="voice-duration">${durationFormatted}</span>
+            ${waveIconSVG}
         </div>
-        <div class="voice-transcript"></div>
+        <div class="voice-transcript" style="display:none;"></div>
     `;
           } else if (msg.type === "transfer") {
             bubble.classList.add("is-transfer");
@@ -18573,6 +18684,24 @@ ${contextSummary}
             chatInput.style.height = chatInput.scrollHeight + "px";
           });
 
+          // ▼▼▼ 新增：手机边框颜色设置相关事件 ▼▼▼
+          const frameColorInput = document.getElementById("frame-color-input");
+          const frameColorValue = document.getElementById("frame-color-value");
+          
+          frameColorInput.addEventListener("input", (e) => {
+            frameColorValue.textContent = e.target.value;
+            // 实时预览：直接修改DOM，但不保存
+            document.getElementById("phone-frame").style.backgroundColor = e.target.value;
+          });
+
+          document.getElementById("reset-frame-color-btn").addEventListener("click", () => {
+            // 重置为默认值（这里假设默认白色，实际保存时为空字符串让CSS生效）
+            frameColorInput.value = "#ffffff";
+            frameColorValue.textContent = "#ffffff";
+            document.getElementById("phone-frame").style.backgroundColor = ""; // 清除内联样式
+          });
+          // ▲▲▲ 新增结束 ▲▲▲
+
           document
             .getElementById("wallpaper-upload-input")
             .addEventListener("change", async (event) => {
@@ -18600,6 +18729,22 @@ ${contextSummary}
                 changesMade = true;
               }
 
+              // ▼▼▼ 新增：保存手机边框颜色 ▼▼▼
+              const currentFrameColor = frameColorInput.value;
+              // 如果是默认的白色（且不在夜间模式下），或者用户点了重置（我们需要一个标记），
+              // 这里简化处理：如果用户选择了颜色，就保存。
+              // 为了支持“重置”功能，我们检查 reset 按钮是否刚刚被点击过比较麻烦。
+              // 更简单的逻辑：直接保存 input 的值。
+              // 但是 reset 按钮清除了 style，input 还是显示 #ffffff。
+              // 修正逻辑：如果当前 style.backgroundColor 为空（被重置了），则保存 null。
+              // 否则保存 input 的值。
+              if (document.getElementById("phone-frame").style.backgroundColor === "") {
+                 state.globalSettings.phoneFrameColor = null;
+              } else {
+                 state.globalSettings.phoneFrameColor = currentFrameColor;
+              }
+              // ▲▲▲ 新增结束 ▲▲▲
+
               // 【核心修改】保存图标设置（它已经在内存中了，我们只需要把整个globalSettings存起来）
               await db.globalSettings.put(state.globalSettings);
 
@@ -18608,6 +18753,7 @@ ${contextSummary}
                 applyGlobalWallpaper();
                 newWallpaperBase64 = null;
               }
+              applyGlobalWallpaper(); // 确保边框颜色被应用（因为 applyGlobalWallpaper 包含了边框逻辑）
               applyAppIcons(); // 重新应用所有图标
 
               alert("外观设置已保存并应用！");
@@ -21659,7 +21805,7 @@ ${contextSummary}
               const bubble = voiceBody.closest(".message-bubble");
               if (!bubble) return;
 
-              const spinner = voiceBody.querySelector(".loading-spinner");
+              const waveIcon = voiceBody.querySelector(".wave-icon");
               const transcriptEl = bubble.querySelector(".voice-transcript");
 
               // 如果正在加载中，则不响应点击
@@ -21675,7 +21821,7 @@ ${contextSummary}
               // 4. 如果是收起状态，则开始“转录”流程
               else {
                 bubble.dataset.state = "loading"; // 进入加载状态
-                spinner.style.display = "block"; // 显示加载动画
+                if (waveIcon) waveIcon.classList.add("playing"); // 显示播放动画
 
                 // 模拟1.5秒的语音识别过程
                 setTimeout(() => {
@@ -21684,11 +21830,11 @@ ${contextSummary}
                     const voiceText = bubble.dataset.voiceText || "(无法识别)";
                     transcriptEl.textContent = voiceText; // 填充文字
 
-                    spinner.style.display = "none"; // 隐藏加载动画
+                    if (waveIcon) waveIcon.classList.remove("playing"); // 停止播放动画
                     transcriptEl.style.display = "block"; // 显示文字
                     bubble.dataset.state = "expanded"; // 进入展开状态
                   }
-                }, 500);
+                }, 1500);
               }
             });
 
