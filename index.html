@@ -5787,6 +5787,23 @@
         height: 100%;
         object-fit: cover;
       }
+/* --- 13.2 API 配置列表样式 --- */
+#api-configs-list { display: flex; flex-direction: column; gap: 12px; }
+.api-config-item { background-color: var(--secondary-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+#phone-screen.dark-mode .api-config-item { background-color: #2c2c2e; }
+.api-config-item .config-main { display: flex; align-items: center; gap: 12px; flex-grow: 1; overflow: hidden; }
+.api-config-item input[type="radio"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--accent-color); }
+.api-config-item .config-details { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+.api-config-item .config-name { font-weight: 600; color: var(--text-primary); font-size: 15px; }
+.api-config-item .config-url { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.api-config-item .config-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.api-config-item .config-actions button { padding: 5px 10px; font-size: 12px; border-radius: 5px; cursor: pointer; border: 1px solid transparent; }
+.api-config-item .config-actions .edit-btn { background-color: #e7f3ff; color: var(--accent-color); }
+.api-config-item .config-actions .delete-btn { background-color: #ffebee; color: #c62828; }
+
+/* 用于替换内'style'的工具类 */
+.form-group-flex { display: flex; justify-content: space-between; align-items: center; }
+
     </style>
   </head>
   <body>
@@ -5947,106 +5964,32 @@
 
         <div id="api-settings-screen" class="screen">
           <div class="header">
-            <span class="back-btn" onclick="showScreen('home-screen')">‹</span
-            ><span>API 设置</span><span style="width: 30px"></span>
+            <button type="button" class="back-btn" onclick="showScreen('home-screen')">‹</button>
+            <span>API 设置</span>
+            <span style="width: 30px"></span>
           </div>
           <div class="form-container">
-            <p
-              style="
-                font-size: 14px;
-                color: #666;
-                background-color: #f0f0f0;
-                padding: 10px;
-                border-radius: 8px;
-              "
-            >
-              提示: 若要使用“发送图片”功能, 请务必选择支持Vision(视觉)的模型,
-              如<code
-                style="
-                  background-color: #e0e0e0;
-                  padding: 2px 4px;
-                  border-radius: 4px;
-                "
-                >gpt-4o</code
-              >或<code
-                style="
-                  background-color: #e0e0e0;
-                  padding: 2px 4px;
-                  border-radius: 4px;
-                "
-                >gpt-4-vision-preview</code
-              >。
-            </p>
             <div class="form-group">
-              <label for="proxy-url">反代地址 (不需要添加/v1噢~)</label
-              ><input
-                type="text"
-                id="proxy-url"
-                placeholder="例如: https://api.openai.com"
-              />
+              <label>API 配置管理</label>
+              <div id="api-configs-list">
+                <!-- API 配置列表将由 JS 动态生成 -->
+              </div>
+              <button
+                type="button"
+                class="form-button form-button-secondary"
+                id="add-new-config-btn"
+                style="margin-top: 15px"
+              >
+                + 添加新配置
+              </button>
             </div>
-            <div class="form-group">
-              <label for="api-key">密钥 (直连轮询用英文逗号隔开)</label
-              ><input type="password" id="api-key" placeholder="sk-..." />
-            </div>
-            <div class="form-group">
-              <label for="model-select">模型</label
-              ><select id="model-select"></select>
-            </div>
-            <button class="form-button" id="fetch-models-btn">拉取模型</button>
-            <button class="form-button form-button-secondary" id="manage-api-presets-btn" style="margin-top: 10px;">配置管理</button>
 
-            <!-- ▼▼▼ 新增：真流式请求开关 ▼▼▼ -->
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-              "
-            >
-              <label for="stream-request-switch" style="margin-bottom: 0">
-                启用真流式请求 (Stream)
-                <p
-                  style="
-                    font-size: 12px;
-                    font-weight: normal;
-                    color: #999;
-                    margin-top: 5px;
-                  "
-                >
-                  开启后将以流式接收数据，可避免长文本超时。显示逻辑保持不变。
-                </p>
-              </label>
-              <input
-                type="checkbox"
-                id="stream-request-switch"
-                style="width: auto; height: 20px"
-              />
-            </div>
-            <!-- ▲▲▲ 新增结束 ▲▲▲ -->
-
-            <!-- ▼▼▼ 将这段代码粘贴到 API 设置页面的“保存设置”按钮上方 ▼▼▼ -->
             <hr style="margin: 20px 0; opacity: 0.3" />
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
+
+            <div class="form-group form-group-flex">
               <label for="background-activity-switch" style="margin-bottom: 0">
                 启用后台角色活动
-                <p
-                  style="
-                    font-size: 12px;
-                    font-weight: normal;
-                    color: #ff6b6b;
-                    margin-top: 5px;
-                  "
-                >
+                <p style="font-size: 12px; font-weight: normal; color: #ff6b6b; margin-top: 5px">
                   警告：此功能会显著增加API调用和费用！
                 </p>
               </label>
@@ -6056,28 +5999,10 @@
                 style="width: auto; height: 20px"
               />
             </div>
-            <!-- ▲▲▲ 粘贴结束 ▲▲▲ -->
-
-            <!-- ▼▼▼ 将这段代码粘贴到“启用后台角色活动”开关的下方 ▼▼▼ -->
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-              "
-            >
+            <div class="form-group form-group-flex" style="margin-top: 10px">
               <label for="background-interval-input" style="margin-bottom: 0">
                 后台活动检测间隔 (秒)
-                <p
-                  style="
-                    font-size: 12px;
-                    font-weight: normal;
-                    color: #999;
-                    margin-top: 5px;
-                  "
-                >
+                <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px">
                   建议值 60-300。值越大，费用越低，但角色反应越慢。
                 </p>
               </label>
@@ -6089,28 +6014,10 @@
                 style="width: 80px; text-align: center"
               />
             </div>
-            <!-- ▲▲▲ 粘贴结束 ▲▲▲ -->
-
-            <!-- ▼▼▼ 在这里新增 ▼▼▼ -->
-            <div
-              class="form-group"
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 10px;
-              "
-            >
+            <div class="form-group form-group-flex" style="margin-top: 10px">
               <label for="block-cooldown-input" style="margin-bottom: 0">
                 AI被拉黑后冷静期 (小时)
-                <p
-                  style="
-                    font-size: 12px;
-                    font-weight: normal;
-                    color: #999;
-                    margin-top: 5px;
-                  "
-                >
+                <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px">
                   被拉黑超过这个时间后，AI才有几率重新申请好友。
                 </p>
               </label>
@@ -6123,25 +6030,12 @@
                 style="width: 80px; text-align: center"
               />
             </div>
-            <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
-            <button class="form-button" id="save-api-settings-btn">
-              保存设置
-            </button>
             <hr style="margin: 20px 0; opacity: 0.3" />
 
-            <button class="form-button" id="export-data-btn">导出数据</button>
-
-            <!-- ① 普通按钮，和“导出”一个 class -->
-            <button class="form-button" id="import-btn">导入备份文件</button>
-
-            <!-- ② 真正的文件选择器，完全隐藏 -->
-            <input
-              id="import-data-input"
-              type="file"
-              accept="application/json"
-              hidden
-            />
+            <button type="button" class="form-button" id="export-data-btn">导出数据</button>
+            <button type="button" class="form-button" id="import-btn">导入备份文件</button>
+            <input id="import-data-input" type="file" accept="application/json" hidden />
           </div>
         </div>
         <!-- ▼▼▼ 用下面这段代码，完整替换掉你原来的 chat-list-screen ▼▼▼ -->
@@ -7516,6 +7410,59 @@
       </div>
     </div>
 
+    <div id="api-config-editor-modal" class="modal">
+      <div class="modal-content" style="height: auto; max-height: 90%">
+        <div class="modal-header">
+          <span>编辑API配置</span>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="config-editor-id" />
+          <div class="form-group">
+            <label for="config-name-input">配置名称</label>
+            <input type="text" id="config-name-input" placeholder="例如：主力模型、备用线路" />
+          </div>
+          <div class="form-group">
+            <label for="config-url-input">反代地址</label>
+            <input type="text" id="config-url-input" placeholder="例如: https://api.openai.com" />
+          </div>
+          <div class="form-group">
+            <label for="config-key-input">密钥</label>
+            <input type="password" id="config-key-input" placeholder="sk-..." />
+          </div>
+          <div class="form-group">
+            <label for="config-model-select">默认模型</label>
+            <select id="config-model-select"></select>
+            <button
+              type="button"
+              class="form-button-secondary"
+              id="config-fetch-models-btn"
+              style="margin-top: 10px"
+            >
+              拉取模型列表
+            </button>
+          </div>
+          <div class="form-group form-group-flex">
+            <label for="config-stream-switch" style="margin-bottom: 0">启用流式传输</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="config-stream-switch" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="form-group form-group-flex">
+            <label for="config-hide-stream-switch" style="margin-bottom: 0">隐藏流式响应</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="config-hide-stream-switch" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="cancel" id="cancel-config-editor-btn">取消</button>
+          <button type="button" class="save" id="save-config-btn">保存</button>
+        </div>
+      </div>
+    </div>
+
     <div id="preset-actions-modal" class="modal">
       <div id="custom-modal" style="width: 250px">
         <div class="custom-modal-footer">
@@ -8605,6 +8552,57 @@
         };
       }
       document.addEventListener("DOMContentLoaded", () => {
+  // === Lightweight performance helpers ===
+  /* visibility safeguard for streaming (patched) */
+  document.addEventListener(
+    "visibilitychange",
+    async () => {
+      if (document.hidden) {
+        try {
+          // flush any in-flight streaming content
+          await db?.chats?.put?.(state.chats[state.activeChatId]);
+        } catch (e) {}
+      }
+    },
+    { passive: true }
+  );
+
+  // 2) Default all images to lazy & async decoding (static + dynamically added)
+  function setImagePerfAttrs(img) {
+    try {
+      if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
+      if (!img.hasAttribute("decoding")) img.setAttribute("decoding", "async");
+    } catch (e) {}
+  }
+  document.querySelectorAll("img").forEach(setImagePerfAttrs);
+  const mo = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      m.addedNodes &&
+        m.addedNodes.forEach((node) => {
+          if (node && node.tagName === "IMG") setImagePerfAttrs(node);
+          else if (node && node.querySelectorAll)
+            node.querySelectorAll("img").forEach(setImagePerfAttrs);
+        });
+    }
+  });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+
+  // 3) Encourage passive listeners for scroll/touch to prevent jank
+  (function () {
+    const orig = EventTarget.prototype.addEventListener;
+    const defaultPassive = { touchstart: true, touchmove: true, wheel: true };
+    EventTarget.prototype.addEventListener = function (type, listener, options) {
+      let opts = options;
+      if (typeof options === "object" && options !== null) {
+        if (defaultPassive[type] && options.passive == null) {
+          opts = Object.assign({}, options, { passive: true });
+        }
+      } else if (options === undefined && defaultPassive[type]) {
+        opts = { passive: true };
+      }
+      return orig.call(this, type, listener, opts);
+    };
+  })();
         // ===================================================================
         // 1. 所有变量和常量定义
         // ===================================================================
@@ -8614,13 +8612,25 @@
           chats: {},
           activeChatId: null,
           globalSettings: {},
-          apiConfig: {},
+          apiConfigs: [],
           userStickers: [],
           worldBooks: [],
           personaPresets: [],
           qzoneSettings: {},
           activeAlbumId: null,
         };
+
+        function getActiveApiConfig() {
+            const activeConfigId = state.globalSettings.activeApiConfigId;
+            const activeConfig = state.apiConfigs.find((c) => c.id === activeConfigId);
+            if (!activeConfig) return null;
+            return { 
+                proxyUrl: activeConfig.url, 
+                apiKey: activeConfig.apiKey, 
+                model: activeConfig.model,
+                enableStreaming: activeConfig.enableStream // Map to old property name for compatibility
+            };
+        }
         // --- 修正结束 ---
         let musicState = {
           isActive: false,
@@ -8806,24 +8816,52 @@
         // 2. 数据库结构定义
         // ===================================================================
 
-        db.version(23).stores({
-          chats: "&id, isGroup, groupId",
-          apiConfig: "&id",
-          globalSettings: "&id",
-          userStickers: "&id, url, name",
-          worldBooks: "&id, name, categoryId", // <-- 【核心修改1】在这里添加 categoryId
-          worldBookCategories: "++id, name", // <-- 【核心修改2】新增这个表
-          musicLibrary: "&id",
-          personaPresets: "&id",
-          qzoneSettings: "&id",
-          qzonePosts: "++id, timestamp",
-          qzoneAlbums: "++id, name, createdAt",
-          qzonePhotos: "++id, albumId",
-          favorites: "++id, type, timestamp, originalTimestamp",
-          qzoneGroups: "++id, name",
-          memories: "++id, chatId, timestamp, type, targetDate",
-          callRecords: "++id, chatId, timestamp, customName", // <--【核心修改】在这里加上 customName
-        });
+        db.version(24)
+          .stores({
+            chats: "&id, isGroup, groupId",
+            // apiConfig: "&id", // <- 移除旧表
+            apiConfigs: "++id, name", // <- 新增，用于存储多个API配置
+            globalSettings: "&id",
+            userStickers: "&id, url, name",
+            worldBooks: "&id, name, categoryId",
+            worldBookCategories: "++id, name",
+            musicLibrary: "&id",
+            personaPresets: "&id",
+            qzoneSettings: "&id",
+            qzonePosts: "++id, timestamp",
+            qzoneAlbums: "++id, name, createdAt",
+            qzonePhotos: "++id, albumId",
+            favorites: "++id, type, timestamp, originalTimestamp",
+            qzoneGroups: "++id, name",
+            memories: "++id, chatId, timestamp, type, targetDate",
+            callRecords: "++id, chatId, timestamp, customName",
+          })
+          .upgrade(async (tx) => {
+            // 数据迁移脚本：从旧的单个 apiConfig 迁移到新的 apiConfigs 列表
+            const oldConfig = await tx.table("apiConfig").get("main");
+            if (oldConfig) {
+              console.log("检测到旧版API配置，正在执行自动迁移...");
+              const newConfigsTable = tx.table("apiConfigs");
+              const existingConfigs = await newConfigsTable.toArray();
+              if (existingConfigs.length === 0) {
+                const newId = await newConfigsTable.add({
+                  name: "默认配置",
+                  url: oldConfig.proxyUrl || "",
+                  apiKey: oldConfig.apiKey || "",
+                  model: oldConfig.model || "",
+                  enableStream: oldConfig.enableStream || false,
+                  hideStreamResponse: oldConfig.hideStreamResponse || false,
+                });
+
+                const globalSettings = (await tx.table("globalSettings").get("main")) || { id: "main" };
+                globalSettings.activeApiConfigId = newId;
+                await tx.table("globalSettings").put(globalSettings);
+
+                await tx.table("apiConfig").clear();
+                console.log("API配置迁移成功！");
+              }
+            }
+          });
 
         // ===================================================================
         // 3. 所有功能函数定义
@@ -9549,24 +9587,24 @@
           // ▼▼▼ 【核心修改在这里】 ▼▼▼
           const [
             chatsArr,
-            apiConfig,
+            apiConfigs, // <-- 修改这里
             globalSettings,
             userStickers,
             worldBooks,
             musicLib,
             personaPresets,
             qzoneSettings,
-            initialFavorites, // 将 initialFavorites 加入到解构赋值中
+            initialFavorites,
           ] = await Promise.all([
             db.chats.toArray(),
-            db.apiConfig.get("main"),
+            db.apiConfigs.toArray(), // <-- 修改这里
             db.globalSettings.get("main"),
             db.userStickers.toArray(),
             db.worldBooks.toArray(),
             db.musicLibrary.get("main"),
             db.personaPresets.toArray(),
             db.qzoneSettings.get("main"),
-            db.favorites.orderBy("timestamp").reverse().toArray(), // 确保这一行在 Promise.all 的数组参数内
+            db.favorites.orderBy("timestamp").reverse().toArray(),
           ]);
           // ▲▲▲ 【修改结束】 ▲▲▲
 
@@ -9651,12 +9689,7 @@
             acc[chat.id] = chat;
             return acc;
           }, {});
-          state.apiConfig = apiConfig || {
-            id: "main",
-            proxyUrl: "",
-            apiKey: "",
-            model: "",
-          };
+          state.apiConfigs = apiConfigs || [];
 
           state.globalSettings = globalSettings || {
             id: "main",
@@ -9666,6 +9699,8 @@
             backgroundActivityInterval: 60,
             blockCooldownHours: 1,
             appIcons: { ...DEFAULT_APP_ICONS }, // 【核心修改】确保appIcons存在并有默认值
+            framelessOnMobile: false, // 【核心新增】默认不开启无边框模式
+            frameColor: "#ffffff", // 【核心新增】默认外框颜色
           };
           // 【核心修改】合并已保存的图标和默认图标，防止更新后旧数据丢失新图标
           state.globalSettings.appIcons = {
@@ -9802,21 +9837,140 @@
         }
 
         function renderApiSettings() {
-          document.getElementById("proxy-url").value =
-            state.apiConfig.proxyUrl || "";
-          document.getElementById("api-key").value =
-            state.apiConfig.apiKey || "";
-          document.getElementById("model-select").value =
-            state.apiConfig.model || ""; // 确保模型也被还原
-          // ▼▼▼ 新增这行 ▼▼▼
-          document.getElementById("stream-request-switch").checked =
-            state.apiConfig.enableStreaming || false;
+          // 渲染其他全局设置（保持不变）
           document.getElementById("background-activity-switch").checked =
             state.globalSettings.enableBackgroundActivity || false;
           document.getElementById("background-interval-input").value =
             state.globalSettings.backgroundActivityInterval || 60;
           document.getElementById("block-cooldown-input").value =
             state.globalSettings.blockCooldownHours || 1;
+
+          // 渲染API配置列表
+          const listEl = document.getElementById("api-configs-list");
+          listEl.innerHTML = "";
+          if (state.apiConfigs.length === 0) {
+            listEl.innerHTML =
+              '<p style="text-align:center; color: var(--text-secondary);">还没有任何配置，请点击“添加”创建一个</p>';
+          }
+
+          const activeId = state.globalSettings.activeApiConfigId;
+
+          state.apiConfigs.forEach((config) => {
+            const item = document.createElement("div");
+            item.className = "api-config-item";
+            item.dataset.configId = config.id;
+            item.innerHTML = `
+        <div class="config-main">
+            <input type="radio" name="active_api_config" ${
+              config.id === activeId ? "checked" : ""
+            }>
+            <div class="config-details">
+                <span class="config-name">${config.name}</span>
+                <span class="config-url">${config.url || "URL未设置"}</span>
+            </div>
+        </div>
+        <div class="config-actions">
+            <button type="button" class="edit-btn">编辑</button>
+            <button type="button" class="delete-btn">删除</button>
+        </div>
+      `;
+            listEl.appendChild(item);
+          });
+        }
+        // ▼▼▼ [新版本] 请使用此函数进行替换 ▼▼▼
+        async function openApiConfigEditor(configId = null) {
+          let config = {
+            name: "",
+            url: "",
+            apiKey: "",
+            model: "gpt-4o",
+            enableStream: true,
+            hideStreamResponse: false,
+          };
+          if (configId) {
+            config = state.apiConfigs.find((c) => c.id === configId) || config;
+          }
+
+          // 填充基本信息
+          document.getElementById("config-editor-id").value = configId || "";
+          document.getElementById("config-name-input").value = config.name;
+          document.getElementById("config-url-input").value = config.url;
+          document.getElementById("config-key-input").value = config.apiKey;
+
+          // --- 【核心修复】 ---
+          // 每次打开时，都重置模型下拉列表，只显示当前配置已保存的模型
+          const modelSelect = document.getElementById("config-model-select");
+          // 1. 清空所有旧的 <option> 元素
+          modelSelect.innerHTML = "";
+          // 2. 创建一个只包含当前已保存模型的新 <option>
+          const savedModelOption = document.createElement("option");
+          savedModelOption.value = config.model;
+          savedModelOption.textContent = config.model;
+          savedModelOption.selected = true;
+          // 3. 将这个唯一的选项添加到下拉列表中
+          modelSelect.appendChild(savedModelOption);
+          // --- 【修复结束】 ---
+
+          // 填充开关状态
+          document.getElementById("config-stream-switch").checked =
+            config.enableStream;
+          document.getElementById("config-hide-stream-switch").checked =
+            config.hideStreamResponse;
+
+          // 显示模态框
+          document
+            .getElementById("api-config-editor-modal")
+            .classList.add("visible");
+        }
+        // ▲▲▲ 替换结束 ▲▲▲
+
+        async function saveApiConfig() {
+          const id = document.getElementById("config-editor-id").value;
+          const configData = {
+            name:
+              document.getElementById("config-name-input").value.trim() ||
+              "未命名配置",
+            url: document.getElementById("config-url-input").value.trim(),
+            apiKey: document.getElementById("config-key-input").value.trim(),
+            model: document.getElementById("config-model-select").value,
+            enableStream: document.getElementById("config-stream-switch")
+              .checked,
+            hideStreamResponse: document.getElementById(
+              "config-hide-stream-switch"
+            ).checked,
+          };
+
+          if (id) {
+            // 更新
+            configData.id = parseInt(id);
+            await db.apiConfigs.put(configData);
+            const index = state.apiConfigs.findIndex(
+              (c) => c.id === configData.id
+            );
+            if (index > -1) state.apiConfigs[index] = configData;
+          } else {
+            // 新增
+            const newId = await db.apiConfigs.add(configData);
+            configData.id = newId;
+            state.apiConfigs.push(configData);
+            // 如果是第一个配置，自动设为激活
+            if (state.apiConfigs.length === 1) {
+              state.globalSettings.activeApiConfigId = newId;
+              await db.globalSettings.put(state.globalSettings);
+            }
+          }
+
+          renderApiSettings();
+          document
+            .getElementById("api-config-editor-modal")
+            .classList.remove("visible");
+        }
+
+        async function setActiveApiConfig(configId) {
+          state.globalSettings.activeApiConfigId = configId;
+          await db.globalSettings.put(state.globalSettings);
+          // 可以在这里给一个轻量提示，或者什么都不做
+          console.log(`Active API config set to ID: ${configId}`);
         }
         window.renderApiSettingsProxy = renderApiSettings;
 
@@ -11137,7 +11291,7 @@
           }
 
           try {
-            const { proxyUrl, apiKey, model } = state.apiConfig;
+            const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
               alert("请先在API设置中配置反代地址、密钥并选择模型。");
               // ★★★★★【核心修改3：无论成功失败，都要隐藏输入提示】★★★★★
@@ -11840,7 +11994,7 @@ ${contextSummaryForApproval}
             let aiResponseContent = "";
 
             // --- 【核心修改】检查是否开启流式请求 (仅限非原生Gemini渠道) ---
-            if (state.apiConfig.enableStreaming && !isGemini) {
+            if ((getActiveApiConfig() || {}).enableStreaming && !isGemini) {
               console.log("正在使用流式请求 (OpenAI兼容模式)...");
               const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: "POST",
@@ -13938,7 +14092,7 @@ ${contextSummaryForApproval}
           const chat = state.chats[chatId];
           if (!chat) return;
 
-          const { proxyUrl, apiKey, model } = state.apiConfig;
+          const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
           if (!proxyUrl || !apiKey || !model) return;
 
           const now = new Date();
@@ -15479,7 +15633,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
 
           // 2. 重新构建一个信息更丰富、指令更明确的API请求
           try {
-            const { proxyUrl, apiKey, model } = state.apiConfig;
+            const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
               throw new Error("API未配置，无法发起通话。");
             }
@@ -15554,7 +15708,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
                       { role: "system", content: systemPromptForCall },
                       ...messagesForApi,
                     ],
-                    temperature: parseFloat(state.apiConfig.temperature) || 0.8,
+                    temperature: 0.8,
                   }),
                 });
 
@@ -16089,7 +16243,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
           if (!videoCallState.isActive) return;
 
           const chat = state.chats[videoCallState.activeChatId];
-          const { proxyUrl, apiKey, model } = state.apiConfig;
+          const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
 
           const isVisualMode = chat.settings.visualVideoCallEnabled;
           const callFeed = isVisualMode
@@ -16232,7 +16386,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
                       { role: "system", content: inCallPrompt },
                       ...messagesForApi,
                     ],
-                    temperature: parseFloat(state.apiConfig.temperature) || 0.8,
+                    temperature: 0.8,
                   }),
                 });
             if (!response.ok)
@@ -16272,8 +16426,8 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
             if (
               !chat.isGroup &&
               chat.settings.videoCallVoiceAccess &&
-              state.apiConfig.minimaxGroupId &&
-              state.apiConfig.minimaxApiKey &&
+              (getActiveApiConfig() || {}).minimaxGroupId &&
+              (getActiveApiConfig() || {}).minimaxApiKey &&
               chat.settings.minimaxVoiceId &&
               sanitizedResponse
             ) {
@@ -16635,7 +16789,7 @@ ${worldBookContent} // <--【核心】在这里注入世界书内容
             `正在为角色“${chat.name}”准备好友申请...`
           );
 
-          const { proxyUrl, apiKey, model } = state.apiConfig;
+          const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
           if (!proxyUrl || !apiKey || !model) {
             await showCustomAlert("配置错误", "API设置不完整，无法继续。");
             return;
@@ -18770,133 +18924,85 @@ ${contextSummary}
               showScreen("home-screen");
             });
           // ▲▲▲ 替换结束 ▲▲▲
-          async function saveApiSettings(silent = false) {
-            state.apiConfig.proxyUrl = document
-              .getElementById("proxy-url")
-              .value.trim();
-            state.apiConfig.apiKey = document
-              .getElementById("api-key")
-              .value.trim();
-            state.apiConfig.model =
-              document.getElementById("model-select").value;
-            // 保存流式请求设置
-            state.apiConfig.enableStreaming = document.getElementById(
-              "stream-request-switch"
-            ).checked;
-            await db.apiConfig.put(state.apiConfig);
 
-            const backgroundSwitch = document.getElementById(
-              "background-activity-switch"
-            );
-            const intervalInput = document.getElementById(
-              "background-interval-input"
-            );
-            const newEnableState = backgroundSwitch.checked;
-            const oldEnableState =
-              state.globalSettings.enableBackgroundActivity || false;
-
-            // 只有在用户“从关到开”时，才弹出警告
-            if (newEnableState && !oldEnableState) {
-              const userConfirmed = confirm(
-                "【高费用警告】\n\n" +
-                  "您正在启用“后台角色活动”功能。\n\n" +
-                  "这会使您的AI角色们在您不和他们聊天时，也能“独立思考”并主动给您发消息或进行社交互动，极大地增强沉浸感。\n\n" +
-                  "但请注意：\n" +
-                  "这会【在后台自动、定期地调用API】，即使您不进行任何操作。根据您的角色数量和检测间隔，这可能会导致您的API费用显著增加。\n\n" +
-                  "您确定要开启吗？"
-              );
-
-              if (!userConfirmed) {
-                backgroundSwitch.checked = false; // 用户取消，把开关拨回去
-                return; // 阻止后续逻辑
-              }
-            }
-
-            state.globalSettings.enableBackgroundActivity = newEnableState;
-            state.globalSettings.backgroundActivityInterval =
-              parseInt(intervalInput.value) || 60;
-            state.globalSettings.blockCooldownHours =
-              parseFloat(document.getElementById("block-cooldown-input").value) ||
-              1;
-            await db.globalSettings.put(state.globalSettings);
-
-            // 动态启动或停止模拟器
-            stopBackgroundSimulation();
-            if (state.globalSettings.enableBackgroundActivity) {
-              startBackgroundSimulation();
-              console.log(
-                `后台活动模拟已启动，间隔: ${state.globalSettings.backgroundActivityInterval}秒`
-              );
-            } else {
-              console.log("后台活动模拟已停止。");
-            }
-
-            if (!silent) alert("设置已保存!");
-          }
-
-          document
-            .getElementById("save-api-settings-btn")
-            .addEventListener("click", () => saveApiSettings(false));
-
-          // 自动保存逻辑
-          ["proxy-url", "api-key"].forEach((id) => {
-            document.getElementById(id).addEventListener("change", () => saveApiSettings(true));
-          });
-          ["model-select", "stream-request-switch", "background-activity-switch", "background-interval-input", "block-cooldown-input"].forEach((id) => {
-            document.getElementById(id).addEventListener("change", () => saveApiSettings(true));
+          // API Config Event Listeners
+          document.getElementById("add-new-config-btn").addEventListener("click", () => openApiConfigEditor());
+          document.getElementById("save-config-btn").addEventListener("click", saveApiConfig);
+          document.getElementById("cancel-config-editor-btn").addEventListener("click", () => {
+            document.getElementById("api-config-editor-modal").classList.remove("visible");
           });
 
-          // gemini 密钥聚焦的时候显示明文
-          const ApiKeyInput = document.getElementById("api-key");
-          ApiKeyInput.addEventListener("focus", (e) => {
-            e.target.setAttribute("type", "text");
-          });
-          ApiKeyInput.addEventListener("blur", (e) => {
-            e.target.setAttribute("type", "password");
-          });
+          document.getElementById("api-configs-list").addEventListener("click", async (e) => {
+            const target = e.target;
+            const item = target.closest(".api-config-item");
+            if (!item) return;
+            const configId = parseInt(item.dataset.configId);
 
-          document
-            .getElementById("fetch-models-btn")
-            .addEventListener("click", async () => {
-              const url = document.getElementById("proxy-url").value.trim();
-              const key = document.getElementById("api-key").value.trim();
-              if (!url || !key) return alert("请先填写反代地址和密钥");
-              try {
-                let isGemini = url === GEMINI_API_URL;
-                const response = await fetch(
-                  isGemini
-                    ? `${GEMINI_API_URL}?key=${getRandomValue(key)}`
-                    : `${url}/v1/models`,
-                  isGemini
-                    ? undefined
-                    : { headers: { Authorization: `Bearer ${key}` } }
-                );
-                if (!response.ok) throw new Error("无法获取模型列表");
-                const data = await response.json();
-                let models = isGemini ? data.models : data.data;
-                if (isGemini) {
-                  models = models.map((model) => {
-                    const parts = model.name.split("/");
-                    return {
-                      id: parts.length > 1 ? parts[1] : model.name,
-                    };
-                  });
+            if (target.classList.contains("edit-btn")) {
+              openApiConfigEditor(configId);
+            } else if (target.classList.contains("delete-btn")) {
+              const confirmed = await showCustomConfirm("删除配置", "确定要删除这个API配置吗？", { confirmButtonClass: "btn-danger" });
+              if (confirmed) {
+                await db.apiConfigs.delete(configId);
+                state.apiConfigs = state.apiConfigs.filter(c => c.id !== configId);
+                if (state.globalSettings.activeApiConfigId === configId) {
+                  state.globalSettings.activeApiConfigId = state.apiConfigs[0]?.id || null;
+                  await db.globalSettings.put(state.globalSettings);
                 }
-                const modelSelect = document.getElementById("model-select");
-                modelSelect.innerHTML = "";
-                models.forEach((model) => {
-                  const option = document.createElement("option");
-                  option.value = model.id;
-                  option.textContent = model.id;
-                  if (model.id === state.apiConfig.model)
-                    option.selected = true;
-                  modelSelect.appendChild(option);
-                });
-                alert("模型列表已更新");
-              } catch (error) {
-                alert(`拉取模型失败: ${error.message}`);
+                renderApiSettings();
               }
-            });
+            } else if (target.type === "radio") {
+              setActiveApiConfig(configId);
+            }
+          });
+
+          document.getElementById("config-fetch-models-btn").addEventListener("click", async () => {
+            const url = document.getElementById("config-url-input").value.trim();
+            const key = document.getElementById("config-key-input").value.trim();
+            if (!url || !key) return alert("请先填写反代地址和密钥");
+            try {
+              let isGemini = url === GEMINI_API_URL;
+              const response = await fetch(
+                isGemini ? `${GEMINI_API_URL}?key=${getRandomValue(key)}` : `${url}/v1/models`,
+                isGemini ? undefined : { headers: { Authorization: `Bearer ${key}` } }
+              );
+              if (!response.ok) throw new Error("无法获取模型列表");
+              const data = await response.json();
+              let models = isGemini ? data.models : data.data;
+              if (isGemini) {
+                models = models.map((model) => {
+                  const parts = model.name.split("/");
+                  return { id: parts.length > 1 ? parts[1] : model.name };
+                });
+              }
+              const modelSelect = document.getElementById("config-model-select");
+              modelSelect.innerHTML = "";
+              models.forEach((model) => {
+                const option = document.createElement("option");
+                option.value = model.id;
+                option.textContent = model.id;
+                modelSelect.appendChild(option);
+              });
+              alert("模型列表已更新！");
+            } catch (e) {
+              console.error(e);
+              alert("获取模型失败: " + e.message);
+            }
+          });
+
+          // Global Settings Auto-save
+          document.getElementById("background-activity-switch").addEventListener("change", async (e) => {
+            state.globalSettings.enableBackgroundActivity = e.target.checked;
+            await db.globalSettings.put(state.globalSettings);
+          });
+          document.getElementById("background-interval-input").addEventListener("change", async (e) => {
+            state.globalSettings.backgroundActivityInterval = parseInt(e.target.value);
+            await db.globalSettings.put(state.globalSettings);
+          });
+          document.getElementById("block-cooldown-input").addEventListener("change", async (e) => {
+            state.globalSettings.blockCooldownHours = parseFloat(e.target.value);
+            await db.globalSettings.put(state.globalSettings);
+          });
           document
             .getElementById("add-world-book-btn")
             .addEventListener("click", async () => {
