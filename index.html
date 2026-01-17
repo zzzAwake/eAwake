@@ -5954,13 +5954,6 @@
         transform: translateZ(0); /* 触发GPU渲染，有时能进一步优化字体边缘 */
       }
 
-      /* ==========================================================================
-   【夜间模式终极修复补丁】
-   修复范围：模态框(Modals)、输入框、弹窗位于 #phone-screen 外部的问题
-   ========================================================================== */
-
-      /* --- 1. 全局模态框 (Modals) --- */
-      /* 核心修正：使用 body.dark-mode 而不是 #phone-screen.dark-mode */
       body.dark-mode .modal-content,
       body.dark-mode .transfer-actions-content,
       body.dark-mode .battery-alert-content {
@@ -5979,14 +5972,12 @@
         border-top-color: #38383a !important;
       }
 
-      /* 弹窗底部按钮通用样式 */
       body.dark-mode .modal-footer button {
         background-color: #2c2c2e !important;
         color: #fff !important;
         border: 1px solid #38383a !important;
       }
 
-      /* 保持“保存/确定”按钮的高亮颜色 */
       body.dark-mode .modal-footer button.save,
       body.dark-mode .modal-footer .confirm-btn {
         background-color: var(--accent-color) !important;
@@ -5994,14 +5985,11 @@
         border: none !important;
       }
 
-      /* 弹窗底部的“取消”按钮 */
       body.dark-mode .modal-footer .cancel,
       body.dark-mode #custom-modal-cancel {
-        color: #ff453a !important; /* 红色文字 */
+        color: #ff453a !important; 
       }
 
-      /* --- 2. 全局表单输入框 (Inputs/Textareas/Selects) --- */
-      /* 核心修正：作用于 body 下的所有输入框，无论在何处 */
       body.dark-mode input[type="text"],
       body.dark-mode input[type="number"],
       body.dark-mode input[type="password"],
@@ -6018,17 +6006,14 @@
         color: #666;
       }
 
-      /* 修复表单标签 Label 颜色 */
       body.dark-mode .form-group label {
         color: #aaaaaa !important;
       }
 
-      /* 下拉菜单箭头 */
       body.dark-mode .select-box .arrow-down {
         color: #aaa;
       }
 
-      /* 多选框容器 */
       body.dark-mode .checkboxes-container {
         background-color: #2c2c2e;
         border-color: #38383a;
@@ -6037,16 +6022,12 @@
         background-color: #3a3a3c;
       }
 
-      /* --- 3. 聊天设置弹窗 (Chat Settings) 特有修复 --- */
-
-      /* 视频通话图片上传区域的浅色背景 */
       body.dark-mode #video-call-image-uploads {
         background-color: #2c2c2e !important;
         border: 1px solid #38383a;
         color: #fff;
       }
 
-      /* 各种设置按钮 (重置、上传头像等) */
       body.dark-mode #reset-theme-btn,
       body.dark-mode #reset-custom-css-btn,
       body.dark-mode #reset-frame-color-btn,
@@ -6061,21 +6042,15 @@
         border: 1px solid #48484a !important;
       }
 
-      /* 主题选择器文字 */
       body.dark-mode .theme-selector label {
         color: #ddd;
       }
 
-      /* 分割线 */
       body.dark-mode hr {
         border-top-color: #38383a !important;
         opacity: 0.5;
       }
 
-      /* --- 4. 聊天界面内嵌卡片 (Bubble Cards) --- */
-      /* 这些元素确实在 #phone-screen 内部，所以保持原样或用 body 均可 */
-
-      /* 链接分享卡片 */
       body.dark-mode .link-share-card {
         background-color: #2c2c2e;
         border-color: #38383a;
@@ -6087,7 +6062,6 @@
         color: #aaa;
       }
 
-      /* 投票卡片 */
       body.dark-mode .poll-card {
         background-color: #2c2c2e;
         border-color: #38383a;
@@ -6103,7 +6077,6 @@
         color: #888;
       }
 
-      /* 外卖卡片 */
       body.dark-mode .waimai-card {
         background-color: #2c2c2e;
         border-color: #38383a;
@@ -6346,6 +6319,310 @@
       body.dark-mode .wb-category-header > span:last-of-type,
       body.dark-mode .wb-book-container label {
         color: #fff;
+      }
+
+      body.dark-mode #custom-modal {
+        background-color: #1c1c1e !important; 
+        box-shadow:
+          0 0 0 1px #38383a,
+          0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .custom-modal-header {
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .custom-modal-body,
+      body.dark-mode .custom-modal-body p {
+        color: #e0e0e0 !important;
+      }
+
+      body.dark-mode .custom-modal-footer {
+        border-top-color: #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer button {
+        background-color: transparent !important;
+        color: #0a84ff !important; 
+      }
+
+      body.dark-mode .custom-modal-footer button:first-child {
+        border-right-color: #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer .confirm-btn.btn-danger {
+        color: #ff453a !important;
+      }
+
+      body.dark-mode #custom-modal input,
+      body.dark-mode #custom-modal textarea {
+        background-color: #2c2c2e !important; 
+        border: 1px solid #38383a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode #custom-modal .format-btn {
+        background-color: #3a3a3c !important;
+        color: #ffffff !important;
+        border: 1px solid #48484a !important;
+      }
+      body.dark-mode #custom-modal .format-btn:hover {
+        background-color: #48484a !important;
+      }
+      body.dark-mode #custom-modal {
+        background-color: #1c1c1e !important; 
+        box-shadow:
+          0 0 0 1px #38383a,
+          0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .custom-modal-header {
+        color: #ffffff !important;
+        border-bottom: 1px solid #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer {
+        border-top: 1px solid #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer button {
+        background-color: transparent !important;
+        color: #0a84ff !important;
+      }
+
+      body.dark-mode .custom-modal-footer button:first-child {
+        border-right: 1px solid #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer .confirm-btn.btn-danger {
+        color: #ff453a !important; 
+      }
+
+      body.dark-mode #custom-modal input,
+      body.dark-mode #custom-modal textarea {
+        background-color: #2c2c2e !important;
+        border: 1px solid #38383a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .existing-group-item {
+        background-color: #2c2c2e !important;
+        border-color: #38383a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .existing-group-item .delete-group-btn {
+        color: #ff453a !important; 
+      }
+
+      body.dark-mode #new-category-name-input {
+        background-color: #2c2c2e !important;
+        border: 1px solid #38383a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode #add-new-category-btn {
+        background-color: #3a3a3c !important;
+        border: 1px solid #48484a !important;
+        color: #ffffff !important;
+      }
+      body.dark-mode #custom-prompt-input {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+        caret-color: #0a84ff;
+      }
+
+      body.dark-mode #custom-prompt-input::placeholder {
+        color: #666666 !important;
+      }
+
+      body.dark-mode #post-public-text,
+      body.dark-mode #post-hidden-text,
+      body.dark-mode #post-image-description {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+      }
+
+      body.dark-mode .post-mode-switcher {
+        background-color: #2c2c2e !important;
+        border: 1px solid #38383a;
+      }
+
+      body.dark-mode .mode-btn {
+        color: #888888;
+      }
+
+      body.dark-mode .mode-btn.active {
+        background-color: #3a3a3c !important; 
+        color: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      body.dark-mode .post-image-preview-container {
+        background-color: #1c1c1e !important;
+        border-color: #38383a !important;
+      }
+
+      body.dark-mode #post-visibility-groups {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a;
+      }
+      body.dark-mode .transfer-content {
+        background-color: #2a1c21 !important; 
+        border: 1px solid #4a2c36 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9) !important;
+        background-image: none !important; 
+      }
+
+      body.dark-mode .transfer-header {
+        color: #ff85b3 !important; 
+      }
+
+      body.dark-mode .transfer-input-group input {
+        background-color: #1a0f12 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a2c36 !important;
+      }
+
+      body.dark-mode .transfer-input-group input:focus {
+        border-color: #ff85b3 !important;
+      }
+
+      body.dark-mode .transfer-input-group label {
+        color: #d18ca6 !important;
+      }
+
+      body.dark-mode #transfer-cancel-btn {
+        background-color: #3d2b32 !important;
+        color: #ff85b3 !important;
+      }
+
+      body.dark-mode #new-group-name-input {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+      }
+
+      body.dark-mode #add-new-group-btn {
+        background-color: #3a3a3c !important;
+        border: 1px solid #48484a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode .existing-group-item {
+        background-color: #2c2c2e !important;
+        border-color: #38383a !important;
+        color: #ffffff !important;
+      }
+
+      body.dark-mode #settings-preview-area {
+        background-color: #000000 !important; 
+        border-color: #38383a !important;
+      }
+
+      body.dark-mode #settings-preview-area .message-bubble {
+        color: #e0e0e0;
+      }
+
+      body.dark-mode #custom-prompt-input {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+        caret-color: #0a84ff;
+      }
+
+      body.dark-mode #custom-prompt-input::placeholder {
+        color: #666666 !important;
+      }
+
+      body.dark-mode #custom-modal-body {
+        color: #e0e0e0 !important;
+      }
+
+      body.dark-mode #favorites-action-bar {
+        background-color: rgba(25, 25, 25, 0.9) !important;
+        border-top: 1px solid #38383a !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+      }
+
+      body.dark-mode #favorites-delete-selected-btn {
+        background-color: #ff453a !important; 
+        color: #ffffff !important;
+      }
+
+      body.dark-mode #custom-modal-body,
+      body.dark-mode #custom-modal-body p {
+        color: #e0e0e0 !important;
+      }
+
+      body.dark-mode #custom-modal {
+        background-color: #1c1c1e !important;
+        border: 1px solid #38383a !important;
+      }
+
+      body.dark-mode .custom-modal-footer button {
+        color: #0a84ff !important;
+      }
+
+      body.dark-mode .custom-modal-footer .confirm-btn.btn-danger {
+        color: #ff453a !important;
+        font-weight: 600;
+      }
+      #phone-screen.dark-mode #world-book-list {
+        background-color: #000000 !important;
+      }
+
+      #phone-screen.dark-mode .world-book-group-content .list-item,
+      #phone-screen.dark-mode #world-book-list .list-item {
+        background-color: #000000 !important; 
+        border-bottom: 1px solid #2c2c2e !important; 
+      }
+
+      #phone-screen.dark-mode .world-book-group-content .list-item:hover,
+      #phone-screen.dark-mode #world-book-list .list-item:hover {
+        background-color: #1c1c1e !important; 
+      }
+
+      #phone-screen.dark-mode .list-item .item-title {
+        color: #ffffff !important; 
+        font-weight: 600;
+        text-shadow: none !important; 
+      }
+
+      #phone-screen.dark-mode .list-item .item-content {
+        color: #8d8d92 !important; 
+        text-shadow: none !important;
+      }
+
+      #phone-screen.dark-mode .world-book-group-header {
+        background-color: #1c1c1e !important; 
+        border-bottom: 1px solid #2c2c2e !important;
+      }
+
+      #phone-screen.dark-mode .world-book-group-header .group-name {
+        color: #e0e0e0 !important; 
+        font-weight: 600;
+      }
+
+      #phone-screen.dark-mode .world-book-group-header .arrow {
+        color: #8d8d92 !important; 
+      }
+
+      #phone-screen.dark-mode .world-book-group-container {
+        border-top-color: #2c2c2e !important;
+        border-bottom-color: #2c2c2e !important;
+        background-color: transparent !important;
+      }
+
+      #phone-screen.dark-mode #world-book-list * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
     </style>
   </head>
@@ -9574,11 +9851,11 @@
                 ? `<textarea id="${inputId}" placeholder="${placeholder}" rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; resize: vertical;">${initialValue}</textarea>`
                 : `<input type="${type}" id="${inputId}" placeholder="${placeholder}" value="${initialValue}">`;
 
-            // 【核心修改】将额外的HTML和输入框组合在一起
+            // 将额外的HTML和输入框组合在一起
             modalBody.innerHTML = extraHtml + inputHtml;
             const input = document.getElementById(inputId);
 
-            // 【核心修改】为格式助手按钮绑定事件
+            // 为格式助手按钮绑定事件
             modalBody.querySelectorAll(".format-btn").forEach((btn) => {
               btn.addEventListener("click", () => {
                 const templateStr = btn.dataset.template;
@@ -9603,8 +9880,32 @@
               resolve(null);
               hideCustomModal();
             };
+
+            // 1. 显示模态框 (修改 DOM/CSS 状态)
             showCustomModal();
-            setTimeout(() => input.focus(), 100);
+
+            // 2. 核心优化：多重聚焦策略
+
+            // 策略A：立即聚焦
+            // 针对高性能设备，尝试在当前同步执行栈中直接聚焦，这是 iOS 最喜欢的“直接交互”。
+            // 虽然此时元素可能还没完全渲染可见，但在 DOM 树中 display 属性已变更为非 none。
+            input.focus();
+
+            // 策略B：下一帧聚焦
+            // 如果策略A失败（因为浏览器还没重排），请求在下一帧渲染前聚焦。
+            // requestAnimationFrame 通常会被浏览器视为用户交互的一部分。
+            requestAnimationFrame(() => {
+              input.focus();
+            });
+
+            // 策略C：保底延时
+            // 针对老旧安卓设备或渲染极慢的情况，稍微延长等待时间。
+            // 即使 iOS 在这里拦截了键盘，上面的 A 或 B 应该已经成功了。
+            setTimeout(() => {
+              if (document.activeElement !== input) {
+                input.focus();
+              }
+            }, 150);
           });
         }
         // ▲▲▲ 替换结束 ▲▲▲
@@ -14002,9 +14303,6 @@
           element.addEventListener("touchmove", cancelPress);
         }
 
-        async function handleListenTogetherClick() {
-          const targetChatId = state.activeChatId;
-          if (!targetChatId) return;
         async function handleListenTogetherClick() {
           const targetChatId = state.activeChatId;
           if (!targetChatId) return;
@@ -20887,33 +21185,30 @@
               modal.classList.add("visible");
             });
 
-          // ▼▼▼ 【修正后】的“动态”（图片）按钮事件 ▼▼▼
           document
             .getElementById("create-post-btn")
             .addEventListener("click", async () => {
-              // 1. 重置并获取模态框
               resetCreatePostModal();
               const modal = document.getElementById("create-post-modal");
 
-              // 2. 设置为“复杂动态”模式
               modal.dataset.mode = "complex";
 
-              // 3. 确保与图片/文字图相关的部分是可见的
               modal.querySelector(".post-mode-switcher").style.display = "flex";
-              // 显式激活“上传图片”模式...
+
+              modal.querySelector("#image-mode-content").style.display = "";
+              modal.querySelector("#text-image-mode-content").style.display =
+                "";
+
               modal
                 .querySelector("#image-mode-content")
                 .classList.add("active");
-              // ...同时确保“文字图”模式是隐藏的
               modal
                 .querySelector("#text-image-mode-content")
                 .classList.remove("active");
 
-              // 4. 恢复主输入框的默认提示语
               modal.querySelector("#post-public-text").placeholder =
                 "分享新鲜事...（非必填的公开文字）";
 
-              // 5. 准备并显示模态框（与“说说”按钮的逻辑相同）
               const visibilityGroupsContainer = document.getElementById(
                 "post-visibility-groups",
               );
