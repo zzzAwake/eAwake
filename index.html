@@ -1012,7 +1012,7 @@
         text-align: center;
       }
       .custom-modal-body {
-        padding: 0 16px 16px;
+        padding: 5px 5px 5px;
         text-align: center;
         font-size: 14px;
         color: #333;
@@ -9794,7 +9794,7 @@
           return new Promise((resolve) => {
             modalResolve = resolve;
             modalTitle.textContent = title;
-            modalBody.innerHTML = `<p style="text-align: left; white-space: pre-wrap;">${message}</p>`;
+            modalBody.innerHTML = `<div style="text-align: center; white-space: pre-wrap; display: flex; align-items: center; justify-content: center; min-height: 30px; width: 100%;">${message}</div>`;
             modalCancelBtn.style.display = "none";
             modalConfirmBtn.textContent = "好的";
             modalConfirmBtn.onclick = () => {
