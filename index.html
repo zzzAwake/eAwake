@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -45,8 +45,15 @@
         overflow: hidden;
         margin: 0;
         padding: 20px;
-        font-family: "bulangni", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Helvetica, Arial, sans-serif;
+        font-family:
+          "bulangni",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
         font-weight: normal;
         background-color: #dcdcdc;
         display: flex;
@@ -62,15 +69,18 @@
         padding: 12px;
         background-color: #fff;
         border-radius: 50px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25),
+        box-shadow:
+          0 20px 50px rgba(0, 0, 0, 0.25),
           inset 0 2px 4px rgba(0, 0, 0, 0.1);
         position: relative;
         transition: background-color 0.3s ease;
       }
       body.dark-mode #phone-frame {
         background-color: #2a2a2a;
-        box-shadow: 0 0 25px rgba(220, 235, 255, 0.18),
-          0 0 100px rgba(220, 235, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1),
+        box-shadow:
+          0 0 25px rgba(220, 235, 255, 0.18),
+          0 0 100px rgba(220, 235, 255, 0.1),
+          0 0 0 1px rgba(255, 255, 255, 0.1),
           0 40px 80px rgba(0, 0, 0, 0.95),
           inset 0 1px 2px rgba(255, 255, 255, 0.2);
       }
@@ -170,7 +180,9 @@
         overflow: hidden;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
+        transition:
+          opacity 0.3s,
+          visibility 0.3s;
       }
       .screen.active {
         opacity: 1;
@@ -938,7 +950,9 @@
         -webkit-backdrop-filter: blur(5px);
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: opacity 0.2s, transform 0.1s;
+        transition:
+          opacity 0.2s,
+          transform 0.1s;
         cursor: pointer;
       }
       #wait-reply-btn:hover {
@@ -1164,7 +1178,9 @@
         border-radius: 12px;
         display: block;
         cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
       }
       .ai-generated-image:hover {
         transform: scale(1.05);
@@ -1824,7 +1840,9 @@
         background-size: cover;
         background-position: center;
         cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
         border: 1px solid rgba(0, 0, 0, 0.1);
       }
       .persona-preset-item:hover {
@@ -1908,7 +1926,9 @@
         flex-direction: column;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.2s, visibility 0.2s;
+        transition:
+          opacity 0.2s,
+          visibility 0.2s;
         z-index: 1;
       }
       .chat-list-view.active {
@@ -2324,7 +2344,9 @@
         display: flex;
         flex-direction: column;
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
         border-radius: 8px; /* 给整个项目也加个圆角 */
       }
 
@@ -2908,7 +2930,9 @@
 
       /* === 收藏页面多选模式样式 === */
       #favorites-view.selection-mode .favorite-item-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
       /* 选择框的样式 */
@@ -3399,7 +3423,8 @@
         overflow: hidden;
         background-color: #fff;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
       }
 
@@ -3691,7 +3716,9 @@
         background-size: 50%;
         background-repeat: no-repeat;
         background-position: center;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
       .call-action-btn:active {
@@ -3841,7 +3868,9 @@
         cursor: pointer;
         background-repeat: no-repeat;
         background-position: center;
-        transition: transform 0.2s, background-color 0.2s;
+        transition:
+          transform 0.2s,
+          background-color 0.2s;
       }
       .control-btn:active {
         transform: scale(0.9);
@@ -4381,8 +4410,8 @@
         border-radius: 10px;
         border: 1px solid #e0e0e0;
         padding: 12px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
 
       .poll-card.closed {
@@ -5090,7 +5119,9 @@
         border: 1px solid var(--border-color);
         border-radius: 8px;
         background-color: #f9f9f9; /* 日间模式的浅灰色背景 */
-        transition: background-color 0.3s, border-color 0.3s;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
       }
 
       /* 预览框里的文字颜色，默认是黑色 */
@@ -5119,8 +5150,8 @@
         text-align: center;
         position: relative;
         border: 1px solid #ffcce0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
 
       .transfer-actions-header {
@@ -5151,7 +5182,9 @@
         font-size: 16px;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
         color: white;
       }
 
@@ -5229,7 +5262,9 @@
         padding: 15px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
         border-left: 5px solid var(--accent-color);
       }
       .call-record-card:hover {
@@ -5412,7 +5447,8 @@
         opacity: 0;
         visibility: hidden;
         transform: translateY(-50px);
-        transition: opacity 0.4s ease-out,
+        transition:
+          opacity 0.4s ease-out,
           transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
@@ -5918,399 +5954,399 @@
         transform: translateZ(0); /* 触发GPU渲染，有时能进一步优化字体边缘 */
       }
 
-/* ==========================================================================
+      /* ==========================================================================
    【夜间模式终极修复补丁】
    修复范围：模态框(Modals)、输入框、弹窗位于 #phone-screen 外部的问题
    ========================================================================== */
 
-/* --- 1. 全局模态框 (Modals) --- */
-/* 核心修正：使用 body.dark-mode 而不是 #phone-screen.dark-mode */
-body.dark-mode .modal-content,
-body.dark-mode .transfer-actions-content, 
-body.dark-mode .battery-alert-content {
-  background-color: #1c1c1e !important;
-  color: #ffffff !important;
-  border: 1px solid #38383a !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8) !important;
-}
+      /* --- 1. 全局模态框 (Modals) --- */
+      /* 核心修正：使用 body.dark-mode 而不是 #phone-screen.dark-mode */
+      body.dark-mode .modal-content,
+      body.dark-mode .transfer-actions-content,
+      body.dark-mode .battery-alert-content {
+        background-color: #1c1c1e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+      }
 
-body.dark-mode .modal-header {
-  border-bottom-color: #38383a !important;
-  color: #fff !important;
-}
+      body.dark-mode .modal-header {
+        border-bottom-color: #38383a !important;
+        color: #fff !important;
+      }
 
-body.dark-mode .modal-footer {
-  border-top-color: #38383a !important;
-}
+      body.dark-mode .modal-footer {
+        border-top-color: #38383a !important;
+      }
 
-/* 弹窗底部按钮通用样式 */
-body.dark-mode .modal-footer button {
-  background-color: #2c2c2e !important;
-  color: #fff !important;
-  border: 1px solid #38383a !important;
-}
+      /* 弹窗底部按钮通用样式 */
+      body.dark-mode .modal-footer button {
+        background-color: #2c2c2e !important;
+        color: #fff !important;
+        border: 1px solid #38383a !important;
+      }
 
-/* 保持“保存/确定”按钮的高亮颜色 */
-body.dark-mode .modal-footer button.save,
-body.dark-mode .modal-footer .confirm-btn {
-  background-color: var(--accent-color) !important;
-  color: #fff !important;
-  border: none !important;
-}
+      /* 保持“保存/确定”按钮的高亮颜色 */
+      body.dark-mode .modal-footer button.save,
+      body.dark-mode .modal-footer .confirm-btn {
+        background-color: var(--accent-color) !important;
+        color: #fff !important;
+        border: none !important;
+      }
 
-/* 弹窗底部的“取消”按钮 */
-body.dark-mode .modal-footer .cancel,
-body.dark-mode #custom-modal-cancel {
-    color: #ff453a !important; /* 红色文字 */
-}
+      /* 弹窗底部的“取消”按钮 */
+      body.dark-mode .modal-footer .cancel,
+      body.dark-mode #custom-modal-cancel {
+        color: #ff453a !important; /* 红色文字 */
+      }
 
-/* --- 2. 全局表单输入框 (Inputs/Textareas/Selects) --- */
-/* 核心修正：作用于 body 下的所有输入框，无论在何处 */
-body.dark-mode input[type="text"],
-body.dark-mode input[type="number"],
-body.dark-mode input[type="password"],
-body.dark-mode input[type="datetime-local"],
-body.dark-mode textarea,
-body.dark-mode select,
-body.dark-mode .select-box {
-  background-color: #2c2c2e !important;
-  color: #ffffff !important;
-  border: 1px solid #38383a !important;
-}
+      /* --- 2. 全局表单输入框 (Inputs/Textareas/Selects) --- */
+      /* 核心修正：作用于 body 下的所有输入框，无论在何处 */
+      body.dark-mode input[type="text"],
+      body.dark-mode input[type="number"],
+      body.dark-mode input[type="password"],
+      body.dark-mode input[type="datetime-local"],
+      body.dark-mode textarea,
+      body.dark-mode select,
+      body.dark-mode .select-box {
+        background-color: #2c2c2e !important;
+        color: #ffffff !important;
+        border: 1px solid #38383a !important;
+      }
 
-body.dark-mode ::placeholder {
-  color: #666;
-}
+      body.dark-mode ::placeholder {
+        color: #666;
+      }
 
-/* 修复表单标签 Label 颜色 */
-body.dark-mode .form-group label {
-    color: #aaaaaa !important; 
-}
+      /* 修复表单标签 Label 颜色 */
+      body.dark-mode .form-group label {
+        color: #aaaaaa !important;
+      }
 
-/* 下拉菜单箭头 */
-body.dark-mode .select-box .arrow-down {
-  color: #aaa;
-}
+      /* 下拉菜单箭头 */
+      body.dark-mode .select-box .arrow-down {
+        color: #aaa;
+      }
 
-/* 多选框容器 */
-body.dark-mode .checkboxes-container {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode .checkboxes-container label:hover {
-  background-color: #3a3a3c;
-}
+      /* 多选框容器 */
+      body.dark-mode .checkboxes-container {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode .checkboxes-container label:hover {
+        background-color: #3a3a3c;
+      }
 
-/* --- 3. 聊天设置弹窗 (Chat Settings) 特有修复 --- */
+      /* --- 3. 聊天设置弹窗 (Chat Settings) 特有修复 --- */
 
-/* 视频通话图片上传区域的浅色背景 */
-body.dark-mode #video-call-image-uploads {
-  background-color: #2c2c2e !important;
-  border: 1px solid #38383a;
-  color: #fff;
-}
+      /* 视频通话图片上传区域的浅色背景 */
+      body.dark-mode #video-call-image-uploads {
+        background-color: #2c2c2e !important;
+        border: 1px solid #38383a;
+        color: #fff;
+      }
 
-/* 各种设置按钮 (重置、上传头像等) */
-body.dark-mode #reset-theme-btn,
-body.dark-mode #reset-custom-css-btn,
-body.dark-mode #reset-frame-color-btn,
-body.dark-mode .avatar-upload button,
-body.dark-mode #manage-groups-btn,
-body.dark-mode #manage-members-btn,
-body.dark-mode #manage-ai-avatar-library-btn,
-body.dark-mode #open-persona-library-btn,
-body.dark-mode #remove-bg-btn {
-    background-color: #3a3a3c !important;
-    color: #fff !important;
-    border: 1px solid #48484a !important;
-}
+      /* 各种设置按钮 (重置、上传头像等) */
+      body.dark-mode #reset-theme-btn,
+      body.dark-mode #reset-custom-css-btn,
+      body.dark-mode #reset-frame-color-btn,
+      body.dark-mode .avatar-upload button,
+      body.dark-mode #manage-groups-btn,
+      body.dark-mode #manage-members-btn,
+      body.dark-mode #manage-ai-avatar-library-btn,
+      body.dark-mode #open-persona-library-btn,
+      body.dark-mode #remove-bg-btn {
+        background-color: #3a3a3c !important;
+        color: #fff !important;
+        border: 1px solid #48484a !important;
+      }
 
-/* 主题选择器文字 */
-body.dark-mode .theme-selector label {
-    color: #ddd;
-}
+      /* 主题选择器文字 */
+      body.dark-mode .theme-selector label {
+        color: #ddd;
+      }
 
-/* 分割线 */
-body.dark-mode hr {
-    border-top-color: #38383a !important;
-    opacity: 0.5;
-}
+      /* 分割线 */
+      body.dark-mode hr {
+        border-top-color: #38383a !important;
+        opacity: 0.5;
+      }
 
-/* --- 4. 聊天界面内嵌卡片 (Bubble Cards) --- */
-/* 这些元素确实在 #phone-screen 内部，所以保持原样或用 body 均可 */
+      /* --- 4. 聊天界面内嵌卡片 (Bubble Cards) --- */
+      /* 这些元素确实在 #phone-screen 内部，所以保持原样或用 body 均可 */
 
-/* 链接分享卡片 */
-body.dark-mode .link-share-card {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode .link-share-card .title {
-  color: #fff;
-}
-body.dark-mode .link-share-card .description {
-  color: #aaa;
-}
+      /* 链接分享卡片 */
+      body.dark-mode .link-share-card {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode .link-share-card .title {
+        color: #fff;
+      }
+      body.dark-mode .link-share-card .description {
+        color: #aaa;
+      }
 
-/* 投票卡片 */
-body.dark-mode .poll-card {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-  color: #fff;
-}
-body.dark-mode .poll-option-item {
-  background-color: #3a3a3c;
-  border-color: #48484a;
-  color: #fff;
-}
-body.dark-mode .poll-footer {
-  border-top-color: #38383a;
-  color: #888;
-}
+      /* 投票卡片 */
+      body.dark-mode .poll-card {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+        color: #fff;
+      }
+      body.dark-mode .poll-option-item {
+        background-color: #3a3a3c;
+        border-color: #48484a;
+        color: #fff;
+      }
+      body.dark-mode .poll-footer {
+        border-top-color: #38383a;
+        color: #888;
+      }
 
-/* 外卖卡片 */
-body.dark-mode .waimai-card {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode .waimai-header {
-  border-bottom-color: #38383a;
-}
-body.dark-mode .waimai-header .title-group {
-  color: #aaa;
-}
-body.dark-mode .waimai-header .brand {
-  color: #fff;
-}
-body.dark-mode .waimai-catchphrase {
-  color: #ccc;
-}
-body.dark-mode .waimai-main .payment-box {
-  background-color: #1c1c1e;
-  color: #fff;
-}
-body.dark-mode .waimai-main .amount {
-  color: #fff;
-}
-body.dark-mode .waimai-user-actions {
-  background-color: #2c2c2e;
-}
-body.dark-mode .waimai-decline-btn {
-  background-color: #3a3a3c;
-  color: #fff;
-  border-color: #48484a;
-}
+      /* 外卖卡片 */
+      body.dark-mode .waimai-card {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode .waimai-header {
+        border-bottom-color: #38383a;
+      }
+      body.dark-mode .waimai-header .title-group {
+        color: #aaa;
+      }
+      body.dark-mode .waimai-header .brand {
+        color: #fff;
+      }
+      body.dark-mode .waimai-catchphrase {
+        color: #ccc;
+      }
+      body.dark-mode .waimai-main .payment-box {
+        background-color: #1c1c1e;
+        color: #fff;
+      }
+      body.dark-mode .waimai-main .amount {
+        color: #fff;
+      }
+      body.dark-mode .waimai-user-actions {
+        background-color: #2c2c2e;
+      }
+      body.dark-mode .waimai-decline-btn {
+        background-color: #3a3a3c;
+        color: #fff;
+        border-color: #48484a;
+      }
 
-/* 消息编辑器块 */
-body.dark-mode .message-editor-block {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode .format-btn {
-  background-color: #3a3a3c;
-  color: #fff;
-}
+      /* 消息编辑器块 */
+      body.dark-mode .message-editor-block {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode .format-btn {
+        background-color: #3a3a3c;
+        color: #fff;
+      }
 
-/* 引用预览栏 */
-body.dark-mode #reply-preview-bar {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-body.dark-mode .reply-preview-content .sender {
-  color: #fff;
-}
+      /* 引用预览栏 */
+      body.dark-mode #reply-preview-bar {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      body.dark-mode .reply-preview-content .sender {
+        color: #fff;
+      }
 
-/* --- 5. 浮层面板 (Panels & Overlays) --- */
+      /* --- 5. 浮层面板 (Panels & Overlays) --- */
 
-/* 音乐播放器 */
-body.dark-mode .music-player-window {
-  background-color: rgba(30, 30, 30, 0.85);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-body.dark-mode #music-player-artist,
-body.dark-mode #music-time-counter {
-  color: #aaa;
-}
-body.dark-mode .music-controls button, 
-body.dark-mode #music-playlist-btn {
-  color: #fff;
-}
-body.dark-mode .music-controls .play-pause-btn {
-  background-color: rgba(255,255,255,0.1);
-}
-body.dark-mode .lyric-line {
-  color: #888;
-}
-body.dark-mode .lyric-line.active {
-  color: #fff;
-}
+      /* 音乐播放器 */
+      body.dark-mode .music-player-window {
+        background-color: rgba(30, 30, 30, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+      body.dark-mode #music-player-artist,
+      body.dark-mode #music-time-counter {
+        color: #aaa;
+      }
+      body.dark-mode .music-controls button,
+      body.dark-mode #music-playlist-btn {
+        color: #fff;
+      }
+      body.dark-mode .music-controls .play-pause-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      body.dark-mode .lyric-line {
+        color: #888;
+      }
+      body.dark-mode .lyric-line.active {
+        color: #fff;
+      }
 
-/* 音乐列表 & 表情面板 */
-body.dark-mode #music-playlist-panel,
-body.dark-mode #sticker-panel {
-  background-color: rgba(28, 28, 30, 0.95);
-  border-top-color: #38383a;
-}
-body.dark-mode .playlist-header, 
-body.dark-mode #sticker-panel-header {
-  border-bottom-color: #38383a;
-  color: #fff;
-}
-body.dark-mode .playlist-item {
-  border-bottom-color: #38383a;
-  color: #fff;
-}
-body.dark-mode .playlist-item.playing {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-body.dark-mode .playlist-item-info .artist {
-  color: #aaa;
-}
-body.dark-mode .sticker-item {
-  background-color: #3a3a3c;
-  border-color: #38383a;
-}
+      /* 音乐列表 & 表情面板 */
+      body.dark-mode #music-playlist-panel,
+      body.dark-mode #sticker-panel {
+        background-color: rgba(28, 28, 30, 0.95);
+        border-top-color: #38383a;
+      }
+      body.dark-mode .playlist-header,
+      body.dark-mode #sticker-panel-header {
+        border-bottom-color: #38383a;
+        color: #fff;
+      }
+      body.dark-mode .playlist-item {
+        border-bottom-color: #38383a;
+        color: #fff;
+      }
+      body.dark-mode .playlist-item.playing {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      body.dark-mode .playlist-item-info .artist {
+        color: #aaa;
+      }
+      body.dark-mode .sticker-item {
+        background-color: #3a3a3c;
+        border-color: #38383a;
+      }
 
-/* 锁定/拉黑遮罩 */
-body.dark-mode #chat-lock-overlay {
-  background-color: rgba(0, 0, 0, 0.85);
-  border-top-color: #38383a;
-}
-body.dark-mode .lock-text {
-  color: #ccc;
-}
+      /* 锁定/拉黑遮罩 */
+      body.dark-mode #chat-lock-overlay {
+        background-color: rgba(0, 0, 0, 0.85);
+        border-top-color: #38383a;
+      }
+      body.dark-mode .lock-text {
+        color: #ccc;
+      }
 
-/* --- 6. 其他列表与组件 --- */
+      /* --- 6. 其他列表与组件 --- */
 
-/* 联系人 & 成员列表 */
-body.dark-mode .contact-picker-item,
-body.dark-mode .member-management-item {
-  border-bottom-color: #38383a;
-  color: #fff;
-}
-body.dark-mode #member-management-actions {
-  background-color: #1c1c1e;
-  border-top-color: #38383a;
-}
+      /* 联系人 & 成员列表 */
+      body.dark-mode .contact-picker-item,
+      body.dark-mode .member-management-item {
+        border-bottom-color: #38383a;
+        color: #fff;
+      }
+      body.dark-mode #member-management-actions {
+        background-color: #1c1c1e;
+        border-top-color: #38383a;
+      }
 
-/* API配置列表 */
-body.dark-mode .api-config-item {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode .api-config-item .config-name {
-  color: #fff;
-}
-body.dark-mode .api-config-item .config-actions button {
-  background-color: #3a3a3c;
-  color: #fff;
-}
-body.dark-mode .api-config-item .config-actions .delete-btn {
-  background-color: #5c1e1e;
-  color: #ff9999;
-}
+      /* API配置列表 */
+      body.dark-mode .api-config-item {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode .api-config-item .config-name {
+        color: #fff;
+      }
+      body.dark-mode .api-config-item .config-actions button {
+        background-color: #3a3a3c;
+        color: #fff;
+      }
+      body.dark-mode .api-config-item .config-actions .delete-btn {
+        background-color: #5c1e1e;
+        color: #ff9999;
+      }
 
-/* 红包详情弹窗 */
-body.dark-mode #red-packet-details-modal .modal-content {
-  background-color: #1c1c1e !important;
-}
-body.dark-mode #rp-details-greeting {
-  color: #fff !important;
-}
-body.dark-mode #rp-details-summary {
-  color: #aaa !important;
-  border-top-color: #38383a !important;
-}
-body.dark-mode .rp-details-item {
-  border-bottom-color: #38383a;
-}
-body.dark-mode .rp-details-item .name {
-  color: #fff;
-}
-body.dark-mode .rp-details-item .amount {
-  color: #ddd;
-}
+      /* 红包详情弹窗 */
+      body.dark-mode #red-packet-details-modal .modal-content {
+        background-color: #1c1c1e !important;
+      }
+      body.dark-mode #rp-details-greeting {
+        color: #fff !important;
+      }
+      body.dark-mode #rp-details-summary {
+        color: #aaa !important;
+        border-top-color: #38383a !important;
+      }
+      body.dark-mode .rp-details-item {
+        border-bottom-color: #38383a;
+      }
+      body.dark-mode .rp-details-item .name {
+        color: #fff;
+      }
+      body.dark-mode .rp-details-item .amount {
+        color: #ddd;
+      }
 
-/* 红包/转账 发送页签 */
-body.dark-mode .frame-tabs {
-  background-color: #2c2c2e;
-}
-body.dark-mode .frame-tab {
-  color: #aaa;
-}
-body.dark-mode .frame-tab.active {
-  background-color: #3a3a3c;
-  color: #fff;
-}
+      /* 红包/转账 发送页签 */
+      body.dark-mode .frame-tabs {
+        background-color: #2c2c2e;
+      }
+      body.dark-mode .frame-tab {
+        color: #aaa;
+      }
+      body.dark-mode .frame-tab.active {
+        background-color: #3a3a3c;
+        color: #fff;
+      }
 
-/* 通话记录卡片 */
-body.dark-mode .call-record-card {
-  background-color: #1c1c1e;
-  border: 1px solid #333;
-}
-body.dark-mode .call-record-card .custom-title {
-  color: #fff;
-  border-bottom-color: #333;
-}
-body.dark-mode .call-record-card .participants-names {
-  color: #aaa;
-}
-body.dark-mode .transcript-entry.assistant {
-  background-color: #2c2c2e;
-  color: #fff;
-}
-body.dark-mode .transcript-entry.user {
-  background-color: #1e4620;
-  color: #fff;
-}
+      /* 通话记录卡片 */
+      body.dark-mode .call-record-card {
+        background-color: #1c1c1e;
+        border: 1px solid #333;
+      }
+      body.dark-mode .call-record-card .custom-title {
+        color: #fff;
+        border-bottom-color: #333;
+      }
+      body.dark-mode .call-record-card .participants-names {
+        color: #aaa;
+      }
+      body.dark-mode .transcript-entry.assistant {
+        background-color: #2c2c2e;
+        color: #fff;
+      }
+      body.dark-mode .transcript-entry.user {
+        background-color: #1e4620;
+        color: #fff;
+      }
 
-/* 动态(QZone)输入相关 */
-body.dark-mode .post-mode-switcher {
-  background-color: #2c2c2e;
-}
-body.dark-mode .mode-btn {
-  color: #aaa;
-}
-body.dark-mode .mode-btn.active {
-  background-color: #3a3a3c;
-  color: #fff;
-}
-body.dark-mode .post-image-preview-container {
-  background-color: #2c2c2e;
-  border-color: #38383a;
-}
-body.dark-mode #post-visibility-groups {
-  background-color: #2c2c2e !important;
-  color: #fff;
-}
+      /* 动态(QZone)输入相关 */
+      body.dark-mode .post-mode-switcher {
+        background-color: #2c2c2e;
+      }
+      body.dark-mode .mode-btn {
+        color: #aaa;
+      }
+      body.dark-mode .mode-btn.active {
+        background-color: #3a3a3c;
+        color: #fff;
+      }
+      body.dark-mode .post-image-preview-container {
+        background-color: #2c2c2e;
+        border-color: #38383a;
+      }
+      body.dark-mode #post-visibility-groups {
+        background-color: #2c2c2e !important;
+        color: #fff;
+      }
 
-/* 自定义弹窗文字 */
-body.dark-mode #custom-modal-body p {
-  color: #ddd;
-}
-body.dark-mode #custom-modal-confirm {
-  color: var(--accent-color);
-}
+      /* 自定义弹窗文字 */
+      body.dark-mode #custom-modal-body p {
+        color: #ddd;
+      }
+      body.dark-mode #custom-modal-confirm {
+        color: var(--accent-color);
+      }
 
-/* 操作菜单按钮 */
-body.dark-mode #preset-actions-modal button,
-body.dark-mode #message-actions-modal button,
-body.dark-mode #post-actions-modal button {
-  background-color: #2c2c2e;
-  color: #fff;
-  border-bottom-color: #38383a;
-}
-body.dark-mode #preset-actions-modal button:last-child,
-body.dark-mode #message-actions-modal button:last-child,
-body.dark-mode #post-actions-modal button:last-child {
-  background-color: #1c1c1e;
-  margin-top: 8px;
-}
+      /* 操作菜单按钮 */
+      body.dark-mode #preset-actions-modal button,
+      body.dark-mode #message-actions-modal button,
+      body.dark-mode #post-actions-modal button {
+        background-color: #2c2c2e;
+        color: #fff;
+        border-bottom-color: #38383a;
+      }
+      body.dark-mode #preset-actions-modal button:last-child,
+      body.dark-mode #message-actions-modal button:last-child,
+      body.dark-mode #post-actions-modal button:last-child {
+        background-color: #1c1c1e;
+        margin-top: 8px;
+      }
 
-/* 世界书文字 */
-body.dark-mode .wb-category-header > span:last-of-type,
-body.dark-mode .wb-book-container label {
-  color: #fff;
-}
+      /* 世界书文字 */
+      body.dark-mode .wb-category-header > span:last-of-type,
+      body.dark-mode .wb-book-container label {
+        color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -7259,7 +7295,9 @@ body.dark-mode .wb-book-container label {
             <div id="wallpaper-preview">点击下方上传</div>
             <button
               class="form-button"
-              onclick="document.getElementById('wallpaper-upload-input').click();"
+              onclick="
+                document.getElementById('wallpaper-upload-input').click()
+              "
             >
               上传壁纸
             </button>
@@ -7747,7 +7785,9 @@ body.dark-mode .wb-book-container label {
                 <div style="text-align: center">
                   <label style="font-size: 12px">对方画面</label>
                   <div
-                    onclick="document.getElementById('char-video-image-input').click()"
+                    onclick="
+                      document.getElementById('char-video-image-input').click()
+                    "
                     style="cursor: pointer; margin-top: 5px"
                   >
                     <img
@@ -7772,7 +7812,9 @@ body.dark-mode .wb-book-container label {
                 <div style="text-align: center">
                   <label style="font-size: 12px">我的画面</label>
                   <div
-                    onclick="document.getElementById('user-video-image-input').click()"
+                    onclick="
+                      document.getElementById('user-video-image-input').click()
+                    "
                     style="cursor: pointer; margin-top: 5px"
                   >
                     <img
@@ -9240,7 +9282,7 @@ body.dark-mode .wb-book-container label {
         apiKey,
         systemInstruction,
         messagesForDecision,
-        isGemini
+        isGemini,
       ) {
         if (!isGemini) {
           return undefined;
@@ -9255,7 +9297,7 @@ body.dark-mode .wb-book-container label {
         };
         return {
           url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
-            apiKey
+            apiKey,
           )}`,
           data: {
             method: "POST",
@@ -9304,7 +9346,7 @@ body.dark-mode .wb-book-container label {
               } catch (e) {}
             }
           },
-          { passive: true }
+          { passive: true },
         );
 
         // 2) Default all images to lazy & async decoding (static + dynamically added)
@@ -9343,7 +9385,7 @@ body.dark-mode .wb-book-container label {
           EventTarget.prototype.addEventListener = function (
             type,
             listener,
-            options
+            options,
           ) {
             let opts = options;
             if (typeof options === "object" && options !== null) {
@@ -9376,7 +9418,7 @@ body.dark-mode .wb-book-container label {
         function getActiveApiConfig() {
           const activeConfigId = state.globalSettings.activeApiConfigId;
           const activeConfig = state.apiConfigs.find(
-            (c) => c.id === activeConfigId
+            (c) => c.id === activeConfigId,
           );
           if (!activeConfig) return null;
           return {
@@ -9520,7 +9562,7 @@ body.dark-mode .wb-book-container label {
           placeholder,
           initialValue = "",
           type = "text",
-          extraHtml = ""
+          extraHtml = "",
         ) {
           return new Promise((resolve) => {
             modalResolve = resolve;
@@ -9762,7 +9804,7 @@ body.dark-mode .wb-book-container label {
           ]);
 
           const favoritedPostIds = new Set(
-            favorites.map((fav) => fav.content.id)
+            favorites.map((fav) => fav.content.id),
           );
 
           postsListEl.innerHTML = "";
@@ -9803,14 +9845,14 @@ body.dark-mode .wb-book-container label {
             const publicTextHtml = post.publicText
               ? `<div class="post-content">${post.publicText.replace(
                   /\n/g,
-                  "<br>"
+                  "<br>",
                 )}</div>`
               : "";
 
             if (post.type === "shuoshuo") {
               contentHtml = `<div class="post-content" style="margin-bottom: 10px;">${post.content.replace(
                 /\n/g,
-                "<br>"
+                "<br>",
               )}</div>`;
             } else if (post.type === "image_post" && post.imageUrl) {
               contentHtml = publicTextHtml
@@ -9825,7 +9867,7 @@ body.dark-mode .wb-book-container label {
             let likesHtml = "";
             if (post.likes && post.likes.length > 0) {
               likesHtml = `<div class="post-likes-section"><svg class="like-icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>${post.likes.join(
-                "、"
+                "、",
               )} 觉得很赞</span></div>`;
             }
 
@@ -9854,8 +9896,8 @@ body.dark-mode .wb-book-container label {
 
             postEl.innerHTML = `
                   <div class="post-header"><img src="${authorAvatar}" class="post-avatar"><div class="post-info"><span class="post-nickname">${authorNickname}</span><span class="post-timestamp">${formatPostTimestamp(
-              post.timestamp
-            )}</span></div>
+                    post.timestamp,
+                  )}</span></div>
                       <div class="post-actions-btn">…</div>
                   </div>
                   <div class="post-main-content">${contentHtml}</div>
@@ -9881,10 +9923,10 @@ body.dark-mode .wb-book-container label {
               postContainer.querySelector(".comment-section");
             if (commentSection) {
               commentSection.addEventListener("touchstart", (e) =>
-                e.stopPropagation()
+                e.stopPropagation(),
               );
               commentSection.addEventListener("mousedown", (e) =>
-                e.stopPropagation()
+                e.stopPropagation(),
               );
             }
             postsListEl.appendChild(postContainer);
@@ -9949,7 +9991,7 @@ body.dark-mode .wb-book-container label {
 
           if (items.length === 0) {
             const searchTerm = document.getElementById(
-              "favorites-search-input"
+              "favorites-search-input",
             ).value;
             const message = searchTerm
               ? "未找到相关收藏"
@@ -9987,13 +10029,13 @@ body.dark-mode .wb-book-container label {
               const publicTextHtml = post.publicText
                 ? `<div class="post-content">${post.publicText.replace(
                     /\n/g,
-                    "<br>"
+                    "<br>",
                   )}</div>`
                 : "";
               if (post.type === "shuoshuo") {
                 contentHtml = `<div class="post-content">${post.content.replace(
                   /\n/g,
-                  "<br>"
+                  "<br>",
                 )}</div>`;
               } else if (post.type === "image_post" && post.imageUrl) {
                 contentHtml = publicTextHtml
@@ -10062,7 +10104,7 @@ body.dark-mode .wb-book-container label {
                   // ★★★★★ 这就是唯一的、核心的修改！ ★★★★★
                   // 我们现在使用 originalName 去匹配，而不是旧的 name
                   const member = chat.members.find(
-                    (m) => m.originalName === msg.senderName
+                    (m) => m.originalName === msg.senderName,
                   );
                   // ★★★★★ 修改结束 ★★★★★
 
@@ -10121,7 +10163,7 @@ body.dark-mode .wb-book-container label {
           // 2. 清空搜索框并隐藏清除按钮
           const searchInput = document.getElementById("favorites-search-input");
           const clearBtn = document.getElementById(
-            "favorites-search-clear-btn"
+            "favorites-search-clear-btn",
           );
           searchInput.value = "";
           clearBtn.style.display = "none";
@@ -10146,11 +10188,10 @@ body.dark-mode .wb-book-container label {
           document.getElementById("switch-to-image-mode").click();
         }
 
-        // ▼▼▼ 用这个【已包含 memories】的版本，完整替换旧的 exportBackup 函数 ▼▼▼
         async function exportBackup() {
           try {
             const backupData = {
-              version: 1,
+              version: 2,
               timestamp: Date.now(),
             };
 
@@ -10158,7 +10199,7 @@ body.dark-mode .wb-book-container label {
               chats,
               worldBooks,
               userStickers,
-              apiConfig,
+              apiConfigs,
               globalSettings,
               personaPresets,
               musicLibrary,
@@ -10169,12 +10210,13 @@ body.dark-mode .wb-book-container label {
               favorites,
               qzoneGroups,
               memories,
-              worldBookCategories, // <-- 【核心修改1】在这里添加新变量
+              worldBookCategories,
+              callRecords,
             ] = await Promise.all([
               db.chats.toArray(),
               db.worldBooks.toArray(),
               db.userStickers.toArray(),
-              db.apiConfig.get("main"),
+              db.apiConfigs.toArray(),
               db.globalSettings.get("main"),
               db.personaPresets.toArray(),
               db.musicLibrary.get("main"),
@@ -10185,14 +10227,15 @@ body.dark-mode .wb-book-container label {
               db.favorites.toArray(),
               db.qzoneGroups.toArray(),
               db.memories.toArray(),
-              db.worldBookCategories.toArray(), // <-- 【核心修改2】在这里添加对新表的读取
+              db.worldBookCategories.toArray(),
+              db.callRecords.toArray(),
             ]);
 
             Object.assign(backupData, {
               chats,
               worldBooks,
               userStickers,
-              apiConfig,
+              apiConfigs,
               globalSettings,
               personaPresets,
               musicLibrary,
@@ -10203,7 +10246,8 @@ body.dark-mode .wb-book-container label {
               favorites,
               qzoneGroups,
               memories,
-              worldBookCategories, // <-- 【核心修改3】将新数据添加到备份对象中
+              worldBookCategories,
+              callRecords,
             });
 
             const blob = new Blob([JSON.stringify(backupData, null, 2)], {
@@ -10224,19 +10268,18 @@ body.dark-mode .wb-book-container label {
             console.error("导出数据时出错:", error);
             await showCustomAlert(
               "导出失败",
-              `发生了一个错误: ${error.message}`
+              `发生了一个错误: ${error.message}`,
             );
           }
         }
 
-        // ▼▼▼ 用这个【已包含 memories】的版本，完整替换旧的 importBackup 函数 ▼▼▼
         async function importBackup(file) {
           if (!file) return;
 
           const confirmed = await showCustomConfirm(
             "严重警告！",
             "导入备份将完全覆盖您当前的所有数据，包括聊天、动态、设置等。此操作不可撤销！您确定要继续吗？",
-            { confirmButtonClass: "btn-danger" }
+            { confirmButtonClass: "btn-danger" },
           );
 
           if (!confirmed) return;
@@ -10270,11 +10313,29 @@ body.dark-mode .wb-book-container label {
               if (Array.isArray(data.qzoneGroups))
                 await db.qzoneGroups.bulkPut(data.qzoneGroups);
               if (Array.isArray(data.memories))
-                await db.memories.bulkPut(data.memories); // 【核心修正】新增
+                await db.memories.bulkPut(data.memories);
+              if (Array.isArray(data.callRecords))
+                await db.callRecords.bulkPut(data.callRecords);
 
-              if (data.apiConfig) await db.apiConfig.put(data.apiConfig);
-              if (data.globalSettings)
+              if (Array.isArray(data.apiConfigs)) {
+                await db.apiConfigs.bulkPut(data.apiConfigs);
+              } else if (data.apiConfig) {
+                await db.apiConfigs.add({
+                  name: "导入的旧配置",
+                  url: data.apiConfig.proxyUrl || "",
+                  apiKey: data.apiConfig.apiKey || "",
+                  model: data.apiConfig.model || "",
+                  enableStream: data.apiConfig.enableStream || false,
+                  hideStreamResponse:
+                    data.apiConfig.hideStreamResponse || false,
+                });
+                console.log("已将旧版API配置迁移到新结构。");
+              }
+
+              if (data.globalSettings) {
                 await db.globalSettings.put(data.globalSettings);
+              }
+
               if (data.musicLibrary)
                 await db.musicLibrary.put(data.musicLibrary);
               if (data.qzoneSettings)
@@ -10283,7 +10344,7 @@ body.dark-mode .wb-book-container label {
 
             await showCustomAlert(
               "导入成功",
-              "所有数据已成功恢复！应用即将刷新以应用所有更改。"
+              "所有数据已成功恢复！应用即将刷新以应用所有更改。",
             );
 
             setTimeout(() => {
@@ -10293,11 +10354,10 @@ body.dark-mode .wb-book-container label {
             console.error("导入数据时出错:", error);
             await showCustomAlert(
               "导入失败",
-              `文件格式不正确或数据已损坏: ${error.message}`
+              `文件格式不正确或数据已损坏: ${error.message}`,
             );
           }
         }
-
         function applyCustomFont(fontUrl, isPreviewOnly = false) {
           if (!fontUrl) {
             dynamicFontStyle.innerHTML = "";
@@ -10319,9 +10379,8 @@ body.dark-mode .wb-book-container label {
             previewStyle.innerHTML = newStyle;
             if (!document.getElementById("preview-font-style"))
               document.head.appendChild(previewStyle);
-            document.getElementById(
-              "font-preview"
-            ).style.fontFamily = `'${fontName}', 'bulangni', sans-serif`;
+            document.getElementById("font-preview").style.fontFamily =
+              `'${fontName}', 'bulangni', sans-serif`;
           } else {
             dynamicFontStyle.innerHTML = `
                           ${newStyle}
@@ -10379,7 +10438,7 @@ body.dark-mode .wb-book-container label {
               chat.members[0].name
             ) {
               console.log(
-                `检测到旧版群聊数据 for "${chat.name}"，正在执行迁移...`
+                `检测到旧版群聊数据 for "${chat.name}"，正在执行迁移...`,
               );
               chat.members.forEach((member) => {
                 // 如果这个成员对象没有 originalName，说明是旧数据
@@ -10427,7 +10486,7 @@ body.dark-mode .wb-book-container label {
               if (!chat.settings) chat.settings = {}; // 以防万一连settings都没有
               chat.settings.aiAvatarLibrary = [];
               console.log(
-                `为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`
+                `为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`,
               );
             }
             // ▲▲▲ 添加结束 ▲▲▲
@@ -10695,7 +10754,7 @@ body.dark-mode .wb-book-container label {
             enableStream: document.getElementById("config-stream-switch")
               .checked,
             hideStreamResponse: document.getElementById(
-              "config-hide-stream-switch"
+              "config-hide-stream-switch",
             ).checked,
           };
 
@@ -10704,7 +10763,7 @@ body.dark-mode .wb-book-container label {
             configData.id = parseInt(id);
             await db.apiConfigs.put(configData);
             const index = state.apiConfigs.findIndex(
-              (c) => c.id === configData.id
+              (c) => c.id === configData.id,
             );
             if (index > -1) state.apiConfigs[index] = configData;
           } else {
@@ -10742,7 +10801,7 @@ body.dark-mode .wb-book-container label {
           const allChats = Object.values(state.chats).sort(
             (a, b) =>
               (b.history.slice(-1)[0]?.timestamp || 0) -
-              (a.history.slice(-1)[0]?.timestamp || 0)
+              (a.history.slice(-1)[0]?.timestamp || 0),
           );
 
           // 2. 获取所有分组
@@ -10760,7 +10819,7 @@ body.dark-mode .wb-book-container label {
           allGroups.forEach((group) => {
             // 从已排序的 allChats 中找到本组的第一个（也就是最新的）聊天
             const latestChatInGroup = allChats.find(
-              (chat) => chat.groupId === group.id
+              (chat) => chat.groupId === group.id,
             );
             // 如果找到了，就用它的时间戳；如果该分组暂时没有聊天或聊天没有历史记录，就用0
             group.latestTimestamp = latestChatInGroup
@@ -10777,7 +10836,7 @@ body.dark-mode .wb-book-container label {
           allGroups.forEach((group) => {
             // 从总列表里过滤出属于这个（已排序）分组的好友
             const groupChats = allChats.filter(
-              (chat) => !chat.isGroup && chat.groupId === group.id
+              (chat) => !chat.isGroup && chat.groupId === group.id,
             );
             // 如果这个分组是空的（可能所有好友都被删了），就跳过
             if (groupChats.length === 0) return;
@@ -10792,7 +10851,7 @@ body.dark-mode .wb-book-container label {
                   <div class="chat-group-content"></div>
               `;
             const contentEl = groupContainer.querySelector(
-              ".chat-group-content"
+              ".chat-group-content",
             );
             // 因为 allChats 本身就是有序的，所以 groupChats 自然也是有序的
             groupChats.forEach((chat) => {
@@ -10805,7 +10864,7 @@ body.dark-mode .wb-book-container label {
           // 6. 最后，渲染所有群聊和未分组的好友
           // 他们的顺序因为 allChats 的初始排序，天然就是正确的
           const ungroupedOrGroupChats = allChats.filter(
-            (chat) => chat.isGroup || (!chat.isGroup && !chat.groupId)
+            (chat) => chat.isGroup || (!chat.isGroup && !chat.groupId),
           );
           ungroupedOrGroupChats.forEach((chat) => {
             const item = createChatListItem(chat);
@@ -10875,7 +10934,7 @@ body.dark-mode .wb-book-container label {
             } else {
               lastMsgDisplay = String(lastMsgObj.content || "...").substring(
                 0,
-                20
+                20,
               );
             }
 
@@ -10946,7 +11005,7 @@ body.dark-mode .wb-book-container label {
             const confirmed = await showCustomConfirm(
               "删除对话",
               `确定要删除与 "${chat.name}" 的整个对话吗？此操作不可撤销。`,
-              { confirmButtonClass: "btn-danger" }
+              { confirmButtonClass: "btn-danger" },
             );
             if (confirmed) {
               if (musicState.isActive && musicState.activeChatId === chat.id)
@@ -10976,12 +11035,12 @@ body.dark-mode .wb-book-container label {
           const fontSize = chat.settings.fontSize || 13;
           messagesContainer.style.setProperty(
             "--chat-font-size",
-            `${fontSize}px`
+            `${fontSize}px`,
           );
           applyScopedCss(
             chat.settings.customCss || "",
             "#chat-messages",
-            "custom-bubble-style"
+            "custom-bubble-style",
           );
 
           document.getElementById("chat-header-title").textContent = chat.name;
@@ -10991,17 +11050,17 @@ body.dark-mode .wb-book-container label {
           if (chat.isGroup) {
             statusContainer.style.display = "none";
             document.getElementById(
-              "chat-header-title-wrapper"
+              "chat-header-title-wrapper",
             ).style.justifyContent = "center";
           } else {
             statusContainer.style.display = "flex";
             document.getElementById(
-              "chat-header-title-wrapper"
+              "chat-header-title-wrapper",
             ).style.justifyContent = "flex-start";
             statusTextEl.textContent = chat.status?.text || "在线";
             statusContainer.classList.toggle(
               "busy",
-              chat.status?.isBusy || false
+              chat.status?.isBusy || false,
             );
           }
 
@@ -11027,8 +11086,8 @@ body.dark-mode .wb-book-container label {
                 const timeRemainingMinutes = Math.max(
                   0,
                   Math.ceil(
-                    (cooldownMilliseconds - timeSinceBlock) / (1000 * 60)
-                  )
+                    (cooldownMilliseconds - timeSinceBlock) / (1000 * 60),
+                  ),
                 );
 
                 lockHtml = `
@@ -11103,8 +11162,8 @@ body.dark-mode .wb-book-container label {
           chatScreen.style.backgroundColor = chat.settings.background
             ? "transparent"
             : isDarkMode
-            ? "#000000"
-            : "#f0f2f5";
+              ? "#000000"
+              : "#f0f2f5";
           const history = chat.history;
           const totalMessages = history.length;
           currentRenderedCount = 0;
@@ -11123,7 +11182,7 @@ body.dark-mode .wb-book-container label {
           setTimeout(
             () =>
               (messagesContainer.scrollTop = messagesContainer.scrollHeight),
-            0
+            0,
           );
         }
         // ▲▲▲ 替换结束 ▲▲▲
@@ -11148,7 +11207,7 @@ body.dark-mode .wb-book-container label {
           const nextSliceEnd = totalMessages - currentRenderedCount;
           const messagesToPrepend = chat.history.slice(
             Math.max(0, nextSliceStart),
-            nextSliceEnd
+            nextSliceEnd,
           );
           const oldScrollHeight = messagesContainer.scrollHeight;
           messagesToPrepend
@@ -11242,7 +11301,7 @@ body.dark-mode .wb-book-container label {
             if (booksInCategory && booksInCategory.length > 0) {
               const groupContainer = createWorldBookGroup(
                 category.name,
-                booksInCategory
+                booksInCategory,
               );
               listEl.appendChild(groupContainer);
             }
@@ -11253,7 +11312,7 @@ body.dark-mode .wb-book-container label {
           if (uncategorizedBooks && uncategorizedBooks.length > 0) {
             const groupContainer = createWorldBookGroup(
               "未分类",
-              uncategorizedBooks
+              uncategorizedBooks,
             );
             listEl.appendChild(groupContainer);
           }
@@ -11289,10 +11348,10 @@ body.dark-mode .wb-book-container label {
 
           // ▼▼▼ 在这里添加新代码 ▼▼▼
           const headerEl = groupContainer.querySelector(
-            ".world-book-group-header"
+            ".world-book-group-header",
           );
           const contentEl = groupContainer.querySelector(
-            ".world-book-group-content"
+            ".world-book-group-content",
           );
 
           // 默认给头部和内容区都加上 collapsed 类
@@ -11315,12 +11374,12 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "删除世界书",
                 `确定要删除《${book.name}》吗？此操作不可撤销。`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
               if (confirmed) {
                 await db.worldBooks.delete(book.id);
                 state.worldBooks = state.worldBooks.filter(
-                  (wb) => wb.id !== book.id
+                  (wb) => wb.id !== book.id,
                 );
                 renderWorldBookScreen();
               }
@@ -11348,7 +11407,7 @@ body.dark-mode .wb-book-container label {
 
           // 【核心修改】填充分类下拉菜单
           const selectEl = document.getElementById(
-            "world-book-category-select"
+            "world-book-category-select",
           );
           selectEl.innerHTML = '<option value="">-- 未分类 --</option>'; // 默认选项
           categories.forEach((cat) => {
@@ -11390,12 +11449,12 @@ body.dark-mode .wb-book-container label {
                 const confirmed = await showCustomConfirm(
                   "删除表情",
                   `确定要删除表情 "${sticker.name}" 吗？`,
-                  { confirmButtonClass: "btn-danger" }
+                  { confirmButtonClass: "btn-danger" },
                 );
                 if (confirmed) {
                   await db.userStickers.delete(sticker.id);
                   state.userStickers = state.userStickers.filter(
-                    (s) => s.id !== sticker.id
+                    (s) => s.id !== sticker.id,
                   );
                   renderStickerPanel();
                 }
@@ -11407,9 +11466,9 @@ body.dark-mode .wb-book-container label {
                   item.addEventListener(
                     "mouseleave",
                     () => deleteBtn.remove(),
-                    { once: true }
+                    { once: true },
                   ),
-                3000
+                3000,
               );
             });
             grid.appendChild(item);
@@ -11437,7 +11496,7 @@ body.dark-mode .wb-book-container label {
 
             // 4. 【核心】为它补上和其他消息一样的标准事件监听器
             addLongPressListener(wrapper, () =>
-              showMessageActions(msg.timestamp)
+              showMessageActions(msg.timestamp),
             );
             wrapper.addEventListener("click", () => {
               if (isSelectionMode) {
@@ -11465,7 +11524,7 @@ body.dark-mode .wb-book-container label {
             bubble.textContent = msg.content;
             wrapper.appendChild(bubble);
             addLongPressListener(wrapper, () =>
-              showMessageActions(msg.timestamp)
+              showMessageActions(msg.timestamp),
             );
             wrapper.addEventListener("click", () => {
               if (isSelectionMode) toggleMessageSelection(msg.timestamp);
@@ -11482,7 +11541,7 @@ body.dark-mode .wb-book-container label {
           if (chat.isGroup && !isUser) {
             // 1. 使用AI返回的“本名”(`msg.senderName`)去列表里查找成员对象
             const member = chat.members.find(
-              (m) => m.originalName === msg.senderName
+              (m) => m.originalName === msg.senderName,
             );
 
             // 2. 创建用于显示名字的 div
@@ -11512,7 +11571,7 @@ body.dark-mode .wb-book-container label {
               avatarSrc = chat.settings.myAvatar || defaultMyGroupAvatar;
             } else {
               const member = chat.members.find(
-                (m) => m.originalName === msg.senderName
+                (m) => m.originalName === msg.senderName,
               );
               avatarSrc = member ? member.avatar : defaultGroupMemberAvatar;
             }
@@ -11576,13 +11635,13 @@ body.dark-mode .wb-book-container label {
 
             const duration = Math.max(
               1,
-              Math.round((msg.content || "").length / 5)
+              Math.round((msg.content || "").length / 5),
             );
             const minutes = Math.floor(duration / 60);
             const seconds = duration % 60;
             const durationFormatted = `${minutes}:${String(seconds).padStart(
               2,
-              "0"
+              "0",
             )}''`;
 
             // 【修改点】使用 5 个 div 替代原有的 SVG 字符串
@@ -11659,7 +11718,7 @@ body.dark-mode .wb-book-container label {
               <div class="transfer-card">
                   <div class="transfer-title">${heartIcon} ${titleText}</div>
                   <div class="transfer-amount">¥ ${Number(msg.amount).toFixed(
-                    2
+                    2,
                   )}</div>
                   <div class.transfer-note">${noteText}</div>
               </div>
@@ -11674,7 +11733,7 @@ body.dark-mode .wb-book-container label {
             if (chat.isGroup) {
               // 就执行原来的逻辑：在成员列表里查找昵称
               const member = chat.members.find(
-                (m) => m.originalName === msg.senderName
+                (m) => m.originalName === msg.senderName,
               );
               displayName = member ? member.groupNickname : msg.senderName;
             } else {
@@ -11705,7 +11764,7 @@ body.dark-mode .wb-book-container label {
                           <div class="payment-box">
                               <div class="payment-label">需付款</div>
                               <div class="amount">¥${Number(msg.amount).toFixed(
-                                2
+                                2,
                               )}</div>
                               <div class="countdown-label">剩余支付时间
                                   <div class="countdown-timer" id="waimai-timer-${
@@ -11720,7 +11779,7 @@ body.dark-mode .wb-book-container label {
 
             setTimeout(() => {
               const timerEl = document.getElementById(
-                `waimai-timer-${msg.timestamp}`
+                `waimai-timer-${msg.timestamp}`,
               );
               if (timerEl && msg.countdownEndTime) {
                 if (waimaiTimers[msg.timestamp])
@@ -11728,14 +11787,14 @@ body.dark-mode .wb-book-container label {
                 if (msg.status === "pending") {
                   waimaiTimers[msg.timestamp] = startWaimaiCountdown(
                     timerEl,
-                    msg.countdownEndTime
+                    msg.countdownEndTime,
                   );
                 } else {
                   timerEl.innerHTML = `<span>已</span><span>处</span><span>理</span>`;
                 }
               }
               const detailsBtn = document.querySelector(
-                `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-details-btn`
+                `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-details-btn`,
               );
               if (detailsBtn) {
                 detailsBtn.addEventListener("click", (e) => {
@@ -11746,13 +11805,13 @@ body.dark-mode .wb-book-container label {
                   showCustomAlert(
                     "订单详情",
                     `<b>商品：</b>${msg.productInfo}<br><b>金额：</b>¥${Number(
-                      msg.amount
-                    ).toFixed(2)}${paidByText}`
+                      msg.amount,
+                    ).toFixed(2)}${paidByText}`,
                   );
                 });
               }
               const actionButtons = document.querySelectorAll(
-                `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-user-actions button`
+                `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-user-actions button`,
               );
               actionButtons.forEach((btn) => {
                 btn.addEventListener("click", (e) => {
@@ -11934,7 +11993,7 @@ body.dark-mode .wb-book-container label {
           wrapper.appendChild(timestampEl);
 
           addLongPressListener(wrapper, () =>
-            showMessageActions(msg.timestamp)
+            showMessageActions(msg.timestamp),
           );
           wrapper.addEventListener("click", () => {
             if (isSelectionMode) toggleMessageSelection(msg.timestamp);
@@ -12015,7 +12074,7 @@ body.dark-mode .wb-book-container label {
             chat.relationship?.status === "pending_ai_approval"
           ) {
             console.log(
-              `检测到好友申请待处理状态，为角色 "${chat.name}" 自动触发AI响应...`
+              `检测到好友申请待处理状态，为角色 "${chat.name}" 自动触发AI响应...`,
             );
             triggerAiResponse();
           }
@@ -12079,7 +12138,7 @@ body.dark-mode .wb-book-container label {
               chat.relationship?.status === "pending_ai_approval"
             ) {
               console.log(
-                `为角色 "${chat.name}" 触发带理由的好友申请决策流程...`
+                `为角色 "${chat.name}" 触发带理由的好友申请决策流程...`,
               );
 
               // 1. 【注入上下文】抓取被拉黑前的最后5条聊天记录作为参考
@@ -12090,7 +12149,7 @@ body.dark-mode .wb-book-container label {
                   const sender = msg.role === "user" ? "用户" : chat.name;
                   return `${sender}: ${String(msg.content).substring(
                     0,
-                    50
+                    50,
                   )}...`;
                 })
                 .join("\n");
@@ -12126,7 +12185,7 @@ body.dark-mode .wb-book-container label {
                   apiKey,
                   "",
                   messagesForDecision,
-                  isGemini
+                  isGemini,
                 );
                 const response = isGemini
                   ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -12145,7 +12204,7 @@ body.dark-mode .wb-book-container label {
 
                 if (!response.ok) {
                   throw new Error(
-                    `API失败: ${(await response.json()).error.message}`
+                    `API失败: ${(await response.json()).error.message}`,
                   );
                 }
                 const data = await response.json();
@@ -12192,7 +12251,7 @@ body.dark-mode .wb-book-container label {
                 await db.chats.put(chat);
                 await showCustomAlert(
                   "申请失败",
-                  `AI在处理你的好友申请时出错了，请稍后重试。\n错误信息: ${error.message}`
+                  `AI在处理你的好友申请时出错了，请稍后重试。\n错误信息: ${error.message}`,
                 );
                 renderChatInterface(chatId); // 刷新UI，让“重新申请”按钮再次出现
               }
@@ -12214,7 +12273,7 @@ body.dark-mode .wb-book-container label {
               const linkedContents = chat.settings.linkedWorldBookIds
                 .map((bookId) => {
                   const worldBook = state.worldBooks.find(
-                    (wb) => wb.id === bookId
+                    (wb) => wb.id === bookId,
                   );
                   return worldBook && worldBook.content
                     ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}`
@@ -12253,7 +12312,7 @@ body.dark-mode .wb-book-container label {
                 // 获取接下来的2句歌词作为预告
                 const upcomingLines = musicState.parsedLyrics.slice(
                   musicState.currentLyricIndex + 1,
-                  musicState.currentLyricIndex + 3
+                  musicState.currentLyricIndex + 3,
                 );
 
                 // 构建歌词部分的Prompt
@@ -12313,7 +12372,7 @@ body.dark-mode .wb-book-container label {
             let sharedContext = "";
             // 1. 找到AI上一次说话的位置
             const lastAiTurnIndex = chat.history.findLastIndex(
-              (msg) => msg.role === "assistant"
+              (msg) => msg.role === "assistant",
             );
 
             // 2. 获取从那时起用户发送的所有新消息
@@ -12321,7 +12380,7 @@ body.dark-mode .wb-book-container label {
 
             // 3. 在这些新消息中，查找是否存在分享卡片
             const shareCardMessage = recentUserMessages.find(
-              (msg) => msg.type === "share_card"
+              (msg) => msg.type === "share_card",
             );
 
             // 4. 如果找到了分享卡片，就构建上下文
@@ -12471,7 +12530,7 @@ body.dark-mode .wb-book-container label {
                     } 发起了一个投票 (时间戳: ${msg.timestamp})，问题是：“${
                       msg.question
                     }”，选项有：[${msg.options.join(
-                      ", "
+                      ", ",
                     )}]。目前投票的人有：${whoVoted}。你可以使用 'vote' 指令参与投票。]`;
                   } else if (msg.meaning)
                     content = `${sender}: [发送了一个表情，意思是: '${msg.meaning}']`;
@@ -12703,7 +12762,7 @@ body.dark-mode .wb-book-container label {
                     const sender = msg.role === "user" ? "用户" : chat.name;
                     return `${sender}: ${String(msg.content).substring(
                       0,
-                      50
+                      50,
                     )}...`;
                   })
                   .join("\n");
@@ -12752,7 +12811,7 @@ body.dark-mode .wb-book-container label {
                 const contentSummary =
                   (post.publicText || post.content || "图片动态").substring(
                     0,
-                    30
+                    30,
                   ) + "...";
                 postsContext += `- (ID: ${post.id}) 作者: ${authorName}, 内容: "${contentSummary}"${interactionStatus}\n`;
               }
@@ -12831,7 +12890,7 @@ body.dark-mode .wb-book-container label {
                 apiKey,
                 systemPrompt,
                 messagesPayload,
-                isGemini
+                isGemini,
               );
               const response = isGemini
                 ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -12905,7 +12964,7 @@ body.dark-mode .wb-book-container label {
                 else {
                   console.warn(
                     "收到了格式不规范的AI指令（缺少type和content），已跳过:",
-                    msgData
+                    msgData,
                   );
                   continue;
                 }
@@ -12933,7 +12992,7 @@ body.dark-mode .wb-book-container label {
               if (msgData.type === "group_call_response") {
                 if (msgData.decision === "join") {
                   const member = chat.members.find(
-                    (m) => m.originalName === msgData.name
+                    (m) => m.originalName === msgData.name,
                   );
                   if (
                     member &&
@@ -12949,7 +13008,7 @@ body.dark-mode .wb-book-container label {
               if (chat.isGroup && msgData.name && msgData.name === chat.name) {
                 console.error(
                   `AI幻觉已被拦截！试图使用群名 ("${chat.name}") 作为角色名。消息内容:`,
-                  msgData
+                  msgData,
                 );
                 continue;
               }
@@ -12960,7 +13019,7 @@ body.dark-mode .wb-book-container label {
               if (chat.isGroup && !msgData.name) {
                 console.error(
                   `AI幻觉已被拦截！试图在群聊中发送一条没有“name”的消息。消息内容:`,
-                  msgData
+                  msgData,
                 );
                 continue; // continue会立即结束本次循环，处理下一条消息
               }
@@ -12977,7 +13036,7 @@ body.dark-mode .wb-book-container label {
               switch (msgData.type) {
                 case "waimai_response":
                   const requestMessageIndex = chat.history.findIndex(
-                    (m) => m.timestamp === msgData.for_timestamp
+                    (m) => m.timestamp === msgData.for_timestamp,
                   );
                   if (requestMessageIndex > -1) {
                     const originalMsg = chat.history[requestMessageIndex];
@@ -13012,7 +13071,7 @@ body.dark-mode .wb-book-container label {
 
                 case "qzone_comment":
                   const postToComment = await db.qzonePosts.get(
-                    parseInt(msgData.postId)
+                    parseInt(msgData.postId),
                   );
                   if (postToComment) {
                     if (!postToComment.comments) postToComment.comments = [];
@@ -13038,7 +13097,7 @@ body.dark-mode .wb-book-container label {
 
                 case "qzone_like":
                   const postToLike = await db.qzonePosts.get(
-                    parseInt(msgData.postId)
+                    parseInt(msgData.postId),
                   );
                   if (postToLike) {
                     if (!postToLike.likes) postToLike.likes = [];
@@ -13109,7 +13168,7 @@ body.dark-mode .wb-book-container label {
                     phoneScreen.classList.add("pat-animation");
                     setTimeout(
                       () => phoneScreen.classList.remove("pat-animation"),
-                      500
+                      500,
                     );
                     appendMessage(patMessage, chat);
                   } else {
@@ -13148,7 +13207,7 @@ body.dark-mode .wb-book-container label {
                     const targetSongIndex = musicState.playlist.findIndex(
                       (track) =>
                         track.name.toLowerCase() ===
-                        songNameToFind.toLowerCase()
+                        songNameToFind.toLowerCase(),
                     );
 
                     if (targetSongIndex > -1) {
@@ -13181,7 +13240,7 @@ body.dark-mode .wb-book-container label {
 
                   console.log(
                     `AI "${chat.name}" 记录了一条新回忆:`,
-                    msgData.description
+                    msgData.description,
                   );
 
                   continue;
@@ -13200,7 +13259,7 @@ body.dark-mode .wb-book-container label {
                     await db.memories.add(newCountdown);
                     console.log(
                       `AI "${chat.name}" 创建了一个新约定:`,
-                      msgData.title
+                      msgData.title,
                     );
                   }
                   continue;
@@ -13255,8 +13314,8 @@ body.dark-mode .wb-book-container label {
                     typeof msgData.options === "string"
                       ? msgData.options.split("\n").filter((opt) => opt.trim())
                       : Array.isArray(msgData.options)
-                      ? msgData.options
-                      : [];
+                        ? msgData.options
+                        : [];
 
                   if (pollOptions.length < 2) continue;
 
@@ -13272,12 +13331,12 @@ body.dark-mode .wb-book-container label {
 
                 case "vote":
                   const pollToVote = chat.history.find(
-                    (m) => m.timestamp === msgData.poll_timestamp
+                    (m) => m.timestamp === msgData.poll_timestamp,
                   );
                   if (pollToVote && !pollToVote.isClosed) {
                     Object.keys(pollToVote.votes).forEach((option) => {
                       const voterIndex = pollToVote.votes[option].indexOf(
-                        msgData.name
+                        msgData.name,
                       );
                       if (voterIndex > -1) {
                         pollToVote.votes[option].splice(voterIndex, 1);
@@ -13289,7 +13348,7 @@ body.dark-mode .wb-book-container label {
 
                     // ▼▼▼ 在这里添加新代码 ▼▼▼
                     const member = chat.members.find(
-                      (m) => m.originalName === msgData.name
+                      (m) => m.originalName === msgData.name,
                     );
                     const displayName = member
                       ? member.groupNickname
@@ -13324,7 +13383,7 @@ body.dark-mode .wb-book-container label {
                   break;
                 case "open_red_packet":
                   const packetToOpen = chat.history.find(
-                    (m) => m.timestamp === msgData.packet_timestamp
+                    (m) => m.timestamp === msgData.packet_timestamp,
                   );
                   if (
                     packetToOpen &&
@@ -13336,7 +13395,7 @@ body.dark-mode .wb-book-container label {
                   ) {
                     // 1. 根据AI的本名(msgData.name)去成员列表里找到完整的成员对象
                     const member = chat.members.find(
-                      (m) => m.originalName === msgData.name
+                      (m) => m.originalName === msgData.name,
                     );
                     // 2. 获取该成员当前的群昵称，如果找不到（异常情况），则备用其本名
                     const displayName = member
@@ -13348,7 +13407,7 @@ body.dark-mode .wb-book-container label {
                       packetToOpen.totalAmount -
                       Object.values(packetToOpen.claimedBy || {}).reduce(
                         (sum, val) => sum + val,
-                        0
+                        0,
                       );
                     const remainingCount =
                       packetToOpen.count -
@@ -13379,7 +13438,7 @@ body.dark-mode .wb-book-container label {
                       chat.history.push(aiClaimedMessage);
 
                       let hiddenContentForAI = `[系统提示：你 (${displayName}) 成功抢到了 ${claimedAmountAI.toFixed(
-                        2
+                        2,
                       )} 元。`; // 【核心修改】
 
                       if (
@@ -13406,7 +13465,7 @@ body.dark-mode .wb-book-container label {
                               if (amount > luckyKing.amount) {
                                 luckyKing = { name, amount };
                               }
-                            }
+                            },
                           );
                         }
                         if (luckyKing.name) {
@@ -13435,7 +13494,7 @@ body.dark-mode .wb-book-container label {
                   const avatarName = msgData.name;
                   // 在该角色的头像库中查找
                   const foundAvatar = chat.settings.aiAvatarLibrary.find(
-                    (avatar) => avatar.name === avatarName
+                    (avatar) => avatar.name === avatarName,
                   );
 
                   if (foundAvatar) {
@@ -13466,7 +13525,7 @@ body.dark-mode .wb-book-container label {
                 case "accept_transfer": {
                   // 使用大括号创建块级作用域
                   const originalTransferMsgIndex = chat.history.findIndex(
-                    (m) => m.timestamp === msgData.for_timestamp
+                    (m) => m.timestamp === msgData.for_timestamp,
                   );
                   if (originalTransferMsgIndex > -1) {
                     const originalMsg = chat.history[originalTransferMsgIndex];
@@ -13478,7 +13537,7 @@ body.dark-mode .wb-book-container label {
                 case "decline_transfer": {
                   // 使用大括号创建块级作用域
                   const originalTransferMsgIndex = chat.history.findIndex(
-                    (m) => m.timestamp === msgData.for_timestamp
+                    (m) => m.timestamp === msgData.for_timestamp,
                   );
                   if (originalTransferMsgIndex > -1) {
                     const originalMsg = chat.history[originalTransferMsgIndex];
@@ -13540,7 +13599,7 @@ body.dark-mode .wb-book-container label {
                 // ▼▼▼ 在 triggerAiResponse 的 switch (msgData.type) 语句中，添加这个新的 case ▼▼▼
                 case "quote_reply":
                   const originalMessage = chat.history.find(
-                    (m) => m.timestamp === msgData.target_timestamp
+                    (m) => m.timestamp === msgData.target_timestamp,
                   );
                   if (originalMessage) {
                     const quoteContext = {
@@ -13552,7 +13611,7 @@ body.dark-mode .wb-book-container label {
                           : chat.name),
                       content: String(originalMessage.content || "").substring(
                         0,
-                        50
+                        50,
                       ),
                     };
                     aiMessage = {
@@ -13584,7 +13643,7 @@ body.dark-mode .wb-book-container label {
                   };
                   const tempMessageElement = createMessageElement(
                     tempMessageData,
-                    chat
+                    chat,
                   );
 
                   // 2. 把它添加到聊天界面上，让用户看到
@@ -13592,13 +13651,13 @@ body.dark-mode .wb-book-container label {
 
                   // 3. 等待片刻，模拟AI的“反应时间”
                   await new Promise((resolve) =>
-                    setTimeout(resolve, Math.random() * 1000 + 1500)
+                    setTimeout(resolve, Math.random() * 1000 + 1500),
                   ); // 随机等待1.5-2.5秒
 
                   // 4. 找到刚刚添加的临时气泡，并播放撤回动画
                   const bubbleWrapper = document
                     .querySelector(
-                      `.message-bubble[data-timestamp="${tempMessageData.timestamp}"]`
+                      `.message-bubble[data-timestamp="${tempMessageData.timestamp}"]`,
                     )
                     ?.closest(".message-wrapper");
                   if (bubbleWrapper) {
@@ -13622,7 +13681,7 @@ body.dark-mode .wb-book-container label {
 
                     // 更新数据模型
                     const msgIndex = chat.history.findIndex(
-                      (m) => m.timestamp === tempMessageData.timestamp
+                      (m) => m.timestamp === tempMessageData.timestamp,
                     );
                     if (msgIndex > -1) {
                       chat.history[msgIndex] = recalledMessage;
@@ -13633,12 +13692,12 @@ body.dark-mode .wb-book-container label {
                     // 替换DOM
                     const placeholder = createMessageElement(
                       recalledMessage,
-                      chat
+                      chat,
                     );
                     if (document.body.contains(bubbleWrapper)) {
                       bubbleWrapper.parentNode.replaceChild(
                         placeholder,
-                        bubbleWrapper
+                        bubbleWrapper,
                       );
                     }
                   }
@@ -13651,7 +13710,7 @@ body.dark-mode .wb-book-container label {
                   aiMessage = {
                     ...baseMessage,
                     content: String(
-                      msgData.content || msgData.message || ""
+                      msgData.content || msgData.message || "",
                     ).trim(),
                   };
                   break;
@@ -13737,7 +13796,7 @@ body.dark-mode .wb-book-container label {
                   showNotification(
                     chatId,
                     finalNotifText.substring(0, 40) +
-                      (finalNotifText.length > 40 ? "..." : "")
+                      (finalNotifText.length > 40 ? "..." : ""),
                   );
                   notificationShown = true; // 确保只通知一次
                 }
@@ -13752,7 +13811,7 @@ body.dark-mode .wb-book-container label {
                   appendMessage(aiMessage, chat);
                   // 3. 【关键】在这里暂停一小会儿，给动画播放的时间
                   await new Promise((resolve) =>
-                    setTimeout(resolve, Math.random() * 1800 + 1000)
+                    setTimeout(resolve, Math.random() * 1800 + 1000),
                   );
                 }
               }
@@ -13783,7 +13842,7 @@ body.dark-mode .wb-book-container label {
               chat.relationship.status = "blocked_by_ai";
               await showCustomAlert(
                 "申请失败",
-                `AI在处理你的好友申请时出错了，请稍后重试。\n错误信息: ${error.message}`
+                `AI在处理你的好友申请时出错了，请稍后重试。\n错误信息: ${error.message}`,
               );
             } else {
               const errorContent = `[出错了: ${error.message}]`;
@@ -13894,7 +13953,7 @@ body.dark-mode .wb-book-container label {
             .classList.remove("selection-mode");
           selectedMessages.forEach((ts) => {
             const bubble = document.querySelector(
-              `.message-bubble[data-timestamp="${ts}"]`
+              `.message-bubble[data-timestamp="${ts}"]`,
             );
             if (bubble) bubble.classList.remove("selected");
           });
@@ -13905,7 +13964,7 @@ body.dark-mode .wb-book-container label {
         function toggleMessageSelection(timestamp) {
           // 【核心修正】选择器已简化，不再寻找已删除的 .recalled-message-placeholder
           const elementToSelect = document.querySelector(
-            `.message-bubble[data-timestamp="${timestamp}"]`
+            `.message-bubble[data-timestamp="${timestamp}"]`,
           );
 
           if (!elementToSelect) return;
@@ -13918,9 +13977,8 @@ body.dark-mode .wb-book-container label {
             elementToSelect.classList.add("selected");
           }
 
-          document.getElementById(
-            "selection-count"
-          ).textContent = `已选 ${selectedMessages.size} 条`;
+          document.getElementById("selection-count").textContent =
+            `已选 ${selectedMessages.size} 条`;
 
           if (selectedMessages.size === 0) {
             exitSelectionMode();
@@ -13962,7 +14020,7 @@ body.dark-mode .wb-book-container label {
             const confirmed = await showCustomConfirm(
               "切换听歌对象",
               `您正和「${oldChatName}」听歌。要结束并开始和「${newChatName}」的新会话吗？`,
-              { confirmButtonClass: "btn-danger" }
+              { confirmButtonClass: "btn-danger" },
             );
             if (confirmed) {
               await endListenTogetherSession(true);
@@ -14060,9 +14118,8 @@ body.dark-mode .wb-book-container label {
 
         function updateElapsedTimeDisplay() {
           const hours = (musicState.totalElapsedTime / 3600).toFixed(1);
-          document.getElementById(
-            "music-time-counter"
-          ).textContent = `已经一起听了${hours}小时`;
+          document.getElementById("music-time-counter").textContent =
+            `已经一起听了${hours}小时`;
         }
 
         function updatePlaylistUI() {
@@ -14137,7 +14194,7 @@ body.dark-mode .wb-book-container label {
           switch (musicState.playMode) {
             case "random":
               nextIndex = Math.floor(
-                Math.random() * musicState.playlist.length
+                Math.random() * musicState.playlist.length,
               );
               break;
             case "single":
@@ -14176,7 +14233,7 @@ body.dark-mode .wb-book-container label {
             "添加网络歌曲",
             "请输入歌曲的URL",
             "",
-            "url"
+            "url",
           );
           if (!url) return;
           const name = await showCustomPrompt("歌曲信息", "请输入歌名");
@@ -14204,14 +14261,14 @@ body.dark-mode .wb-book-container label {
             const artist = await showCustomPrompt(
               "歌曲信息",
               "请输入歌手名",
-              "未知歌手"
+              "未知歌手",
             );
             if (artist === null) continue;
 
             let lrcContent = "";
             const wantLrc = await showCustomConfirm(
               "导入歌词",
-              `要为《${name}》导入歌词文件 (.lrc) 吗？`
+              `要为《${name}》导入歌词文件 (.lrc) 吗？`,
             );
             if (wantLrc) {
               lrcContent = await new Promise((resolve) => {
@@ -14281,7 +14338,7 @@ body.dark-mode .wb-book-container label {
               if (musicState.currentIndex >= index)
                 musicState.currentIndex = Math.max(
                   0,
-                  musicState.currentIndex - 1
+                  musicState.currentIndex - 1,
                 );
             }
           }
@@ -14290,13 +14347,13 @@ body.dark-mode .wb-book-container label {
         }
 
         const personaLibraryModal = document.getElementById(
-          "persona-library-modal"
+          "persona-library-modal",
         );
         const personaEditorModal = document.getElementById(
-          "persona-editor-modal"
+          "persona-editor-modal",
         );
         const presetActionsModal = document.getElementById(
-          "preset-actions-modal"
+          "preset-actions-modal",
         );
 
         function openPersonaLibrary() {
@@ -14357,7 +14414,7 @@ body.dark-mode .wb-book-container label {
 
         function openPersonaEditorForEdit() {
           const preset = state.personaPresets.find(
-            (p) => p.id === editingPersonaPresetId
+            (p) => p.id === editingPersonaPresetId,
           );
           if (!preset) return;
           document.getElementById("persona-editor-title").textContent =
@@ -14373,12 +14430,12 @@ body.dark-mode .wb-book-container label {
           const confirmed = await showCustomConfirm(
             "删除预设",
             "确定要删除这个人设预设吗？此操作不可恢复。",
-            { confirmButtonClass: "btn-danger" }
+            { confirmButtonClass: "btn-danger" },
           );
           if (confirmed && editingPersonaPresetId) {
             await db.personaPresets.delete(editingPersonaPresetId);
             state.personaPresets = state.personaPresets.filter(
-              (p) => p.id !== editingPersonaPresetId
+              (p) => p.id !== editingPersonaPresetId,
             );
             hidePresetActions();
             renderPersonaLibrary();
@@ -14401,7 +14458,7 @@ body.dark-mode .wb-book-container label {
           }
           if (editingPersonaPresetId) {
             const preset = state.personaPresets.find(
-              (p) => p.id === editingPersonaPresetId
+              (p) => p.id === editingPersonaPresetId,
             );
             if (preset) {
               preset.avatar = avatar;
@@ -14422,7 +14479,7 @@ body.dark-mode .wb-book-container label {
         }
 
         const batteryAlertModal = document.getElementById(
-          "battery-alert-modal"
+          "battery-alert-modal",
         );
 
         function showBatteryAlert(imageUrl, text) {
@@ -14465,7 +14522,7 @@ body.dark-mode .wb-book-container label {
             ) {
               showBatteryAlert(
                 "https://i.postimg.cc/T2yKJ0DV/40.jpg",
-                "有点饿了，可以去找充电器惹"
+                "有点饿了，可以去找充电器惹",
               );
               alertFlags.hasShown40 = true;
             }
@@ -14476,7 +14533,7 @@ body.dark-mode .wb-book-container label {
             ) {
               showBatteryAlert(
                 "https://i.postimg.cc/qB9zbKs9/20.jpg",
-                "赶紧的充电，要饿死了"
+                "赶紧的充电，要饿死了",
               );
               alertFlags.hasShown20 = true;
             }
@@ -14487,7 +14544,7 @@ body.dark-mode .wb-book-container label {
             ) {
               showBatteryAlert(
                 "https://i.postimg.cc/ThMMVfW4/10.jpg",
-                "已阵亡，还有30秒爆炸"
+                "已阵亡，还有30秒爆炸",
               );
               alertFlags.hasShown10 = true;
             }
@@ -14505,14 +14562,14 @@ body.dark-mode .wb-book-container label {
               lastKnownBatteryLevel = battery.level;
               handleBatteryChange(battery);
               battery.addEventListener("levelchange", () =>
-                handleBatteryChange(battery)
+                handleBatteryChange(battery),
               );
               battery.addEventListener("chargingchange", () => {
                 handleBatteryChange(battery);
                 if (battery.charging) {
                   showBatteryAlert(
                     "https://i.postimg.cc/3NDQ0dWG/image.jpg",
-                    "窝爱泥，电量吃饱饱"
+                    "窝爱泥，电量吃饱饱",
                   );
                 }
               });
@@ -14562,7 +14619,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "删除相册",
                 `确定要删除相册《${album.name}》吗？此操作将同时删除相册内的所有照片，且无法恢复。`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
 
               if (confirmed) {
@@ -14640,7 +14697,7 @@ body.dark-mode .wb-book-container label {
 
           // 2. 找到被点击照片的索引
           photoViewerState.currentIndex = photoViewerState.photos.findIndex(
-            (url) => url === clickedPhotoUrl
+            (url) => url === clickedPhotoUrl,
           );
           if (photoViewerState.currentIndex === -1) return; // 如果找不到，则不打开
 
@@ -14731,7 +14788,7 @@ body.dark-mode .wb-book-container label {
 
           // --- 更新底部导航栏的“动态”按钮 ---
           const navItem = document.querySelector(
-            '.nav-item[data-view="qzone-screen"]'
+            '.nav-item[data-view="qzone-screen"]',
           );
 
           const targetSpan = navItem.querySelector("span"); // 定位到文字 "动态"
@@ -14783,7 +14840,7 @@ body.dark-mode .wb-book-container label {
           // 将旧的固定间隔 45000 替换为动态获取
           simulationIntervalId = setInterval(
             runBackgroundSimulationTick,
-            intervalSeconds * 1000
+            intervalSeconds * 1000,
           );
         }
 
@@ -14805,7 +14862,7 @@ body.dark-mode .wb-book-container label {
             return;
           }
           const allSingleChats = Object.values(state.chats).filter(
-            (chat) => !chat.isGroup
+            (chat) => !chat.isGroup,
           );
 
           if (allSingleChats.length === 0) return;
@@ -14819,7 +14876,7 @@ body.dark-mode .wb-book-container label {
               // 安全检查：确保有拉黑时间戳
               if (!blockedTimestamp) {
                 console.warn(
-                  `角色 "${chat.name}" 状态为拉黑，但缺少拉黑时间戳，跳过处理。`
+                  `角色 "${chat.name}" 状态为拉黑，但缺少拉黑时间戳，跳过处理。`,
                 );
                 return; // 跳过这个角色，继续下一个
               }
@@ -14830,14 +14887,14 @@ body.dark-mode .wb-book-container label {
 
               console.log(
                 `检查角色 "${chat.name}"：已拉黑 ${Math.round(
-                  blockedDuration / 1000 / 60
-                )}分钟，冷静期需 ${cooldownMilliseconds / 1000 / 60}分钟。`
+                  blockedDuration / 1000 / 60,
+                )}分钟，冷静期需 ${cooldownMilliseconds / 1000 / 60}分钟。`,
               ); // 添加日志
 
               // 【核心修改】移除了随机概率，只要冷静期一过，就触发！
               if (blockedDuration > cooldownMilliseconds) {
                 console.log(
-                  `角色 "${chat.name}" 的冷静期已过，触发“反思”并申请好友事件...`
+                  `角色 "${chat.name}" 的冷静期已过，触发“反思”并申请好友事件...`,
                 );
 
                 // 【重要】为了防止在AI响应前重复触发，我们在触发后立刻更新状态
@@ -14884,12 +14941,12 @@ body.dark-mode .wb-book-container label {
           let recentContextSummary = "你们最近没有聊过天。";
           if (lastUserMessage) {
             recentContextSummary = `用户 (${userNickname}) 最后对你说：“${String(
-              lastUserMessage.content
+              lastUserMessage.content,
             ).substring(0, 50)}...”。`;
           }
           if (lastAiMessage) {
             recentContextSummary += `\n你最后对用户说：“${String(
-              lastAiMessage.content
+              lastAiMessage.content,
             ).substring(0, 50)}...”。`;
           }
 
@@ -14902,7 +14959,7 @@ body.dark-mode .wb-book-container label {
             const linkedContents = chat.settings.linkedWorldBookIds
               .map((bookId) => {
                 const worldBook = state.worldBooks.find(
-                  (wb) => wb.id === bookId
+                  (wb) => wb.id === bookId,
                 );
                 return worldBook && worldBook.content
                   ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}`
@@ -14992,7 +15049,7 @@ body.dark-mode .wb-book-container label {
 
             console.log(
               "正在为后台活动发送API请求，Payload:",
-              JSON.stringify(messagesPayload, null, 2)
+              JSON.stringify(messagesPayload, null, 2),
             ); // 添加日志，方便调试
 
             // 发送请求
@@ -15002,7 +15059,7 @@ body.dark-mode .wb-book-container label {
               apiKey,
               systemPrompt,
               messagesPayload,
-              isGemini
+              isGemini,
             );
             const response = isGemini
               ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -15022,7 +15079,7 @@ body.dark-mode .wb-book-container label {
             if (!response.ok) {
               const errorData = await response.json();
               throw new Error(
-                `API请求失败: ${response.status} - ${JSON.stringify(errorData)}`
+                `API请求失败: ${response.status} - ${JSON.stringify(errorData)}`,
               );
             }
             const data = await response.json();
@@ -15033,14 +15090,14 @@ body.dark-mode .wb-book-container label {
               !data.choices[0].message.content
             ) {
               console.warn(
-                `API为空回或格式不正确，角色 "${chat.name}" 的本次后台活动跳过。`
+                `API为空回或格式不正确，角色 "${chat.name}" 的本次后台活动跳过。`,
               );
               return;
             }
             const responseArray = parseAiResponse(
               isGemini
                 ? data.candidates[0].content.parts[0].text
-                : data.choices[0].message.content
+                : data.choices[0].message.content,
             );
 
             // 后续处理AI返回指令的逻辑保持不变...
@@ -15067,7 +15124,7 @@ body.dark-mode .wb-book-container label {
                 showNotification(chatId, aiMessage.content);
                 renderChatList();
                 console.log(
-                  `后台活动: 角色 "${chat.name}" 主动发送了消息: ${aiMessage.content}`
+                  `后台活动: 角色 "${chat.name}" 主动发送了消息: ${aiMessage.content}`,
                 );
               }
               if (action.type === "qzone_post") {
@@ -15098,7 +15155,7 @@ body.dark-mode .wb-book-container label {
                   });
                   updateUnreadIndicator(unreadPostsCount + 1);
                   console.log(
-                    `后台活动: 角色 "${chat.name}" 评论了动态 #${post.id}`
+                    `后台活动: 角色 "${chat.name}" 评论了动态 #${post.id}`,
                   );
                 }
               } else if (action.type === "qzone_like") {
@@ -15110,7 +15167,7 @@ body.dark-mode .wb-book-container label {
                     await db.qzonePosts.update(post.id, { likes: post.likes });
                     updateUnreadIndicator(unreadPostsCount + 1);
                     console.log(
-                      `后台活动: 角色 "${chat.name}" 点赞了动态 #${post.id}`
+                      `后台活动: 角色 "${chat.name}" 点赞了动态 #${post.id}`,
                     );
                   }
                 }
@@ -15123,7 +15180,7 @@ body.dark-mode .wb-book-container label {
                   state.activeChatId = chatId;
                   showIncomingCallModal();
                   console.log(
-                    `后台活动: 角色 "${chat.name}" 发起了视频通话请求`
+                    `后台活动: 角色 "${chat.name}" 发起了视频通话请求`,
                   );
                 }
               }
@@ -15154,15 +15211,15 @@ body.dark-mode .wb-book-container label {
           const scopedCss = cssString
             .replace(
               /\s*\.message-bubble\.user\s+([^{]+\{)/g,
-              `${scopeId} .message-bubble.user $1`
+              `${scopeId} .message-bubble.user $1`,
             )
             .replace(
               /\s*\.message-bubble\.ai\s+([^{]+\{)/g,
-              `${scopeId} .message-bubble.ai $1`
+              `${scopeId} .message-bubble.ai $1`,
             )
             .replace(
               /\s*\.message-bubble\s+([^{]+\{)/g,
-              `${scopeId} .message-bubble $1`
+              `${scopeId} .message-bubble $1`,
             );
 
           styleTag.innerHTML = scopedCss;
@@ -15225,7 +15282,7 @@ body.dark-mode .wb-book-container label {
           applyScopedCss(
             customCss,
             "#settings-preview-area",
-            "preview-bubble-style"
+            "preview-bubble-style",
           );
         }
 
@@ -15289,7 +15346,7 @@ body.dark-mode .wb-book-container label {
           const confirmed = await showCustomConfirm(
             "确认删除",
             "删除分组后，该组内的好友将变为“未分组”。确定要删除吗？",
-            { confirmButtonClass: "btn-danger" }
+            { confirmButtonClass: "btn-danger" },
           );
           if (confirmed) {
             await db.qzoneGroups.delete(groupId);
@@ -15342,7 +15399,7 @@ body.dark-mode .wb-book-container label {
           const timestampToEdit = activeMessageTimestamp;
           const chat = state.chats[state.activeChatId];
           const message = chat.history.find(
-            (m) => m.timestamp === timestampToEdit
+            (m) => m.timestamp === timestampToEdit,
           );
           if (!message) return;
 
@@ -15353,7 +15410,7 @@ body.dark-mode .wb-book-container label {
           const isSpecialType =
             message.type &&
             ["voice_message", "ai_image", "transfer", "share_link"].includes(
-              message.type
+              message.type,
             );
 
           if (isSpecialType) {
@@ -15398,16 +15455,16 @@ body.dark-mode .wb-book-container label {
           const helpersHtml = `
               <div class="format-helpers">
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.voice
+                    templates.voice,
                   )}'>语音</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.image
+                    templates.image,
                   )}'>图片</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.transfer
+                    templates.transfer,
                   )}'>转账</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.link
+                    templates.link,
                   )}'>链接</button>
               </div>
           `;
@@ -15417,7 +15474,7 @@ body.dark-mode .wb-book-container label {
             "在此修改，或点击上方按钮使用格式模板...",
             contentForEditing,
             "textarea",
-            helpersHtml
+            helpersHtml,
           );
 
           if (newContent !== null) {
@@ -15434,7 +15491,7 @@ body.dark-mode .wb-book-container label {
           if (!activeMessageTimestamp) return;
           const chat = state.chats[state.activeChatId];
           const message = chat.history.find(
-            (m) => m.timestamp === activeMessageTimestamp
+            (m) => m.timestamp === activeMessageTimestamp,
           );
           if (!message) return;
 
@@ -15484,17 +15541,17 @@ body.dark-mode .wb-book-container label {
               <textarea>${initialContent}</textarea>
               <div class="format-helpers">
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.voice
+                    templates.voice,
                   )}'>语音</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.image
+                    templates.image,
                   )}'>图片</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.transfer
+                    templates.transfer,
                   )}'>转账</button>
                   <!-- 【核心修改2】在这里添加新的“链接”按钮 -->
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.link
+                    templates.link,
                   )}'>链接</button>
               </div>
           `;
@@ -15546,7 +15603,7 @@ body.dark-mode .wb-book-container label {
 
           const chat = state.chats[state.activeChatId];
           const message = chat.history.find(
-            (m) => m.timestamp === timestampToEdit
+            (m) => m.timestamp === timestampToEdit,
           );
           if (!message) return;
 
@@ -15555,7 +15612,7 @@ body.dark-mode .wb-book-container label {
 
           const editorModal = document.getElementById("message-editor-modal");
           const editorContainer = document.getElementById(
-            "message-editor-container"
+            "message-editor-container",
           );
           editorContainer.innerHTML = "";
 
@@ -15587,7 +15644,7 @@ body.dark-mode .wb-book-container label {
           // 4. 【核心】动态绑定所有控制按钮的事件
           // 为了防止事件重复绑定，我们使用克隆节点的方法来清除旧监听器
           const addBtn = document.getElementById(
-            "add-message-editor-block-btn"
+            "add-message-editor-block-btn",
           );
           const newAddBtn = addBtn.cloneNode(true);
           addBtn.parentNode.replaceChild(newAddBtn, addBtn);
@@ -15598,7 +15655,7 @@ body.dark-mode .wb-book-container label {
           });
 
           const cancelBtn = document.getElementById(
-            "cancel-advanced-editor-btn"
+            "cancel-advanced-editor-btn",
           );
           const newCancelBtn = cancelBtn.cloneNode(true);
           cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
@@ -15657,7 +15714,7 @@ body.dark-mode .wb-book-container label {
 
           const chat = state.chats[state.activeChatId];
           const messageIndex = chat.history.findIndex(
-            (m) => m.timestamp === timestamp
+            (m) => m.timestamp === timestamp,
           );
           if (messageIndex === -1) return;
 
@@ -15698,10 +15755,10 @@ body.dark-mode .wb-book-container label {
           } else {
             // --- 来自高级编辑器 ---
             const editorContainer = document.getElementById(
-              "message-editor-container"
+              "message-editor-container",
             );
             const editorBlocks = editorContainer.querySelectorAll(
-              ".message-editor-block"
+              ".message-editor-block",
             );
 
             for (const block of editorBlocks) {
@@ -15851,10 +15908,10 @@ body.dark-mode .wb-book-container label {
               <div class="format-helpers">
                   <button class="format-btn" data-type="text">说说</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.image
+                    templates.image,
                   )}'>图片动态</button>
                   <button class="format-btn" data-template='${JSON.stringify(
-                    templates.text_image
+                    templates.text_image,
                   )}'>文字图</button>
               </div>
           `;
@@ -15864,14 +15921,14 @@ body.dark-mode .wb-book-container label {
             "在此修改内容...",
             contentForEditing,
             "textarea",
-            helpersHtml
+            helpersHtml,
           );
 
           // 【特殊处理】为说说的格式助手按钮添加不同的行为
           // 我们需要在模态框出现后，再给它绑定事件
           setTimeout(() => {
             const shuoshuoBtn = document.querySelector(
-              '#custom-modal-body .format-btn[data-type="text"]'
+              '#custom-modal-body .format-btn[data-type="text"]',
             );
             if (shuoshuoBtn) {
               shuoshuoBtn.addEventListener("click", () => {
@@ -15957,7 +16014,7 @@ body.dark-mode .wb-book-container label {
 
           // 【核心修复】在这里，我们为“完成”按钮明确绑定“创建群聊”的功能
           const confirmBtn = document.getElementById(
-            "confirm-contact-picker-btn"
+            "confirm-contact-picker-btn",
           );
           // 使用克隆节点技巧，清除掉之前可能绑定的任何其他事件（比如“添加成员”）
           const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -15979,7 +16036,7 @@ body.dark-mode .wb-book-container label {
 
           // 只选择单聊角色作为群成员候选
           const contacts = Object.values(state.chats).filter(
-            (chat) => !chat.isGroup
+            (chat) => !chat.isGroup,
           );
 
           if (contacts.length === 0) {
@@ -16026,7 +16083,7 @@ body.dark-mode .wb-book-container label {
           const groupName = await showCustomPrompt(
             "设置群名",
             "请输入群聊的名字",
-            "我们的群聊"
+            "我们的群聊",
           );
           if (!groupName || !groupName.trim()) return;
 
@@ -16129,7 +16186,7 @@ body.dark-mode .wb-book-container label {
           const confirmed = await showCustomConfirm(
             "移出成员",
             `确定要将“${memberName}”移出群聊吗？`,
-            { confirmButtonClass: "btn-danger" }
+            { confirmButtonClass: "btn-danger" },
           );
 
           if (confirmed) {
@@ -16153,18 +16210,18 @@ body.dark-mode .wb-book-container label {
           const listEl = document.getElementById("contact-picker-list");
           listEl.innerHTML = "";
           const contacts = Object.values(state.chats).filter(
-            (c) => !c.isGroup && !existingMemberIds.has(c.id)
+            (c) => !c.isGroup && !existingMemberIds.has(c.id),
           );
 
           if (contacts.length === 0) {
             listEl.innerHTML =
               '<p style="text-align:center; color:#8a8a8a; margin-top:50px;">没有更多可以邀请的好友了。</p>';
             document.getElementById(
-              "confirm-contact-picker-btn"
+              "confirm-contact-picker-btn",
             ).style.display = "none"; // 没有人可选，隐藏完成按钮
           } else {
             document.getElementById(
-              "confirm-contact-picker-btn"
+              "confirm-contact-picker-btn",
             ).style.display = "block";
             contacts.forEach((contact) => {
               const item = document.createElement("div");
@@ -16222,7 +16279,7 @@ body.dark-mode .wb-book-container label {
         async function createNewMemberInGroup() {
           const name = await showCustomPrompt(
             "创建新成员",
-            "请输入新成员的名字 (这将是TA的“本名”，不可更改)"
+            "请输入新成员的名字 (这将是TA的“本名”，不可更改)",
           );
           if (!name || !name.trim()) return;
 
@@ -16237,7 +16294,7 @@ body.dark-mode .wb-book-container label {
             "设置人设",
             `请输入“${name}”的人设`,
             "",
-            "textarea"
+            "textarea",
           );
           if (persona === null) return;
 
@@ -16275,7 +16332,7 @@ body.dark-mode .wb-book-container label {
             }
 
             const minutes = Math.floor(
-              (distance % (1000 * 60 * 60)) / (1000 * 60)
+              (distance % (1000 * 60 * 60)) / (1000 * 60),
             );
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
@@ -16283,9 +16340,9 @@ body.dark-mode .wb-book-container label {
             const secStr = String(seconds).padStart(2, "0");
 
             element.innerHTML = `<span>${minStr.charAt(
-              0
+              0,
             )}</span><span>${minStr.charAt(1)}</span> : <span>${secStr.charAt(
-              0
+              0,
             )}</span><span>${secStr.charAt(1)}</span>`;
           }, 1000);
           return timerId;
@@ -16304,7 +16361,7 @@ body.dark-mode .wb-book-container label {
           if (!chat) return;
 
           const messageIndex = chat.history.findIndex(
-            (m) => m.timestamp === originalTimestamp
+            (m) => m.timestamp === originalTimestamp,
           );
           if (messageIndex === -1) return;
 
@@ -16386,7 +16443,7 @@ body.dark-mode .wb-book-container label {
               chat.name;
           }
           document.querySelector(
-            "#outgoing-call-screen .caller-text"
+            "#outgoing-call-screen .caller-text",
           ).textContent = chat.isGroup ? "正在呼叫所有成员..." : "正在呼叫...";
           showScreen("outgoing-call-screen");
 
@@ -16399,7 +16456,7 @@ body.dark-mode .wb-book-container label {
                   msg.role === "user"
                     ? chat.settings.myNickname || "我"
                     : msg.senderName || chat.name
-                }: ${String(msg.content).substring(0, 50)}...`
+                }: ${String(msg.content).substring(0, 50)}...`,
             )
             .join("\n");
 
@@ -16435,8 +16492,8 @@ body.dark-mode .wb-book-container label {
               systemPromptForCall = `
       			# 你的任务
       			你正在扮演角色 "${chat.name}"。用户 (${
-                chat.settings.myNickname || "我"
-              }) 刚刚向你发起了视频通话请求。
+              chat.settings.myNickname || "我"
+            }) 刚刚向你发起了视频通话请求。
       			你的任务是根据你的人设和我们最近的聊天内容，决定是否接受。
 
       			# 核心规则
@@ -16465,7 +16522,7 @@ body.dark-mode .wb-book-container label {
               apiKey,
               systemPromptForCall,
               messagesForApi,
-              isGemini
+              isGemini,
             );
 
             const response = isGemini
@@ -16506,7 +16563,7 @@ body.dark-mode .wb-book-container label {
                   action.decision === "join"
                 ) {
                   const member = chat.members.find(
-                    (m) => m.originalName === action.name
+                    (m) => m.originalName === action.name,
                   );
                   if (member) videoCallState.participants.push(member);
                 }
@@ -16548,7 +16605,7 @@ body.dark-mode .wb-book-container label {
                   msg.role === "user"
                     ? chat.settings.myNickname || "我"
                     : msg.senderName || chat.name
-                }: ${String(msg.content).substring(0, 50)}...`
+                }: ${String(msg.content).substring(0, 50)}...`,
             )
             .join("\n");
 
@@ -16561,10 +16618,10 @@ body.dark-mode .wb-book-container label {
             videoCallState.callHistory = [];
 
             const visualInterface = document.getElementById(
-              "visual-call-interface"
+              "visual-call-interface",
             );
             const textInterface = document.getElementById(
-              "text-call-interface"
+              "text-call-interface",
             );
 
             // 显示新界面，隐藏旧界面
@@ -16578,9 +16635,8 @@ body.dark-mode .wb-book-container label {
               chat.settings.userVideoImage || defaultAvatar;
 
             // 清空旧的聊天气泡
-            document.getElementById(
-              "video-call-messages-visual"
-            ).innerHTML = `<em>正在接通...</em>`;
+            document.getElementById("video-call-messages-visual").innerHTML =
+              `<em>正在接通...</em>`;
             showScreen("video-call-screen");
 
             // 启动计时器
@@ -16598,10 +16654,10 @@ body.dark-mode .wb-book-container label {
             videoCallState.callHistory = [];
 
             const visualInterface = document.getElementById(
-              "visual-call-interface"
+              "visual-call-interface",
             );
             const textInterface = document.getElementById(
-              "text-call-interface"
+              "text-call-interface",
             );
 
             // 显示旧界面，隐藏新界面
@@ -16641,7 +16697,7 @@ body.dark-mode .wb-book-container label {
           if (!videoCallState.isActive) return;
 
           const duration = Math.floor(
-            (Date.now() - videoCallState.startTime) / 1000
+            (Date.now() - videoCallState.startTime) / 1000,
           );
           const durationText = `${Math.floor(duration / 60)}分${
             duration % 60
@@ -16657,7 +16713,7 @@ body.dark-mode .wb-book-container label {
                 participantsData.push({
                   name: p.originalName,
                   avatar: p.avatar,
-                })
+                }),
               );
               if (videoCallState.isUserParticipating) {
                 participantsData.unshift({
@@ -16712,7 +16768,7 @@ body.dark-mode .wb-book-container label {
                     h.role === "user"
                       ? chat.settings.myNickname || "我"
                       : h.role
-                  }: ${h.content}`
+                  }: ${h.content}`,
               )
               .join("\n");
 
@@ -16956,12 +17012,12 @@ body.dark-mode .wb-book-container label {
         function updateCallTimer() {
           if (!videoCallState.isActive) return;
           const elapsed = Math.floor(
-            (Date.now() - videoCallState.startTime) / 1000
+            (Date.now() - videoCallState.startTime) / 1000,
           );
           const minutes = Math.floor(elapsed / 60);
           const seconds = elapsed % 60;
           const timeString = `${String(minutes).padStart(2, "0")}:${String(
-            seconds
+            seconds,
           ).padStart(2, "0")}`;
 
           // 同时更新两个界面的计时器
@@ -16985,7 +17041,7 @@ body.dark-mode .wb-book-container label {
               chat.settings.groupAvatar || defaultGroupAvatar;
             document.getElementById("caller-name").textContent = chat.name; // 显示群名
             document.querySelector(
-              ".incoming-call-content .caller-text"
+              ".incoming-call-content .caller-text",
             ).textContent = `${requesterName} 邀请你加入群视频`; // 显示具体发起人
           } else {
             // 单聊逻辑保持不变
@@ -16993,7 +17049,7 @@ body.dark-mode .wb-book-container label {
               chat.settings.aiAvatar || defaultAvatar;
             document.getElementById("caller-name").textContent = chat.name;
             document.querySelector(
-              ".incoming-call-content .caller-text"
+              ".incoming-call-content .caller-text",
             ).textContent = "邀请你视频通话";
           }
 
@@ -17034,7 +17090,7 @@ body.dark-mode .wb-book-container label {
             const linkedContents = chat.settings.linkedWorldBookIds
               .map((bookId) => {
                 const worldBook = state.worldBooks.find(
-                  (wb) => wb.id === bookId
+                  (wb) => wb.id === bookId,
                 );
                 return worldBook && worldBook.content
                   ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}`
@@ -17069,7 +17125,7 @@ body.dark-mode .wb-book-container label {
           let inCallPrompt;
           if (videoCallState.isGroupCall) {
             const participantNames = videoCallState.participants.map(
-              (p) => p.originalName
+              (p) => p.originalName,
             );
             if (videoCallState.isUserParticipating) {
               participantNames.unshift(userNickname);
@@ -17144,7 +17200,7 @@ body.dark-mode .wb-book-container label {
               apiKey,
               inCallPrompt,
               messagesForApi,
-              isGemini
+              isGemini,
             );
             const response = isGemini
               ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -17206,13 +17262,13 @@ body.dark-mode .wb-book-container label {
               sanitizedResponse
             ) {
               console.log(
-                `[视频通话] 检测到语音接入已开启，为“${chat.name}”合成语音...`
+                `[视频通话] 检测到语音接入已开启，为“${chat.name}”合成语音...`,
               );
               // 调用你已有的 playMinimaxAudio 函数来播放语音
               playMinimaxAudio(
                 sanitizedResponse,
                 chat.settings.minimaxVoiceId,
-                [bubble]
+                [bubble],
               );
             }
 
@@ -17263,7 +17319,7 @@ body.dark-mode .wb-book-container label {
           if (!chat) return;
 
           const messageIndex = chat.history.findIndex(
-            (m) => m.timestamp === originalTimestamp
+            (m) => m.timestamp === originalTimestamp,
           );
           if (messageIndex === -1) return;
 
@@ -17325,7 +17381,7 @@ body.dark-mode .wb-book-container label {
             `你拍了拍 “${characterName}”`,
             "（可选）输入后缀",
             "",
-            "text"
+            "text",
           );
 
           // 如果用户点了取消，则什么也不做
@@ -17424,12 +17480,12 @@ body.dark-mode .wb-book-container label {
           card.className = "memory-card";
           const memoryDate = new Date(memory.timestamp);
           const dateString = `${memoryDate.getFullYear()}-${String(
-            memoryDate.getMonth() + 1
+            memoryDate.getMonth() + 1,
           ).padStart(2, "0")}-${String(memoryDate.getDate()).padStart(
             2,
-            "0"
+            "0",
           )} ${String(memoryDate.getHours()).padStart(2, "0")}:${String(
-            memoryDate.getMinutes()
+            memoryDate.getMinutes(),
           ).padStart(2, "0")}`;
 
           let titleHtml, contentHtml;
@@ -17439,7 +17495,7 @@ body.dark-mode .wb-book-container label {
             // 如果是已到期的约定
             titleHtml = `[约定达成] ${memory.description}`;
             contentHtml = `在 ${new Date(
-              memory.targetDate
+              memory.targetDate,
             ).toLocaleString()}，我们一起见证了这个约定。`;
           } else {
             // 如果是普通的日记式回忆
@@ -17460,7 +17516,7 @@ body.dark-mode .wb-book-container label {
             const confirmed = await showCustomConfirm(
               "删除记录",
               "确定要删除这条记录吗？",
-              { confirmButtonClass: "btn-danger" }
+              { confirmButtonClass: "btn-danger" },
             );
             if (confirmed) {
               await db.memories.delete(memory.id);
@@ -17492,7 +17548,7 @@ body.dark-mode .wb-book-container label {
             const confirmed = await showCustomConfirm(
               "删除约定",
               "确定要删除这个约定吗？",
-              { confirmButtonClass: "btn-danger" }
+              { confirmButtonClass: "btn-danger" },
             );
             if (confirmed) {
               await db.memories.delete(countdown.id);
@@ -17533,10 +17589,10 @@ body.dark-mode .wb-book-container label {
                 }
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor(
-                  (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                  (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
                 );
                 const minutes = Math.floor(
-                  (distance % (1000 * 60 * 60)) / (1000 * 60)
+                  (distance % (1000 * 60 * 60)) / (1000 * 60),
                 );
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 timerEl.textContent = `${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
@@ -17560,7 +17616,7 @@ body.dark-mode .wb-book-container label {
 
           await showCustomAlert(
             "流程启动",
-            `正在为角色“${chat.name}”准备好友申请...`
+            `正在为角色“${chat.name}”准备好友申请...`,
           );
 
           const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
@@ -17589,7 +17645,7 @@ body.dark-mode .wb-book-container label {
             const linkedContents = chat.settings.linkedWorldBookIds
               .map((bookId) => {
                 const worldBook = state.worldBooks.find(
-                  (wb) => wb.id === bookId
+                  (wb) => wb.id === bookId,
                 );
                 return worldBook && worldBook.content
                   ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}`
@@ -17631,7 +17687,7 @@ body.dark-mode .wb-book-container label {
               apiKey,
               systemPrompt,
               messagesForApi,
-              isGemini
+              isGemini,
             );
             const response = isGemini
               ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -17650,7 +17706,7 @@ body.dark-mode .wb-book-container label {
             if (!response.ok) {
               const errorData = await response.json();
               throw new Error(
-                `API 请求失败: ${response.status} - ${errorData.error.message}`
+                `API 请求失败: ${response.status} - ${errorData.error.message}`,
               );
             }
 
@@ -17679,12 +17735,12 @@ body.dark-mode .wb-book-container label {
               renderChatList();
               await showCustomAlert(
                 "申请成功！",
-                `“${chat.name}”已向你发送好友申请。请返回聊天列表查看。`
+                `“${chat.name}”已向你发送好友申请。请返回聊天列表查看。`,
               );
             } else {
               await showCustomAlert(
                 "AI决策",
-                `“${chat.name}”思考后决定暂时不发送好友申请，将重置冷静期。`
+                `“${chat.name}”思考后决定暂时不发送好友申请，将重置冷静期。`,
               );
               chat.relationship.status = "blocked_by_user";
               chat.relationship.blockedTimestamp = Date.now();
@@ -17692,7 +17748,7 @@ body.dark-mode .wb-book-container label {
           } catch (error) {
             await showCustomAlert(
               "执行出错",
-              `为“${chat.name}”申请好友时发生错误：\n\n${error.message}\n\n将重置冷静期。`
+              `为“${chat.name}”申请好友时发生错误：\n\n${error.message}\n\n将重置冷静期。`,
             );
             chat.relationship.status = "blocked_by_user";
             chat.relationship.blockedTimestamp = Date.now();
@@ -17759,10 +17815,10 @@ body.dark-mode .wb-book-container label {
         async function sendGroupRedPacket() {
           const chat = state.chats[state.activeChatId];
           const amount = parseFloat(
-            document.getElementById("rp-group-amount").value
+            document.getElementById("rp-group-amount").value,
           );
           const count = parseInt(
-            document.getElementById("rp-group-count").value
+            document.getElementById("rp-group-count").value,
           );
           const greeting = document
             .getElementById("rp-group-greeting")
@@ -17812,7 +17868,7 @@ body.dark-mode .wb-book-container label {
         async function sendDirectRedPacket() {
           const chat = state.chats[state.activeChatId];
           const amount = parseFloat(
-            document.getElementById("rp-direct-amount").value
+            document.getElementById("rp-direct-amount").value,
           );
           const receiverName =
             document.getElementById("rp-direct-receiver").value;
@@ -17866,7 +17922,7 @@ body.dark-mode .wb-book-container label {
 
           state.chats[currentChatId] = freshChat;
           const packet = freshChat.history.find(
-            (m) => m.timestamp === timestamp
+            (m) => m.timestamp === timestamp,
           );
           if (!packet) return;
 
@@ -17895,14 +17951,14 @@ body.dark-mode .wb-book-container label {
                 "恭喜！",
                 `你领取了 ${
                   packet.senderName
-                } 的红包，金额为 ${claimedAmount.toFixed(2)} 元。`
+                } 的红包，金额为 ${claimedAmount.toFixed(2)} 元。`,
               );
             }
 
             // 无论成功与否，最后都显示详情页
             // 此时需要从state中获取最新的packet对象，因为它可能在handleOpenRedPacket中被更新了
             const updatedPacket = state.chats[currentChatId].history.find(
-              (m) => m.timestamp === timestamp
+              (m) => m.timestamp === timestamp,
             );
             showRedPacketDetails(updatedPacket);
           }
@@ -17932,7 +17988,7 @@ body.dark-mode .wb-book-container label {
             packet.totalAmount -
             Object.values(packet.claimedBy || {}).reduce(
               (sum, val) => sum + val,
-              0
+              0,
             );
           if (packet.packetType === "lucky") {
             if (remainingCount === 1) {
@@ -18018,17 +18074,17 @@ body.dark-mode .wb-book-container label {
           const claimedCount = Object.keys(packet.claimedBy || {}).length;
           const claimedAmountSum = Object.values(packet.claimedBy || {}).reduce(
             (sum, val) => sum + val,
-            0
+            0,
           );
           let summaryText = `${claimedCount}/${
             packet.count
           }个红包，共${claimedAmountSum.toFixed(
-            2
+            2,
           )}/${packet.totalAmount.toFixed(2)}元。`;
           if (!packet.isFullyClaimed && claimedCount < packet.count) {
             const timeLeft = Math.floor(
               (packet.timestamp + 24 * 60 * 60 * 1000 - Date.now()) /
-                (1000 * 60 * 60)
+                (1000 * 60 * 60),
             );
             if (timeLeft > 0)
               summaryText += ` 剩余红包将在${timeLeft}小时内退还。`;
@@ -18097,7 +18153,7 @@ body.dark-mode .wb-book-container label {
           const modal = document.getElementById("create-poll-modal");
           document.getElementById("poll-question-input").value = "";
           const optionsContainer = document.getElementById(
-            "poll-options-container"
+            "poll-options-container",
           );
           optionsContainer.innerHTML = "";
 
@@ -18149,7 +18205,7 @@ body.dark-mode .wb-book-container label {
           }
 
           const options = Array.from(
-            document.querySelectorAll(".poll-option-input")
+            document.querySelectorAll(".poll-option-input"),
           )
             .map((input) => input.value.trim())
             .filter((text) => text); // 过滤掉空的选项
@@ -18264,7 +18320,7 @@ body.dark-mode .wb-book-container label {
 
           const confirmed = await showCustomConfirm(
             "结束投票",
-            "确定要结束这个投票吗？结束后将无法再进行投票。"
+            "确定要结束这个投票吗？结束后将无法再进行投票。",
           );
           if (confirmed) {
             poll.isClosed = true;
@@ -18308,8 +18364,8 @@ body.dark-mode .wb-book-container label {
               resultsHtml += `
                       <div style="margin-bottom: 15px;">
                           <p style="font-weight: 500; margin: 0 0 5px 0;">${option} (${
-                voters.length
-              }票)</p>
+                            voters.length
+                          }票)</p>
                           <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">
                               ${
                                 voters.length > 0
@@ -18335,9 +18391,8 @@ body.dark-mode .wb-book-container label {
         function openAiAvatarLibraryModal() {
           if (!state.activeChatId) return;
           const chat = state.chats[state.activeChatId];
-          document.getElementById(
-            "ai-avatar-library-title"
-          ).textContent = `“${chat.name}”的头像库`;
+          document.getElementById("ai-avatar-library-title").textContent =
+            `“${chat.name}”的头像库`;
           renderAiAvatarLibrary();
           document
             .getElementById("ai-avatar-library-modal")
@@ -18374,7 +18429,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "删除头像",
                 `确定要从头像库中删除“${avatar.name}”吗？`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
               if (confirmed) {
                 chat.settings.aiAvatarLibrary.splice(index, 1);
@@ -18393,7 +18448,7 @@ body.dark-mode .wb-book-container label {
         async function addAvatarToLibrary() {
           const name = await showCustomPrompt(
             "添加头像",
-            "请为这个头像起个名字（例如：开心、哭泣）"
+            "请为这个头像起个名字（例如：开心、哭泣）",
           );
           if (!name || !name.trim()) return;
 
@@ -18401,7 +18456,7 @@ body.dark-mode .wb-book-container label {
             "添加头像",
             "请输入头像的图片URL",
             "",
-            "url"
+            "url",
           );
           if (!url || !url.trim().startsWith("http")) {
             alert("请输入有效的图片URL！");
@@ -18513,7 +18568,7 @@ body.dark-mode .wb-book-container label {
               <div class="article-body">
                   <p>${(message.content || "内容为空。").replace(
                     /\n/g,
-                    "</p><p>"
+                    "</p><p>",
                   )}</p>
               </div>
           `;
@@ -18681,7 +18736,7 @@ body.dark-mode .wb-book-container label {
 
           const chat = state.chats[state.activeChatId];
           const message = chat.history.find(
-            (m) => m.timestamp === activeMessageTimestamp
+            (m) => m.timestamp === activeMessageTimestamp,
           );
           if (!message) return;
 
@@ -18721,9 +18776,8 @@ body.dark-mode .wb-book-container label {
 
           // 3. 【核心修正】仅在更新“回复预览栏”时，才使用“预览片段”
           const previewBar = document.getElementById("reply-preview-bar");
-          previewBar.querySelector(
-            ".sender"
-          ).textContent = `回复 ${currentReplyContext.senderName}:`;
+          previewBar.querySelector(".sender").textContent =
+            `回复 ${currentReplyContext.senderName}:`;
           previewBar.querySelector(".text").textContent = previewSnippet; // <--- 这里用的是缩略版！
           previewBar.style.display = "block";
 
@@ -18785,7 +18839,7 @@ body.dark-mode .wb-book-container label {
           const timestamp = activeTransferTimestamp;
           const chat = state.chats[state.activeChatId];
           const messageIndex = chat.history.findIndex(
-            (m) => m.timestamp === timestamp
+            (m) => m.timestamp === timestamp,
           );
           if (messageIndex === -1) return;
 
@@ -18863,7 +18917,7 @@ body.dark-mode .wb-book-container label {
               const newName = await showCustomPrompt(
                 "自定义通话名称",
                 "请输入新的名称（留空则恢复默认）",
-                record.customName || "" // 如果已有自定义名称，就显示它
+                record.customName || "", // 如果已有自定义名称，就显示它
               );
 
               // 2. 如果用户点击了“取消”，则什么都不做
@@ -18901,12 +18955,12 @@ body.dark-mode .wb-book-container label {
 
           const callDate = new Date(record.timestamp);
           const dateString = `${callDate.getFullYear()}-${String(
-            callDate.getMonth() + 1
+            callDate.getMonth() + 1,
           ).padStart(2, "0")}-${String(callDate.getDate()).padStart(
             2,
-            "0"
+            "0",
           )} ${String(callDate.getHours()).padStart(2, "0")}:${String(
-            callDate.getMinutes()
+            callDate.getMinutes(),
           ).padStart(2, "0")}`;
           const durationText = `${Math.floor(record.duration / 60)}分${
             record.duration % 60
@@ -18915,7 +18969,7 @@ body.dark-mode .wb-book-container label {
           const avatarsHtml = record.participants
             .map(
               (p) =>
-                `<img src="${p.avatar}" alt="${p.name}" class="participant-avatar" title="${p.name}">`
+                `<img src="${p.avatar}" alt="${p.name}" class="participant-avatar" title="${p.name}">`,
             )
             .join("");
 
@@ -18955,7 +19009,7 @@ body.dark-mode .wb-book-container label {
           const bodyEl = document.getElementById("transcript-modal-body");
 
           titleEl.textContent = `通话于 ${new Date(
-            record.timestamp
+            record.timestamp,
           ).toLocaleString()} (时长: ${Math.floor(record.duration / 60)}分${
             record.duration % 60
           }秒)`;
@@ -18985,7 +19039,7 @@ body.dark-mode .wb-book-container label {
             const confirmed = await showCustomConfirm(
               "确认删除",
               "确定要永久删除这条通话记录吗？此操作不可恢复。",
-              { confirmButtonClass: "btn-danger" }
+              { confirmButtonClass: "btn-danger" },
             );
 
             if (confirmed) {
@@ -19023,7 +19077,7 @@ body.dark-mode .wb-book-container label {
           const newStatusText = await showCustomPrompt(
             "编辑对方状态",
             "请输入对方现在的新状态：",
-            chat.status.text // 将当前状态作为输入框的默认内容
+            chat.status.text, // 将当前状态作为输入框的默认内容
           );
 
           // 3. 如果用户输入了内容并点击了“确定”
@@ -19041,7 +19095,7 @@ body.dark-mode .wb-book-container label {
             // 6. 给出一个无伤大雅的成功提示
             await showCustomAlert(
               "状态已更新",
-              `“${chat.name}”的当前状态已更新为：${chat.status.text}`
+              `“${chat.name}”的当前状态已更新为：${chat.status.text}`,
             );
           }
         }
@@ -19158,7 +19212,7 @@ body.dark-mode .wb-book-container label {
             return;
           }
           const activeLine = lyricsList.querySelector(
-            `.lyric-line[data-index="${musicState.currentLyricIndex}"]`
+            `.lyric-line[data-index="${musicState.currentLyricIndex}"]`,
           );
           if (activeLine) {
             activeLine.classList.add("active");
@@ -19211,7 +19265,7 @@ body.dark-mode .wb-book-container label {
             hideMessageActions();
             await showCustomAlert(
               "操作失败",
-              "该消息发送已超过2分钟，无法撤回。"
+              "该消息发送已超过2分钟，无法撤回。",
             );
             return;
           }
@@ -19231,7 +19285,7 @@ body.dark-mode .wb-book-container label {
           if (!chat) return;
 
           const messageIndex = chat.history.findIndex(
-            (m) => m.timestamp === timestamp
+            (m) => m.timestamp === timestamp,
           );
           if (messageIndex === -1) return;
 
@@ -19338,7 +19392,7 @@ body.dark-mode .wb-book-container label {
           const confirmed = await showCustomConfirm(
             "确认删除",
             "删除分类后，该分类下的所有世界书将变为“未分类”。确定要删除吗？",
-            { confirmButtonClass: "btn-danger" }
+            { confirmButtonClass: "btn-danger" },
           );
           if (confirmed) {
             await db.worldBookCategories.delete(categoryId);
@@ -19351,7 +19405,7 @@ body.dark-mode .wb-book-container label {
               book.categoryId = null;
               await db.worldBooks.put(book);
               const bookInState = state.worldBooks.find(
-                (wb) => wb.id === book.id
+                (wb) => wb.id === book.id,
               );
               if (bookInState) bookInState.categoryId = null;
             }
@@ -19431,7 +19485,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("import-btn")
             .addEventListener("click", () =>
-              document.getElementById("import-data-input").click()
+              document.getElementById("import-data-input").click(),
             );
           document
             .getElementById("import-data-input")
@@ -19444,7 +19498,7 @@ body.dark-mode .wb-book-container label {
               applyScopedCss(
                 "",
                 "#settings-preview-area",
-                "preview-bubble-style"
+                "preview-bubble-style",
               ); // 清除预览区的自定义样式
               // ▲▲▲ 修改结束 ▲▲▲
 
@@ -19458,7 +19512,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", async () => {
               const name = await showCustomPrompt(
                 "创建新聊天",
-                "请输入Ta的名字"
+                "请输入Ta的名字",
               );
               if (name && name.trim()) {
                 const newChatId = "chat_" + Date.now();
@@ -19508,7 +19562,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", () =>
               document
                 .getElementById("transfer-modal")
-                .classList.remove("visible")
+                .classList.remove("visible"),
             );
           document
             .getElementById("transfer-confirm-btn")
@@ -19548,7 +19602,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", () =>
               document
                 .getElementById("music-playlist-panel")
-                .classList.remove("visible")
+                .classList.remove("visible"),
             );
           document
             .getElementById("add-song-url-btn")
@@ -19556,7 +19610,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("add-song-local-btn")
             .addEventListener("click", () =>
-              document.getElementById("local-song-upload-input").click()
+              document.getElementById("local-song-upload-input").click(),
             );
           document
             .getElementById("local-song-upload-input")
@@ -19608,7 +19662,6 @@ body.dark-mode .wb-book-container label {
 
               // --- 【核心修改】发送后，取消引用模式 ---
               cancelReplyMode();
-              
             });
           document
             .getElementById("wait-reply-btn")
@@ -19736,12 +19789,12 @@ body.dark-mode .wb-book-container label {
                 const confirmed = await showCustomConfirm(
                   "删除配置",
                   "确定要删除这个API配置吗？",
-                  { confirmButtonClass: "btn-danger" }
+                  { confirmButtonClass: "btn-danger" },
                 );
                 if (confirmed) {
                   await db.apiConfigs.delete(configId);
                   state.apiConfigs = state.apiConfigs.filter(
-                    (c) => c.id !== configId
+                    (c) => c.id !== configId,
                   );
                   if (state.globalSettings.activeApiConfigId === configId) {
                     state.globalSettings.activeApiConfigId =
@@ -19773,7 +19826,7 @@ body.dark-mode .wb-book-container label {
                     : `${url}/v1/models`,
                   isGemini
                     ? undefined
-                    : { headers: { Authorization: `Bearer ${key}` } }
+                    : { headers: { Authorization: `Bearer ${key}` } },
                 );
                 if (!response.ok) throw new Error("无法获取模型列表");
                 const data = await response.json();
@@ -19785,7 +19838,7 @@ body.dark-mode .wb-book-container label {
                   });
                 }
                 const modelSelect = document.getElementById(
-                  "config-model-select"
+                  "config-model-select",
                 );
                 modelSelect.innerHTML = "";
                 models.forEach((model) => {
@@ -19812,7 +19865,7 @@ body.dark-mode .wb-book-container label {
             .getElementById("background-interval-input")
             .addEventListener("change", async (e) => {
               state.globalSettings.backgroundActivityInterval = parseInt(
-                e.target.value
+                e.target.value,
               );
               await db.globalSettings.put(state.globalSettings);
             });
@@ -19820,7 +19873,7 @@ body.dark-mode .wb-book-container label {
             .getElementById("block-cooldown-input")
             .addEventListener("change", async (e) => {
               state.globalSettings.blockCooldownHours = parseFloat(
-                e.target.value
+                e.target.value,
               );
               await db.globalSettings.put(state.globalSettings);
             });
@@ -19845,7 +19898,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", async () => {
               if (!editingWorldBookId) return;
               const book = state.worldBooks.find(
-                (wb) => wb.id === editingWorldBookId
+                (wb) => wb.id === editingWorldBookId,
               );
               if (book) {
                 const newName = document
@@ -19857,12 +19910,12 @@ body.dark-mode .wb-book-container label {
                 }
                 book.name = newName;
                 book.content = document.getElementById(
-                  "world-book-content-input"
+                  "world-book-content-input",
                 ).value;
 
                 // ▼▼▼ 【核心修改】在这里保存分类ID ▼▼▼
                 const categoryId = document.getElementById(
-                  "world-book-category-select"
+                  "world-book-category-select",
                 ).value;
                 // 如果选择了“未分类”，存入 null；否则存入数字ID
                 book.categoryId = categoryId ? parseInt(categoryId) : null;
@@ -19888,20 +19941,20 @@ body.dark-mode .wb-book-container label {
             });
 
           const chatSettingsModal = document.getElementById(
-            "chat-settings-modal"
+            "chat-settings-modal",
           );
           const worldBookSelectBox = document.querySelector(
-            ".custom-multiselect .select-box"
+            ".custom-multiselect .select-box",
           );
           const worldBookCheckboxesContainer = document.getElementById(
-            "world-book-checkboxes-container"
+            "world-book-checkboxes-container",
           );
 
           function updateWorldBookSelectionDisplay() {
             const checkedBoxes =
               worldBookCheckboxesContainer.querySelectorAll("input:checked");
             const displayText = document.querySelector(
-              ".selected-options-text"
+              ".selected-options-text",
             );
             if (checkedBoxes.length === 0) {
               displayText.textContent = "-- 点击选择 --";
@@ -20014,7 +20067,7 @@ body.dark-mode .wb-book-container label {
               // ▼▼▼ 用下面这段【全新逻辑】替换掉原来简单的 forEach 循环 ▼▼▼
 
               const worldBookCheckboxesContainer = document.getElementById(
-                "world-book-checkboxes-container"
+                "world-book-checkboxes-container",
               );
               worldBookCheckboxesContainer.innerHTML = "";
               const linkedIds = new Set(chat.settings.linkedWorldBookIds || []);
@@ -20044,7 +20097,7 @@ body.dark-mode .wb-book-container label {
                 const booksInCategory = booksByCategoryId[category.id] || [];
                 if (booksInCategory.length > 0) {
                   const allInCategoryChecked = booksInCategory.every((book) =>
-                    linkedIds.has(book.id)
+                    linkedIds.has(book.id),
                   );
 
                   const header = document.createElement("div");
@@ -20094,14 +20147,14 @@ body.dark-mode .wb-book-container label {
                 const header = e.target.closest(".wb-category-header");
                 if (header && !e.target.matches('input[type="checkbox"]')) {
                   const categoryId = header.querySelector(
-                    ".wb-category-checkbox"
+                    ".wb-category-checkbox",
                   )?.dataset.categoryId;
                   // 【修改】现在 categoryId 可能是数字，也可能是 "uncategorized" 字符串，所以这个判断能通过了！
                   if (categoryId) {
                     // <-- 把原来的 !categoryId return; 改成这样
                     const bookContainer =
                       worldBookCheckboxesContainer.querySelector(
-                        `.wb-book-container[data-container-for="${categoryId}"]`
+                        `.wb-book-container[data-container-for="${categoryId}"]`,
                       );
                     if (bookContainer) {
                       header.classList.toggle("collapsed");
@@ -20121,7 +20174,7 @@ body.dark-mode .wb-book-container label {
                   // 找到这个分类下的所有书籍复选框，并将它们的状态设置为与分类复选框一致
                   const bookCheckboxes =
                     worldBookCheckboxesContainer.querySelectorAll(
-                      `input.wb-book-checkbox[data-parent-category="${categoryId}"]`
+                      `input.wb-book-checkbox[data-parent-category="${categoryId}"]`,
                     );
                   bookCheckboxes.forEach((cb) => (cb.checked = isChecked));
                 }
@@ -20133,15 +20186,15 @@ body.dark-mode .wb-book-container label {
                     // 检查它是否属于一个分类
                     const categoryCheckbox =
                       worldBookCheckboxesContainer.querySelector(
-                        `input.wb-category-checkbox[data-category-id="${categoryId}"]`
+                        `input.wb-category-checkbox[data-category-id="${categoryId}"]`,
                       );
                     const allBookCheckboxes =
                       worldBookCheckboxesContainer.querySelectorAll(
-                        `input.wb-book-checkbox[data-parent-category="${categoryId}"]`
+                        `input.wb-book-checkbox[data-parent-category="${categoryId}"]`,
                       );
                     // 检查该分类下是否所有书籍都被选中了
                     const allChecked = Array.from(allBookCheckboxes).every(
-                      (cb) => cb.checked
+                      (cb) => cb.checked,
                     );
                     // 同步分类“全选”复选框的状态
                     categoryCheckbox.checked = allChecked;
@@ -20158,15 +20211,14 @@ body.dark-mode .wb-book-container label {
               const themeRadio = document.querySelector(
                 `input[name="theme-select"][value="${
                   chat.settings.theme || "default"
-                }"]`
+                }"]`,
               );
               if (themeRadio) themeRadio.checked = true;
               const fontSizeSlider =
                 document.getElementById("font-size-slider");
               fontSizeSlider.value = chat.settings.fontSize || 13;
-              document.getElementById(
-                "font-size-value"
-              ).textContent = `${fontSizeSlider.value}px`;
+              document.getElementById("font-size-value").textContent =
+                `${fontSizeSlider.value}px`;
               const customCssInput =
                 document.getElementById("custom-css-input");
               customCssInput.value = chat.settings.customCss || "";
@@ -20232,10 +20284,10 @@ body.dark-mode .wb-book-container label {
               }
               member.groupNickname = newNickname; // 只修改群昵称
               member.persona = document.getElementById(
-                "member-persona-input"
+                "member-persona-input",
               ).value;
               member.avatar = document.getElementById(
-                "member-avatar-preview"
+                "member-avatar-preview",
               ).src;
 
               renderGroupMemberSettings(chat.members);
@@ -20265,14 +20317,14 @@ body.dark-mode .wb-book-container label {
               if (!newName) return alert("备注名/群名不能为空！");
               chat.name = newName;
               const selectedThemeRadio = document.querySelector(
-                'input[name="theme-select"]:checked'
+                'input[name="theme-select"]:checked',
               );
               chat.settings.theme = selectedThemeRadio
                 ? selectedThemeRadio.value
                 : "default";
 
               chat.settings.fontSize = parseInt(
-                document.getElementById("font-size-slider").value
+                document.getElementById("font-size-slider").value,
               );
               chat.settings.customCss = document
                 .getElementById("custom-css-input")
@@ -20283,10 +20335,10 @@ body.dark-mode .wb-book-container label {
               chat.settings.myAvatar =
                 document.getElementById("my-avatar-preview").src;
               const checkedBooks = document.querySelectorAll(
-                "#world-book-checkboxes-container input.wb-book-checkbox:checked"
+                "#world-book-checkboxes-container input.wb-book-checkbox:checked",
               );
               chat.settings.linkedWorldBookIds = Array.from(checkedBooks).map(
-                (cb) => cb.value
+                (cb) => cb.value,
               );
 
               if (chat.isGroup) {
@@ -20294,7 +20346,7 @@ body.dark-mode .wb-book-container label {
                   .getElementById("my-group-nickname-input")
                   .value.trim();
                 chat.settings.groupAvatar = document.getElementById(
-                  "group-avatar-preview"
+                  "group-avatar-preview",
                 ).src;
               } else {
                 chat.settings.aiPersona =
@@ -20302,7 +20354,7 @@ body.dark-mode .wb-book-container label {
                 chat.settings.aiAvatar =
                   document.getElementById("ai-avatar-preview").src;
                 const selectedGroupId = document.getElementById(
-                  "assign-group-select"
+                  "assign-group-select",
                 ).value;
                 chat.groupId = selectedGroupId
                   ? parseInt(selectedGroupId)
@@ -20316,7 +20368,7 @@ body.dark-mode .wb-book-container label {
               applyScopedCss(
                 chat.settings.customCss,
                 "#chat-messages",
-                "custom-bubble-style"
+                "custom-bubble-style",
               );
 
               chatSettingsModal.classList.remove("visible");
@@ -20331,7 +20383,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "清空聊天记录",
                 "此操作将永久删除此聊天的所有消息，无法恢复。确定要清空吗？",
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
               if (confirmed) {
                 chat.history = [];
@@ -20362,22 +20414,22 @@ body.dark-mode .wb-book-container label {
           setupFileUpload(
             "ai-avatar-input",
             (base64) =>
-              (document.getElementById("ai-avatar-preview").src = base64)
+              (document.getElementById("ai-avatar-preview").src = base64),
           );
           setupFileUpload(
             "my-avatar-input",
             (base64) =>
-              (document.getElementById("my-avatar-preview").src = base64)
+              (document.getElementById("my-avatar-preview").src = base64),
           );
           setupFileUpload(
             "group-avatar-input",
             (base64) =>
-              (document.getElementById("group-avatar-preview").src = base64)
+              (document.getElementById("group-avatar-preview").src = base64),
           );
           setupFileUpload(
             "member-avatar-input",
             (base64) =>
-              (document.getElementById("member-avatar-preview").src = base64)
+              (document.getElementById("member-avatar-preview").src = base64),
           );
           setupFileUpload("bg-input", (base64) => {
             if (state.activeChatId) {
@@ -20392,7 +20444,7 @@ body.dark-mode .wb-book-container label {
           setupFileUpload(
             "preset-avatar-input",
             (base64) =>
-              (document.getElementById("preset-avatar-preview").src = base64)
+              (document.getElementById("preset-avatar-preview").src = base64),
           );
           document
             .getElementById("remove-bg-btn")
@@ -20416,20 +20468,20 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("close-sticker-panel-btn")
             .addEventListener("click", () =>
-              stickerPanel.classList.remove("visible")
+              stickerPanel.classList.remove("visible"),
             );
           document
             .getElementById("add-sticker-btn")
             .addEventListener("click", async () => {
               const url = await showCustomPrompt(
                 "添加表情(URL)",
-                "请输入表情包的图片URL"
+                "请输入表情包的图片URL",
               );
               if (!url || !url.trim().startsWith("http"))
                 return url && alert("请输入有效的URL (以http开头)");
               const name = await showCustomPrompt(
                 "命名表情",
-                "请为这个表情命名 (例如：开心、疑惑)"
+                "请为这个表情命名 (例如：开心、疑惑)",
               );
               if (name && name.trim()) {
                 const newSticker = {
@@ -20445,7 +20497,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("upload-sticker-btn")
             .addEventListener("click", () =>
-              document.getElementById("sticker-upload-input").click()
+              document.getElementById("sticker-upload-input").click(),
             );
           document
             .getElementById("sticker-upload-input")
@@ -20458,7 +20510,7 @@ body.dark-mode .wb-book-container label {
                 const base64Url = reader.result;
                 const name = await showCustomPrompt(
                   "命名表情",
-                  "请为这个表情命名 (例如：好耶、疑惑)"
+                  "请为这个表情命名 (例如：好耶、疑惑)",
                 );
                 if (name && name.trim()) {
                   const newSticker = {
@@ -20477,7 +20529,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("upload-image-btn")
             .addEventListener("click", () =>
-              document.getElementById("image-upload-input").click()
+              document.getElementById("image-upload-input").click(),
             );
           document
             .getElementById("image-upload-input")
@@ -20509,7 +20561,7 @@ body.dark-mode .wb-book-container label {
               if (!state.activeChatId) return;
               const text = await showCustomPrompt(
                 "发送语音",
-                "请输入你想说的内容："
+                "请输入你想说的内容：",
               );
               if (text && text.trim()) {
                 const chat = state.chats[state.activeChatId];
@@ -20531,7 +20583,7 @@ body.dark-mode .wb-book-container label {
               if (!state.activeChatId) return;
               const description = await showCustomPrompt(
                 "发送照片",
-                "请用文字描述您要发送的照片："
+                "请用文字描述您要发送的照片：",
               );
               if (description && description.trim()) {
                 const chat = state.chats[state.activeChatId];
@@ -20568,7 +20620,7 @@ body.dark-mode .wb-book-container label {
               if (!state.activeChatId) return;
 
               const productInfoInput = document.getElementById(
-                "waimai-product-info"
+                "waimai-product-info",
               );
               const amountInput = document.getElementById("waimai-amount");
 
@@ -20650,7 +20702,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "删除消息",
                 `确定要删除选中的 ${selectedMessages.size} 条消息吗？这将改变AI的记忆。`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
               if (confirmed) {
                 const chat = state.chats[state.activeChatId];
@@ -20659,25 +20711,25 @@ body.dark-mode .wb-book-container label {
                 let deletedPollsInfo = [];
                 for (const timestamp of selectedMessages) {
                   const msg = chat.history.find(
-                    (m) => m.timestamp === timestamp
+                    (m) => m.timestamp === timestamp,
                   );
                   if (msg && msg.type === "poll") {
                     deletedPollsInfo.push(
-                      `关于“${msg.question}”的投票(时间戳: ${msg.timestamp})`
+                      `关于“${msg.question}”的投票(时间戳: ${msg.timestamp})`,
                     );
                   }
                 }
 
                 // 2. 更新后端的历史记录
                 chat.history = chat.history.filter(
-                  (msg) => !selectedMessages.has(msg.timestamp)
+                  (msg) => !selectedMessages.has(msg.timestamp),
                 );
 
                 // 3. 【核心加强】构建更具体的“遗忘指令”
                 let forgetReason = "一些之前的消息已被用户删除。";
                 if (deletedPollsInfo.length > 0) {
                   forgetReason += ` 其中包括以下投票：${deletedPollsInfo.join(
-                    "；"
+                    "；",
                   )}。`;
                 }
                 forgetReason +=
@@ -20703,7 +20755,7 @@ body.dark-mode .wb-book-container label {
 
           const fontUrlInput = document.getElementById("font-url-input");
           fontUrlInput.addEventListener("input", () =>
-            applyCustomFont(fontUrlInput.value.trim(), true)
+            applyCustomFont(fontUrlInput.value.trim(), true),
           );
           document
             .getElementById("save-font-btn")
@@ -20726,13 +20778,13 @@ body.dark-mode .wb-book-container label {
             .querySelectorAll("#chat-list-bottom-nav .nav-item")
             .forEach((item) => {
               item.addEventListener("click", () =>
-                switchToChatListView(item.dataset.view)
+                switchToChatListView(item.dataset.view),
               );
             });
           document
             .getElementById("qzone-back-btn")
             .addEventListener("click", () =>
-              switchToChatListView("messages-view")
+              switchToChatListView("messages-view"),
             );
           document
             .getElementById("qzone-nickname")
@@ -20740,7 +20792,7 @@ body.dark-mode .wb-book-container label {
               const newNickname = await showCustomPrompt(
                 "修改昵称",
                 "请输入新的昵称",
-                state.qzoneSettings.nickname
+                state.qzoneSettings.nickname,
               );
               if (newNickname && newNickname.trim()) {
                 state.qzoneSettings.nickname = newNickname.trim();
@@ -20751,12 +20803,12 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("qzone-avatar-container")
             .addEventListener("click", () =>
-              document.getElementById("qzone-avatar-input").click()
+              document.getElementById("qzone-avatar-input").click(),
             );
           document
             .getElementById("qzone-banner-container")
             .addEventListener("click", () =>
-              document.getElementById("qzone-banner-input").click()
+              document.getElementById("qzone-banner-input").click(),
             );
           document
             .getElementById("qzone-avatar-input")
@@ -20814,7 +20866,7 @@ body.dark-mode .wb-book-container label {
 
               // 5. 准备并显示模态框
               const visibilityGroupsContainer = document.getElementById(
-                "post-visibility-groups"
+                "post-visibility-groups",
               );
               visibilityGroupsContainer.innerHTML = "";
               const groups = await db.qzoneGroups.toArray();
@@ -20860,7 +20912,7 @@ body.dark-mode .wb-book-container label {
 
               // 5. 准备并显示模态框（与“说说”按钮的逻辑相同）
               const visibilityGroupsContainer = document.getElementById(
-                "post-visibility-groups"
+                "post-visibility-groups",
               );
               visibilityGroupsContainer.innerHTML = "";
               const groups = await db.qzoneGroups.toArray();
@@ -20902,7 +20954,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("album-upload-photo-btn")
             .addEventListener("click", () =>
-              document.getElementById("album-photo-input").click()
+              document.getElementById("album-photo-input").click(),
             );
 
           document
@@ -20965,7 +21017,7 @@ body.dark-mode .wb-book-container label {
                 const confirmed = await showCustomConfirm(
                   "删除照片",
                   "确定要删除这张照片吗？此操作不可恢复。",
-                  { confirmButtonClass: "btn-danger" }
+                  { confirmButtonClass: "btn-danger" },
                 );
 
                 if (confirmed) {
@@ -21030,7 +21082,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", async () => {
               const albumName = await showCustomPrompt(
                 "创建新相册",
-                "请输入相册名称"
+                "请输入相册名称",
               );
               if (albumName && albumName.trim()) {
                 const newAlbum = {
@@ -21053,12 +21105,12 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", () =>
               document
                 .getElementById("create-post-modal")
-                .classList.remove("visible")
+                .classList.remove("visible"),
             );
           document
             .getElementById("post-upload-local-btn")
             .addEventListener("click", () =>
-              document.getElementById("post-local-image-input").click()
+              document.getElementById("post-local-image-input").click(),
             );
           document
             .getElementById("post-local-image-input")
@@ -21073,7 +21125,7 @@ body.dark-mode .wb-book-container label {
                     .getElementById("post-image-preview-container")
                     .classList.add("visible");
                   document.getElementById(
-                    "post-image-desc-group"
+                    "post-image-desc-group",
                   ).style.display = "block";
                 };
                 reader.readAsDataURL(file);
@@ -21086,7 +21138,7 @@ body.dark-mode .wb-book-container label {
                 "输入图片URL",
                 "请输入网络图片的链接",
                 "",
-                "url"
+                "url",
               );
               if (url) {
                 document.getElementById("post-image-preview").src = url;
@@ -21102,12 +21154,12 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", () => resetCreatePostModal());
           const imageModeBtn = document.getElementById("switch-to-image-mode");
           const textImageModeBtn = document.getElementById(
-            "switch-to-text-image-mode"
+            "switch-to-text-image-mode",
           );
           const imageModeContent =
             document.getElementById("image-mode-content");
           const textImageModeContent = document.getElementById(
-            "text-image-mode-content"
+            "text-image-mode-content",
           );
           imageModeBtn.addEventListener("click", () => {
             imageModeBtn.classList.add("active");
@@ -21131,15 +21183,15 @@ body.dark-mode .wb-book-container label {
 
               // --- 1. 获取通用的可见性设置 ---
               const visibilityMode = document.querySelector(
-                'input[name="visibility"]:checked'
+                'input[name="visibility"]:checked',
               ).value;
               let visibleGroupIds = null;
 
               if (visibilityMode === "include") {
                 visibleGroupIds = Array.from(
                   document.querySelectorAll(
-                    'input[name="visibility_group"]:checked'
-                  )
+                    'input[name="visibility_group"]:checked',
+                  ),
                 ).map((cb) => parseInt(cb.value));
               }
 
@@ -21311,7 +21363,7 @@ body.dark-mode .wb-book-container label {
               ? e.pageY
               : e.touches[0].pageY;
             swipeState.activeContainer.querySelector(
-              ".qzone-post-item"
+              ".qzone-post-item",
             ).style.transition = "none";
           };
 
@@ -21354,7 +21406,7 @@ body.dark-mode .wb-book-container label {
               if (translation > 0) translation = 0;
               if (translation < -90) translation = -90;
               swipeState.activeContainer.querySelector(
-                ".qzone-post-item"
+                ".qzone-post-item",
               ).style.transform = `translateX(${translation}px)`;
             }
           };
@@ -21432,9 +21484,9 @@ body.dark-mode .wb-book-container label {
                 "删除评论",
                 `确定要删除这条评论吗？\n\n“${commentText.substring(
                   0,
-                  50
+                  50,
                 )}...”`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
 
               if (confirmed) {
@@ -21467,7 +21519,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "删除动态",
                 "确定要永久删除这条动态吗？",
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
 
               if (confirmed) {
@@ -21487,7 +21539,7 @@ body.dark-mode .wb-book-container label {
                         !(
                           msg.role === "system" &&
                           msg.content.includes(notificationIdentifier)
-                        )
+                        ),
                     );
                     if (chat.history.length < originalHistoryLength) {
                       await db.chats.put(chat);
@@ -21525,7 +21577,7 @@ body.dark-mode .wb-book-container label {
                   icon.addEventListener(
                     "animationend",
                     () => icon.classList.remove("animate-like"),
-                    { once: true }
+                    { once: true },
                   );
                 }
                 await db.qzonePosts.update(postId, { likes: post.likes });
@@ -21595,12 +21647,12 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("qzone-back-btn")
             .addEventListener("click", () =>
-              switchToChatListView("messages-view")
+              switchToChatListView("messages-view"),
             );
           document
             .getElementById("favorites-back-btn")
             .addEventListener("click", () =>
-              switchToChatListView("messages-view")
+              switchToChatListView("messages-view"),
             );
 
           // ▲▲▲ 添加结束 ▲▲▲
@@ -21610,7 +21662,7 @@ body.dark-mode .wb-book-container label {
           // 收藏页搜索功能
           const searchInput = document.getElementById("favorites-search-input");
           const searchClearBtn = document.getElementById(
-            "favorites-search-clear-btn"
+            "favorites-search-clear-btn",
           );
 
           searchInput.addEventListener("input", () => {
@@ -21698,7 +21750,7 @@ body.dark-mode .wb-book-container label {
 
                 if (!existing) {
                   const messageToSave = chat.history.find(
-                    (msg) => msg.timestamp === timestamp
+                    (msg) => msg.timestamp === timestamp,
                   );
                   if (messageToSave) {
                     favoritesToAdd.push({
@@ -21720,7 +21772,7 @@ body.dark-mode .wb-book-container label {
                   .toArray(); // 更新全局收藏缓存
                 await showCustomAlert(
                   "收藏成功",
-                  `已成功收藏 ${favoritesToAdd.length} 条消息。`
+                  `已成功收藏 ${favoritesToAdd.length} 条消息。`,
                 );
               } else {
                 await showCustomAlert("提示", "选中的消息均已收藏过。");
@@ -21734,7 +21786,7 @@ body.dark-mode .wb-book-container label {
             document.getElementById("favorites-edit-btn");
           const favoritesView = document.getElementById("favorites-view");
           const favoritesActionBar = document.getElementById(
-            "favorites-action-bar"
+            "favorites-action-bar",
           );
           const mainBottomNav = document.getElementById("chat-list-bottom-nav"); // 获取主导航栏
           const favoritesList = document.getElementById("favorites-list"); // 获取收藏列表
@@ -21743,7 +21795,7 @@ body.dark-mode .wb-book-container label {
             isFavoritesSelectionMode = !isFavoritesSelectionMode;
             favoritesView.classList.toggle(
               "selection-mode",
-              isFavoritesSelectionMode
+              isFavoritesSelectionMode,
             );
 
             if (isFavoritesSelectionMode) {
@@ -21765,7 +21817,7 @@ body.dark-mode .wb-book-container label {
                 .querySelectorAll(".favorite-item-card.selected")
                 .forEach((card) => card.classList.remove("selected"));
               document.getElementById(
-                "favorites-delete-selected-btn"
+                "favorites-delete-selected-btn",
               ).textContent = `删除 (0)`;
             }
           });
@@ -21805,7 +21857,7 @@ body.dark-mode .wb-book-container label {
 
               // 更新底部删除按钮的计数
               document.getElementById(
-                "favorites-delete-selected-btn"
+                "favorites-delete-selected-btn",
               ).textContent = `删除 (${selectedFavorites.size})`;
             });
 
@@ -21819,7 +21871,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "确认删除",
                 `确定要从收藏夹中移除这 ${selectedFavorites.size} 条内容吗？`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
 
               if (confirmed) {
@@ -21829,7 +21881,7 @@ body.dark-mode .wb-book-container label {
 
                 // 【核心修正1】从前端缓存中也移除被删除的项
                 allFavoriteItems = allFavoriteItems.filter(
-                  (item) => !idsToDelete.includes(item.id)
+                  (item) => !idsToDelete.includes(item.id),
                 );
 
                 // 【核心修正2】使用更新后的缓存，立即重新渲染列表
@@ -21862,9 +21914,8 @@ body.dark-mode .wb-book-container label {
           const fontSizeSlider = document.getElementById("font-size-slider");
           fontSizeSlider.addEventListener("input", () => {
             // a. 实时更新数值显示
-            document.getElementById(
-              "font-size-value"
-            ).textContent = `${fontSizeSlider.value}px`;
+            document.getElementById("font-size-value").textContent =
+              `${fontSizeSlider.value}px`;
             // b. 更新预览
             updateSettingsPreview();
           });
@@ -21874,7 +21925,7 @@ body.dark-mode .wb-book-container label {
             document.getElementById("custom-css-input");
           customCssInputForPreview.addEventListener(
             "input",
-            updateSettingsPreview
+            updateSettingsPreview,
           );
 
           // 4. 监听重置按钮
@@ -21900,7 +21951,7 @@ body.dark-mode .wb-book-container label {
             .forEach((radio) => {
               radio.addEventListener("change", function () {
                 const groupsContainer = document.getElementById(
-                  "post-visibility-groups"
+                  "post-visibility-groups",
                 );
                 if (this.value === "include" || this.value === "exclude") {
                   groupsContainer.style.display = "block";
@@ -22056,7 +22107,7 @@ body.dark-mode .wb-book-container label {
               // 【已恢复】从好友列表添加的事件
               // 【关键】为“完成”按钮绑定“拉人入群”的逻辑
               const confirmBtn = document.getElementById(
-                "confirm-contact-picker-btn"
+                "confirm-contact-picker-btn",
               );
               // 使用克隆节点方法清除旧的事件监听器，防止重复绑定
               const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -22164,7 +22215,7 @@ body.dark-mode .wb-book-container label {
                 // 对于群聊，我们只把【发起通话的AI】加入参与者列表
                 const chat = state.chats[videoCallState.activeChatId];
                 const requester = chat.members.find(
-                  (m) => m.name === videoCallState.callRequester
+                  (m) => m.name === videoCallState.callRequester,
                 );
                 if (requester) {
                   // 清空可能存在的旧数据，然后只添加发起者
@@ -22188,7 +22239,7 @@ body.dark-mode .wb-book-container label {
 
               // ★★★★★ 核心新增：在弹出输入框前，先找到并高亮用户头像 ★★★★★
               const userAvatar = document.querySelector(
-                '.participant-avatar-wrapper[data-participant-id="user"] .participant-avatar'
+                '.participant-avatar-wrapper[data-participant-id="user"] .participant-avatar',
               );
               if (userAvatar) {
                 userAvatar.classList.add("speaking");
@@ -22196,7 +22247,7 @@ body.dark-mode .wb-book-container label {
 
               const userInput = await showCustomPrompt(
                 "你说",
-                "请输入你想说的话..."
+                "请输入你想说的话...",
               );
 
               // ★★★★★ 核心新增：无论用户是否输入，只要关闭输入框就移除高亮 ★★★★★
@@ -22227,7 +22278,7 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("memories-back-btn")
             .addEventListener("click", () =>
-              switchToChatListView("messages-view")
+              switchToChatListView("messages-view"),
             );
 
           // ▲▲▲ 新增结束 ▲▲▲
@@ -22254,7 +22305,7 @@ body.dark-mode .wb-book-container label {
                 .getElementById("countdown-title-input")
                 .value.trim();
               const dateValue = document.getElementById(
-                "countdown-date-input"
+                "countdown-date-input",
               ).value;
 
               if (!title || !dateValue) {
@@ -22298,7 +22349,7 @@ body.dark-mode .wb-book-container label {
               const confirmed = await showCustomConfirm(
                 "确认拉黑",
                 `确定要拉黑“${chat.name}”吗？拉黑后您将无法向其发送消息，直到您将Ta移出黑名单，或等待Ta重新申请好友。`,
-                { confirmButtonClass: "btn-danger" }
+                { confirmButtonClass: "btn-danger" },
               );
 
               if (confirmed) {
@@ -22335,7 +22386,7 @@ body.dark-mode .wb-book-container label {
 
               if (e.target.id === "force-apply-check-btn") {
                 alert(
-                  "正在手动触发好友申请流程，请稍后...\n如果API调用成功，将弹出提示。如果失败，也会有错误提示。如果长时间无反应，说明AI可能决定暂时不申请。"
+                  "正在手动触发好友申请流程，请稍后...\n如果API调用成功，将弹出提示。如果失败，也会有错误提示。如果长时间无反应，说明AI可能决定暂时不申请。",
                 );
                 await triggerAiFriendApplication(chat.id);
                 renderChatInterface(chat.id);
@@ -22398,7 +22449,7 @@ body.dark-mode .wb-book-container label {
                 const reason = await showCustomPrompt(
                   "发送好友申请",
                   `请输入你想对“${chat.name}”说的申请理由：`,
-                  "我们和好吧！"
+                  "我们和好吧！",
                 );
                 // 只有当用户输入了内容并点击“确定”后才继续
                 if (reason !== null) {
@@ -22463,17 +22514,15 @@ body.dark-mode .wb-book-container label {
             .getElementById("rp-group-amount")
             .addEventListener("input", (e) => {
               const amount = parseFloat(e.target.value) || 0;
-              document.getElementById(
-                "rp-group-total"
-              ).textContent = `¥ ${amount.toFixed(2)}`;
+              document.getElementById("rp-group-total").textContent =
+                `¥ ${amount.toFixed(2)}`;
             });
           document
             .getElementById("rp-direct-amount")
             .addEventListener("input", (e) => {
               const amount = parseFloat(e.target.value) || 0;
-              document.getElementById(
-                "rp-direct-total"
-              ).textContent = `¥ ${amount.toFixed(2)}`;
+              document.getElementById("rp-direct-total").textContent =
+                `¥ ${amount.toFixed(2)}`;
             });
 
           // ▲▲▲ 新事件绑定结束 ▲▲▲
@@ -22578,7 +22627,7 @@ body.dark-mode .wb-book-container label {
                   `更换“${item.querySelector(".icon-preview").alt}”图标`,
                   "请输入新的图片URL",
                   currentUrl,
-                  "url"
+                  "url",
                 );
 
                 if (newUrl && newUrl.trim().startsWith("http")) {
@@ -22688,12 +22737,12 @@ body.dark-mode .wb-book-container label {
           document
             .getElementById("transfer-action-accept")
             .addEventListener("click", () =>
-              handleUserTransferResponse("accepted")
+              handleUserTransferResponse("accepted"),
             );
           document
             .getElementById("transfer-action-decline")
             .addEventListener("click", () =>
-              handleUserTransferResponse("declined")
+              handleUserTransferResponse("declined"),
             );
           document
             .getElementById("transfer-action-cancel")
@@ -22786,7 +22835,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", async () => {
               const sourceChat = state.chats[state.activeChatId];
               const selectedTargetIds = Array.from(
-                document.querySelectorAll(".share-target-checkbox:checked")
+                document.querySelectorAll(".share-target-checkbox:checked"),
               ).map((cb) => cb.dataset.chatId);
 
               if (selectedTargetIds.length === 0) {
@@ -22797,11 +22846,11 @@ body.dark-mode .wb-book-container label {
               // 1. 打包聊天记录
               const sharedHistory = [];
               const sortedTimestamps = [...selectedMessages].sort(
-                (a, b) => a - b
+                (a, b) => a - b,
               );
               for (const timestamp of sortedTimestamps) {
                 const msg = sourceChat.history.find(
-                  (m) => m.timestamp === timestamp
+                  (m) => m.timestamp === timestamp,
                 );
                 if (msg) {
                   sharedHistory.push(msg);
@@ -22839,7 +22888,7 @@ body.dark-mode .wb-book-container label {
               exitSelectionMode(); // 退出多选模式
               await showCustomAlert(
                 "分享成功",
-                `聊天记录已成功分享到 ${selectedTargetIds.length} 个会话中。`
+                `聊天记录已成功分享到 ${selectedTargetIds.length} 个会话中。`,
               );
               renderChatList(); // 刷新列表，可能会有新消息提示
             });
@@ -22861,7 +22910,7 @@ body.dark-mode .wb-book-container label {
 
               // 新增逻辑：处理分享卡片的点击
               const shareCard = e.target.closest(
-                ".link-share-card[data-timestamp]"
+                ".link-share-card[data-timestamp]",
               );
               if (
                 shareCard &&
@@ -22888,13 +22937,13 @@ body.dark-mode .wb-book-container label {
             if (!message || message.type !== "share_card") return;
 
             const viewerModal = document.getElementById(
-              "shared-history-viewer-modal"
+              "shared-history-viewer-modal",
             );
             const viewerTitle = document.getElementById(
-              "shared-history-viewer-title"
+              "shared-history-viewer-title",
             );
             const viewerContent = document.getElementById(
-              "shared-history-viewer-content"
+              "shared-history-viewer-content",
             );
 
             viewerTitle.textContent = message.payload.title;
@@ -22905,7 +22954,7 @@ body.dark-mode .wb-book-container label {
               // 注意：这里我们传入的是 sourceChat 对象，以确保头像、昵称等正确
               const sourceChat =
                 Object.values(state.chats).find(
-                  (c) => c.name === message.payload.sourceChatName
+                  (c) => c.name === message.payload.sourceChatName,
                 ) || chat;
               const bubbleEl = createMessageElement(sharedMsg, sourceChat);
               if (bubbleEl) {
@@ -22940,7 +22989,7 @@ body.dark-mode .wb-book-container label {
                 const track = musicState.playlist[index];
                 const confirmed = await showCustomConfirm(
                   "删除歌曲",
-                  `确定要从播放列表中删除《${track.name}》吗？`
+                  `确定要从播放列表中删除《${track.name}》吗？`,
                 );
                 if (confirmed) {
                   deleteTrack(index);
@@ -22998,7 +23047,7 @@ body.dark-mode .wb-book-container label {
             .addEventListener("click", (e) => {
               // 检查被点击的元素或其父元素是否是“已撤回”提示
               const placeholder = e.target.closest(
-                ".recalled-message-placeholder"
+                ".recalled-message-placeholder",
               );
               if (!placeholder) return; // 如果不是，就退出
 
@@ -23009,7 +23058,7 @@ body.dark-mode .wb-book-container label {
                 // 从父容器上找到时间戳
                 const timestamp = parseInt(wrapper.dataset.timestamp);
                 const recalledMsg = chat.history.find(
-                  (m) => m.timestamp === timestamp
+                  (m) => m.timestamp === timestamp,
                 );
 
                 if (recalledMsg && recalledMsg.recalledData) {
@@ -23055,16 +23104,16 @@ body.dark-mode .wb-book-container label {
 
           // ▼▼▼ API配置管理相关逻辑 ▼▼▼
           const manageApiPresetsBtn = document.getElementById(
-            "manage-api-presets-btn"
+            "manage-api-presets-btn",
           );
           const apiPresetsModal = document.getElementById("api-presets-modal");
           const apiPresetsList = document.getElementById("api-presets-list");
           const savePresetNameInput = document.getElementById(
-            "save-preset-name-input"
+            "save-preset-name-input",
           );
           const savePresetBtn = document.getElementById("save-preset-btn");
           const closeApiPresetsModalBtn = document.getElementById(
-            "close-api-presets-modal-btn"
+            "close-api-presets-modal-btn",
           );
 
           if (manageApiPresetsBtn) {
@@ -23091,7 +23140,7 @@ body.dark-mode .wb-book-container label {
                 apiKey: document.getElementById("api-key").value.trim(),
                 model: document.getElementById("model-select").value,
                 enableStreaming: document.getElementById(
-                  "stream-request-switch"
+                  "stream-request-switch",
                 ).checked,
               };
 
@@ -23101,7 +23150,7 @@ body.dark-mode .wb-book-container label {
 
               // Check for duplicate name and overwrite
               const existingIndex = state.globalSettings.apiPresets.findIndex(
-                (p) => p.name === name
+                (p) => p.name === name,
               );
               if (existingIndex > -1) {
                 if (!confirm(`配置 "${name}" 已存在，是否覆盖？`)) return;
