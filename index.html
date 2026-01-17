@@ -13989,19 +13989,27 @@
         function addLongPressListener(element, callback) {
           let pressTimer;
           const startPress = (e) => {
+            if (
+              ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName) ||
+              e.target.isContentEditable
+            ) {
+              return;
+            }
             if (isSelectionMode) return;
-            e.preventDefault();
+            if (e.type === 'touchstart' && e.cancelable) {
+                e.preventDefault();
+            }
             pressTimer = window.setTimeout(() => callback(e), 500);
           };
           const cancelPress = () => clearTimeout(pressTimer);
           element.addEventListener("mousedown", startPress);
           element.addEventListener("mouseup", cancelPress);
           element.addEventListener("mouseleave", cancelPress);
-          element.addEventListener("touchstart", startPress, { passive: true });
+          element.addEventListener("touchstart", startPress, { passive: false });
           element.addEventListener("touchend", cancelPress);
           element.addEventListener("touchmove", cancelPress);
         }
-
+        
         async function handleListenTogetherClick() {
           const targetChatId = state.activeChatId;
           if (!targetChatId) return;
