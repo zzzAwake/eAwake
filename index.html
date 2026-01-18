@@ -1189,17 +1189,15 @@
       .voice-message-body {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         cursor: pointer;
-        padding: 10px 14px;
         min-width: 60px;
         height: 22px;
         border-radius: 4px;
         position: relative;
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        gap: 4px;
-        width: -moz-fit-content;
-        width: fit-content;
+        gap: 6px;
+        box-sizing: content-box;
       }
       .message-bubble.user .voice-message-body {
         background-color: #2ba245;
@@ -1208,9 +1206,9 @@
       }
       .message-bubble.ai .voice-message-body {
         background-color: #ffffff;
-        color: #000;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
+        color: var(--text-primary);
+        flex-direction: row;
+        padding: 10px 10px 10px 14px;
       }
       #phone-screen.dark-mode .message-bubble.ai .voice-message-body {
         background-color: #2c2c2e;
@@ -1248,20 +1246,22 @@
       .voice-message-body {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         cursor: pointer;
-        padding: 10px 14px;
         min-width: 60px;
         height: 22px;
         border-radius: 4px;
         position: relative;
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
         gap: 6px;
+        box-sizing: content-box;
       }
       .message-bubble.user .voice-message-body {
         background-color: #2ba245;
         color: #1a3d00;
+        margin-left: auto;
         flex-direction: row-reverse;
+        padding: 10px 14px 10px 10px;
       }
 
       .message-bubble.ai .voice-message-body {
@@ -6595,8 +6595,8 @@
 
       #phone-screen.dark-mode .message-bubble.system-bubble,
       #phone-screen.dark-mode #typing-indicator .system-bubble {
-        background-color: rgba(255, 255, 255, 0.15) !important; 
-        box-shadow: none !important; 
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        box-shadow: none !important;
       }
     </style>
   </head>
@@ -11894,18 +11894,13 @@
                   </div>
               </div>
           `;
-          }
-
-          // 后续的其他 else if 保持不变
-          else if (msg.type === "user_photo" || msg.type === "ai_image") {
+          } else if (msg.type === "user_photo" || msg.type === "ai_image") {
             bubble.classList.add("is-ai-image");
             const altText =
               msg.type === "user_photo" ? "用户描述的照片" : "AI生成的图片";
             contentHtml = `<img src="https://i.postimg.cc/KYr2qRCK/1.jpg" class="ai-generated-image" alt="${altText}" data-description="${msg.content}">`;
           } else if (msg.type === "voice_message") {
             bubble.classList.add("is-voice-message");
-
-            // 保持原有的数据绑定
             bubble.dataset.voiceText = msg.content;
 
             const duration = Math.max(
@@ -11914,22 +11909,27 @@
             );
             const minutes = Math.floor(duration / 60);
             const seconds = duration % 60;
-            const durationFormatted = `${minutes}:${String(seconds).padStart(
-              2,
-              "0",
-            )}''`;
+            const durationFormatted = `${minutes > 0 ? minutes + "'" : ""}${seconds}''`; // 仿微信格式：60'' 或 1'00''
 
-            // 【修改点】使用 5 个 div 替代原有的 SVG 字符串
+            const MAX_DURATION = 60;
+            const MIN_WIDTH = 60;
+            const MAX_WIDTH = 220;
+
+            const effectiveDuration = Math.min(duration, MAX_DURATION);
+
+            const dynamicWidth =
+              MIN_WIDTH +
+              ((effectiveDuration - 1) / (MAX_DURATION - 1)) *
+                (MAX_WIDTH - MIN_WIDTH);
+
             const waveformHTML = `
                       <div class="voice-waveform">
                           <div></div><div></div><div></div><div></div><div></div>
                       </div>
                   `;
 
-            // 【关键】保留原有的 loading-spinner 和 voice-transcript 结构
-            // 只替换中间的图标部分
             contentHtml = `
-                      <div class="voice-message-body">
+                      <div class="voice-message-body" style="width: ${Math.floor(dynamicWidth)}px">
                           ${waveformHTML}
                           <div class="loading-spinner"></div>
                           <span class="voice-duration">${durationFormatted}</span>
