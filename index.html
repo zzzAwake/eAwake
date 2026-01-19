@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -6783,6 +6783,13 @@
             ><input type="text" id="chat-name-input" />
           </div>
 
+          <!-- ▼▼▼ 新增：AI备注输入框 ▼▼▼ -->
+          <div class="form-group" id="ai-remark-group" style="display: none">
+            <label for="ai-remark-input">AI备注 (仅自己可见)</label>
+            <input type="text" id="ai-remark-input" placeholder="例如：贴心小棉袄" />
+          </div>
+          <!-- ▲▲▲ 新增结束 ▲▲▲ -->
+
           <!-- ▼▼▼ 请将这段新代码粘贴到“备注名”输入框的 form-group 之后 ▼▼▼ -->
           <div
             class="form-group"
@@ -10163,7 +10170,10 @@
             "custom-bubble-style",
           );
 
-          document.getElementById("chat-header-title").textContent = chat.name;
+          document.getElementById("chat-header-title").textContent =
+            chat.settings.aiRemark
+              ? `${chat.name} | ${chat.settings.aiRemark}`
+              : chat.name;
           const statusContainer = document.getElementById("chat-header-status");
           const statusTextEl = statusContainer.querySelector(".status-text");
 
@@ -19130,6 +19140,10 @@
               document.getElementById("ai-avatar-group").style.display = isGroup
                 ? "none"
                 : "block";
+              // 【新增】控制AI备注输入框的显示
+              document.getElementById("ai-remark-group").style.display = isGroup
+                ? "none"
+                : "block";
 
               // 【核心修改1】根据是否为群聊，显示或隐藏“好友分组”区域
               document.getElementById("assign-group-section").style.display =
@@ -19137,6 +19151,10 @@
 
               // --- 加载表单数据 ---
               document.getElementById("chat-name-input").value = chat.name;
+              // 【新增】加载AI备注
+              document.getElementById("ai-remark-input").value =
+                chat.settings.aiRemark || "";
+
               document.getElementById("my-persona").value =
                 chat.settings.myPersona;
               document.getElementById("my-avatar-preview").src =
@@ -19473,6 +19491,11 @@
                   document.getElementById("ai-persona").value;
                 chat.settings.aiAvatar =
                   document.getElementById("ai-avatar-preview").src;
+                // 【新增】保存AI备注
+                chat.settings.aiRemark = document
+                  .getElementById("ai-remark-input")
+                  .value.trim();
+
                 const selectedGroupId = document.getElementById(
                   "assign-group-select",
                 ).value;
