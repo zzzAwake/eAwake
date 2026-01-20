@@ -18,17 +18,12 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiRVBob25l77yI5YWUa+acuueJiO+8iSIsInNob3J0X25hbWUiOiJFUGhvbmUiLCJzdGFydF91cmwiOiIuL2luZGV4Lmh0bWwiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMDAwMDAwIiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vaS5wb3N0aW1nLmNjL0tqOEpuUmNwLzI2NzYxMS1DQzAxLUY4LUEzLUI0OTEwLUEyLUMyLUZGREU0NzktREMuanBnIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic3JjIjoiaHR0cHM6Ly9pLnBvc3RpbWcuY2MvS2o4Sm5SY3AvMjY3NjExLUNDMDEtRjgtQTMtQjQ5MTAtQTItQzItRkZERTQ3OS1EQy5qcGciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==" />
+    <link rel="manifest" href="./manifest.json" />
     <script>
       if ("serviceWorker" in navigator) {
-        const swContent = `self.addEventListener('install', (e) => self.skipWaiting());
-self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));`;
-        const blob = new Blob([swContent], { type: "text/javascript" });
-        const url = URL.createObjectURL(blob);
         navigator.serviceWorker
-          .register(url)
-          .then(() => console.log("SW Registered (Blob)"))
+          .register("./sw.js")
+          .then(() => console.log("SW Registered"))
           .catch((e) => console.error("SW Error:", e));
       }
     </script>
