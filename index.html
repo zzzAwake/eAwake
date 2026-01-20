@@ -3402,12 +3402,12 @@
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
       }
-      .message-bubble.is-sticker::after,
-      .message-bubble.has-image::after,
-      .message-bubble.is-ai-image::after,
-      .message-bubble.is-transfer::after,
-      .message-bubble.is-waimai-request::after,
-      .message-bubble.is-voice-message::after {
+      .message-bubble.is-sticker:not(.selected)::after,
+      .message-bubble.has-image:not(.selected)::after,
+      .message-bubble.is-ai-image:not(.selected)::after,
+      .message-bubble.is-transfer:not(.selected)::after,
+      .message-bubble.is-waimai-request:not(.selected)::after,
+      .message-bubble.is-voice-message:not(.selected)::after {
         display: none !important;
       }
       #typing-indicator {
@@ -7297,6 +7297,48 @@
               拉取模型列表
             </button>
           </div>
+          <!-- ▼▼▼ 新增：Temperature, Top P, Top K 设置 ▼▼▼ -->
+          <div class="form-group form-group-flex">
+            <div style="flex: 1; margin-right: 10px">
+              <label for="config-temperature-input" style="font-size: 12px"
+                >Temperature (0-2)</label
+              >
+              <input
+                type="number"
+                id="config-temperature-input"
+                placeholder="0.8"
+                step="0.1"
+                min="0"
+                max="2"
+              />
+            </div>
+            <div style="flex: 1; margin-right: 10px">
+              <label for="config-topp-input" style="font-size: 12px"
+                >Top P (0-1)</label
+              >
+              <input
+                type="number"
+                id="config-topp-input"
+                placeholder="1.0"
+                step="0.05"
+                min="0"
+                max="1"
+              />
+            </div>
+            <div style="flex: 1">
+              <label for="config-topk-input" style="font-size: 12px"
+                >Top K (>=1)</label
+              >
+              <input
+                type="number"
+                id="config-topk-input"
+                placeholder="40"
+                step="1"
+                min="1"
+              />
+            </div>
+          </div>
+          <!-- ▲▲▲ 新增结束 ▲▲▲ -->
           <div class="form-group form-group-flex">
             <label for="config-stream-switch" style="margin-bottom: 0"
               >启用流式传输</label
@@ -8380,62 +8422,67 @@
         return [{ text: res }];
       }
 
-      function toGeminiRequestData(
-        model,
-        apiKey,
-        systemInstruction,
-        messagesForDecision,
-        isGemini,
-      ) {
-        if (!isGemini) {
-          return undefined;
-        }
+        function toGeminiRequestData(
+          model,
+          apiKey,
+          systemInstruction,
+          messagesForDecision,
+          isGemini,
+          temperature = 0.8,
+          topP = 1.0,
+          topK = 40
+        ) {
+          if (!isGemini) {
+            return undefined;
+          }
 
-        // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
+          // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
 
-        let roleType = {
-          user: "user",
-          assistant: "model",
-          system: "user", // <--- 新增这一行
-        };
-        return {
-          url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
-            apiKey,
-          )}`,
-          data: {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              contents: messagesForDecision.map((item) => {
-                let includesImages = false;
-                if (Array.isArray(item.content) && item.content.length === 2) {
-                  includesImages = item.content.some((sub) => {
-                    return sub.type === "image_url" && sub.image_url.url;
-                  });
-                }
-                return {
-                  role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
-                  parts: includesImages
-                    ? isImage(item.content[0], item.content[1])
-                    : transformChatData(item),
-                };
+          let roleType = {
+            user: "user",
+            assistant: "model",
+            system: "user", // <--- 新增这一行
+          };
+          return {
+            url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
+              apiKey,
+            )}`,
+            data: {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                contents: messagesForDecision.map((item) => {
+                  let includesImages = false;
+                  if (Array.isArray(item.content) && item.content.length === 2) {
+                    includesImages = item.content.some((sub) => {
+                      return sub.type === "image_url" && sub.image_url.url;
+                    });
+                  }
+                  return {
+                    role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
+                    parts: includesImages
+                      ? isImage(item.content[0], item.content[1])
+                      : transformChatData(item),
+                  };
+                }),
+                generationConfig: {
+                  temperature: temperature,
+                  topP: topP,
+                  topK: topK,
+                },
+                systemInstruction: {
+                  parts: [
+                    {
+                      text: systemInstruction,
+                    },
+                  ],
+                },
               }),
-              generationConfig: {
-                temperature: 0.8,
-              },
-              systemInstruction: {
-                parts: [
-                  {
-                    text: systemInstruction,
-                  },
-                ],
-              },
-            }),
-          },
-        };
-      }
+            },
+          };
+        }
       document.addEventListener("DOMContentLoaded", () => {
         // === Lightweight performance helpers ===
         /* visibility safeguard for streaming (patched) */
@@ -8528,6 +8575,9 @@
             proxyUrl: activeConfig.url,
             apiKey: activeConfig.apiKey,
             model: activeConfig.model,
+            temperature: activeConfig.temperature ?? 0.8, // 传递新参数
+            topP: activeConfig.topP ?? 1.0,
+            topK: activeConfig.topK ?? 40,
             enableStreaming: activeConfig.enableStream, // Map to old property name for compatibility
           };
         }
@@ -9831,6 +9881,9 @@
             model: "gpt-4o",
             enableStream: true,
             hideStreamResponse: false,
+            temperature: 0.8, // 默认值
+            topP: 1.0, // 默认值
+            topK: 40, // 默认值
           };
           if (configId) {
             config = state.apiConfigs.find((c) => c.id === configId) || config;
@@ -9856,6 +9909,14 @@
           modelSelect.appendChild(savedModelOption);
           // --- 【修复结束】 ---
 
+          // 填充新参数
+          document.getElementById("config-temperature-input").value =
+            config.temperature !== undefined ? config.temperature : 0.8;
+          document.getElementById("config-topp-input").value =
+            config.topP !== undefined ? config.topP : 1.0;
+          document.getElementById("config-topk-input").value =
+            config.topK !== undefined ? config.topK : 40;
+
           // 填充开关状态
           document.getElementById("config-stream-switch").checked =
             config.enableStream;
@@ -9871,6 +9932,16 @@
 
         async function saveApiConfig() {
           const id = document.getElementById("config-editor-id").value;
+          
+          // 获取并验证新参数
+          let temp = parseFloat(document.getElementById("config-temperature-input").value);
+          let topP = parseFloat(document.getElementById("config-topp-input").value);
+          let topK = parseInt(document.getElementById("config-topk-input").value);
+
+          if (isNaN(temp)) temp = 0.8;
+          if (isNaN(topP)) topP = 1.0;
+          if (isNaN(topK)) topK = 40;
+
           const configData = {
             name:
               document.getElementById("config-name-input").value.trim() ||
@@ -9878,6 +9949,9 @@
             url: document.getElementById("config-url-input").value.trim(),
             apiKey: document.getElementById("config-key-input").value.trim(),
             model: document.getElementById("config-model-select").value,
+            temperature: temp,
+            topP: topP,
+            topK: topK,
             enableStream: document.getElementById("config-stream-switch")
               .checked,
             hideStreamResponse: document.getElementById(
@@ -11247,7 +11321,7 @@
           }
 
           try {
-            const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
+            const { proxyUrl, apiKey, model, temperature, topP, topK } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
               alert("请先在API设置中配置反代地址、密钥并选择模型。");
               // ★★★★★【核心修改3：无论成功失败，都要隐藏输入提示】★★★★★
@@ -11316,6 +11390,9 @@
                   "",
                   messagesForDecision,
                   isGemini,
+                  temperature,
+                  topP,
+                  topK
                 );
                 const response = isGemini
                   ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -11328,7 +11405,12 @@
                       body: JSON.stringify({
                         model: model,
                         messages: messagesForDecision,
-                        temperature: 0.8,
+                        temperature: temperature, // 使用配置的 temperature
+                        top_p: topP, // 使用配置的 top_p
+                        // OpenAI标准API通常不使用 top_k，但如果是转发给其他支持的模型，可能会用到
+                        // 为了兼容性，我们可以选择性添加，或者仅在非OpenAI官方endpoint时添加
+                        // 这里我们加上它，因为很多反代/本地模型支持
+                        // top_k: topK, 
                       }),
                     });
 
@@ -11390,7 +11472,11 @@
               return;
             }
 
-            const now = new Date();
+            // 强制转换为北京时间
+            const localNow = new Date();
+            const utcMilliseconds = localNow.getTime() + localNow.getTimezoneOffset() * 60000;
+            const beijingMilliseconds = utcMilliseconds + 3600000 * 8;
+            const now = new Date(beijingMilliseconds);
             const currentTime = now.toLocaleString("zh-CN", {
               dateStyle: "full",
               timeStyle: "short",
@@ -11965,7 +12051,9 @@
                     { role: "system", content: systemPrompt },
                     ...messagesPayload,
                   ],
-                  temperature: 0.8,
+                  temperature: temperature, // 使用配置
+                  top_p: topP, // 使用配置
+                  // top_k: topK, // 暂不传top_k给OpenAI接口
                   stream: true, // <--- 开启流式
                 }),
               });
@@ -12021,6 +12109,9 @@
                 systemPrompt,
                 messagesPayload,
                 isGemini,
+                temperature,
+                topP,
+                topK
               );
               const response = isGemini
                 ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -12036,7 +12127,9 @@
                         { role: "system", content: systemPrompt },
                         ...messagesPayload,
                       ],
-                      temperature: 0.8,
+                      temperature: temperature, // 使用配置
+                      top_p: topP, // 使用配置
+                      // top_k: topK, // 暂不传top_k给OpenAI接口，以免报错
                       stream: false,
                     }),
                   });
@@ -14054,7 +14147,11 @@
           const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
           if (!proxyUrl || !apiKey || !model) return;
 
-          const now = new Date();
+          // 强制转换为北京时间
+          const localNow = new Date();
+          const utcMilliseconds = localNow.getTime() + localNow.getTimezoneOffset() * 60000;
+          const beijingMilliseconds = utcMilliseconds + 3600000 * 8;
+          const now = new Date(beijingMilliseconds);
           const currentTime = now.toLocaleTimeString("zh-CN", {
             hour: "numeric",
             minute: "numeric",
