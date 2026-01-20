@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -5454,6 +5454,40 @@
         background-color: rgba(255, 255, 255, 0.15) !important;
         box-shadow: none !important;
       }
+      /* Paging Logic */
+      #home-screen {
+        padding: 0 !important;
+        display: block !important;
+      }
+      .home-screen-slider {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        cursor: grab; /* Enable grab cursor for desktop */
+      }
+      .home-screen-slider:active {
+        cursor: grabbing;
+      }
+      .home-screen-slider::-webkit-scrollbar { display: none; }
+      .home-page {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        padding-top: 80px;
+        padding-bottom: 50px;
+        box-sizing: border-box;
+      }
     </style>
   </head>
   <body>
@@ -5487,7 +5521,9 @@
         </div>
 
         <div id="home-screen" class="screen active">
-          <div id="clock-container">
+          <div class="home-screen-slider">
+            <div class="home-page">
+              <div id="clock-container">
             <div id="main-time">12:00</div>
             <div id="main-date">星期一, 1月1日</div>
           </div>
@@ -5559,9 +5595,22 @@
             </div>
           </div>
           <!-- ▲▲▲ 替换结束 ▲▲▲ -->
+        </div> <!-- Close .home-page -->
+        
+        <div class="home-page">
+           <div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;color:rgba(0,0,0,0.3);font-weight:500;">
+             <div>更多应用敬请期待</div>
+           </div>
         </div>
+      </div> <!-- Close .home-screen-slider -->
+      
+      <div class="home-screen-dots" style="position: absolute; bottom: 20px; left:0; width:100%; display:flex; justify-content:center; gap:8px; z-index:20; pointer-events:none;">
+          <div class="dot active" style="width:8px; height:8px; background:rgba(255,255,255,0.9); box-shadow:0 1px 2px rgba(0,0,0,0.2); border-radius:50%; opacity:1; transition:opacity 0.3s;"></div>
+          <div class="dot" style="width:8px; height:8px; background:rgba(255,255,255,0.9); box-shadow:0 1px 2px rgba(0,0,0,0.2); border-radius:50%; opacity:0.4; transition:opacity 0.3s;"></div>
+      </div>
+    </div>
 
-        <div id="world-book-screen" class="screen">
+    <div id="world-book-screen" class="screen">
           <div class="header">
             <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
             <span>世界书</span>
@@ -22712,6 +22761,65 @@
 
           // ===================================================================
           // 5. 启动！
+
+          // Paging Logic (Home Screen Slider)
+          const slider = document.querySelector(".home-screen-slider");
+          const dots = document.querySelectorAll(".home-screen-dots .dot");
+          if (slider && dots.length) {
+            // 1. Update Dots on Scroll
+            slider.addEventListener("scroll", () => {
+              const pageIndex = Math.round(
+                slider.scrollLeft / slider.clientWidth,
+              );
+              dots.forEach((d, i) => {
+                d.style.opacity = i === pageIndex ? "1" : "0.4";
+                d.classList.toggle("active", i === pageIndex);
+              });
+            });
+
+            // 2. Mouse Drag Support
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener("mousedown", (e) => {
+              isDown = true;
+              slider.style.cursor = "grabbing";
+              slider.style.scrollSnapType = "none"; // Disable snap while dragging
+              startX = e.pageX - slider.offsetLeft;
+              scrollLeft = slider.scrollLeft;
+            });
+
+            const snapToPage = () => {
+              isDown = false;
+              slider.style.cursor = "grab";
+              slider.style.scrollSnapType = "x mandatory"; // Re-enable snap
+              // Manual smooth snap to nearest page
+              const pageIndex = Math.round(
+                slider.scrollLeft / slider.clientWidth,
+              );
+              slider.scrollTo({
+                left: pageIndex * slider.clientWidth,
+                behavior: "smooth",
+              });
+            };
+
+            slider.addEventListener("mouseleave", () => {
+              if (isDown) snapToPage();
+            });
+
+            slider.addEventListener("mouseup", () => {
+              if (isDown) snapToPage();
+            });
+
+            slider.addEventListener("mousemove", (e) => {
+              if (!isDown) return;
+              e.preventDefault();
+              const x = e.pageX - slider.offsetLeft;
+              const walk = (x - startX) * 1.5; // Drag speed multiplier
+              slider.scrollLeft = scrollLeft - walk;
+            });
+          }
 
           showScreen("home-screen");
         }
