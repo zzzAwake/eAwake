@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -7424,12 +7424,29 @@
               拉取模型列表
             </button>
           </div>
-          <!-- ▼▼▼ 新增：Temperature, Top P, Top K 设置 ▼▼▼ -->
-          <div class="form-group form-group-flex">
+          <!-- ▼▼▼ 新增：Temperature, Top P, Top K 设置 (独立开关版) ▼▼▼ -->
+          <div class="form-group form-group-flex" style="align-items: flex-start">
+            <!-- Temperature -->
             <div style="flex: 1; margin-right: 10px">
-              <label for="config-temperature-input" style="font-size: 12px"
-                >Temperature (0-2)</label
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 5px;
+                "
               >
+                <label
+                  for="config-temperature-input"
+                  style="font-size: 12px; margin-bottom: 0"
+                  >Temperature</label
+                >
+                <input
+                  type="checkbox"
+                  id="config-enable-temp"
+                  title="启用此参数"
+                />
+              </div>
               <input
                 type="number"
                 id="config-temperature-input"
@@ -7439,10 +7456,28 @@
                 max="2"
               />
             </div>
+
+            <!-- Top P -->
             <div style="flex: 1; margin-right: 10px">
-              <label for="config-topp-input" style="font-size: 12px"
-                >Top P (0-1)</label
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 5px;
+                "
               >
+                <label
+                  for="config-topp-input"
+                  style="font-size: 12px; margin-bottom: 0"
+                  >Top P</label
+                >
+                <input
+                  type="checkbox"
+                  id="config-enable-topp"
+                  title="启用此参数"
+                />
+              </div>
               <input
                 type="number"
                 id="config-topp-input"
@@ -7452,10 +7487,28 @@
                 max="1"
               />
             </div>
+
+            <!-- Top K -->
             <div style="flex: 1">
-              <label for="config-topk-input" style="font-size: 12px"
-                >Top K (>=1)</label
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 5px;
+                "
               >
+                <label
+                  for="config-topk-input"
+                  style="font-size: 12px; margin-bottom: 0"
+                  >Top K</label
+                >
+                <input
+                  type="checkbox"
+                  id="config-enable-topk"
+                  title="启用此参数"
+                />
+              </div>
               <input
                 type="number"
                 id="config-topk-input"
@@ -7466,6 +7519,7 @@
             </div>
           </div>
           <!-- ▲▲▲ 新增结束 ▲▲▲ -->
+
           <div class="form-group form-group-flex">
             <label for="config-stream-switch" style="margin-bottom: 0"
               >启用流式传输</label
@@ -8555,9 +8609,9 @@
           systemInstruction,
           messagesForDecision,
           isGemini,
-          temperature = 0.8,
-          topP = 1.0,
-          topK = 40
+          temperature,
+          topP,
+          topK
         ) {
           if (!isGemini) {
             return undefined;
@@ -8570,6 +8624,13 @@
             assistant: "model",
             system: "user", // <--- 新增这一行
           };
+
+          // 构建 generationConfig
+          const generationConfig = {};
+          if (temperature !== undefined) generationConfig.temperature = temperature;
+          if (topP !== undefined) generationConfig.topP = topP;
+          if (topK !== undefined) generationConfig.topK = topK;
+
           return {
             url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
               apiKey,
@@ -8594,12 +8655,9 @@
                       : transformChatData(item),
                   };
                 }),
-                generationConfig: {
-                  temperature: temperature,
-                  topP: topP,
-                  topK: topK,
-                },
+                generationConfig: generationConfig,
                 systemInstruction: {
+
                   parts: [
                     {
                       text: systemInstruction,
@@ -8705,7 +8763,12 @@
             temperature: activeConfig.temperature ?? 0.8, // 传递新参数
             topP: activeConfig.topP ?? 1.0,
             topK: activeConfig.topK ?? 40,
+            enableTemp: activeConfig.enableTemp ?? activeConfig.enableAdvancedParams ?? false,
+            enableTopP: activeConfig.enableTopP ?? activeConfig.enableAdvancedParams ?? false,
+            enableTopK: activeConfig.enableTopK ?? activeConfig.enableAdvancedParams ?? false,
             enableStreaming: activeConfig.enableStream, // Map to old property name for compatibility
+
+
           };
         }
         // --- 修正结束 ---
@@ -10023,6 +10086,9 @@
             temperature: 0.8, // 默认值
             topP: 1.0, // 默认值
             topK: 40, // 默认值
+            enableTemp: false,
+            enableTopP: false,
+            enableTopK: false,
           };
           if (configId) {
             config = state.apiConfigs.find((c) => c.id === configId) || config;
@@ -10048,7 +10114,18 @@
           modelSelect.appendChild(savedModelOption);
           // --- 【修复结束】 ---
 
-          // 填充新参数
+          // --- 迁移逻辑：兼容旧的 enableAdvancedParams ---
+          // 如果旧配置有 enableAdvancedParams，但没有新的独立开关，则继承旧开关的值
+          if (config.enableAdvancedParams !== undefined) {
+            if (config.enableTemp === undefined)
+              config.enableTemp = config.enableAdvancedParams;
+            if (config.enableTopP === undefined)
+              config.enableTopP = config.enableAdvancedParams;
+            if (config.enableTopK === undefined)
+              config.enableTopK = config.enableAdvancedParams;
+          }
+
+          // 填充值
           document.getElementById("config-temperature-input").value =
             config.temperature !== undefined ? config.temperature : 0.8;
           document.getElementById("config-topp-input").value =
@@ -10062,6 +10139,35 @@
           document.getElementById("config-hide-stream-switch").checked =
             config.hideStreamResponse;
 
+          // ▼▼▼ 新增：独立开关逻辑 ▼▼▼
+          const tempCheck = document.getElementById("config-enable-temp");
+          const toppCheck = document.getElementById("config-enable-topp");
+          const topkCheck = document.getElementById("config-enable-topk");
+          const tempInput = document.getElementById("config-temperature-input");
+          const toppInput = document.getElementById("config-topp-input");
+          const topkInput = document.getElementById("config-topk-input");
+
+          // 设置初始状态 (默认 false)
+          tempCheck.checked = !!config.enableTemp;
+          toppCheck.checked = !!config.enableTopP;
+          topkCheck.checked = !!config.enableTopK;
+
+          function updateInputState(checkbox, input) {
+            input.disabled = !checkbox.checked;
+            input.style.opacity = checkbox.checked ? "1" : "0.5";
+          }
+
+          // 初始化 UI 状态
+          updateInputState(tempCheck, tempInput);
+          updateInputState(toppCheck, toppInput);
+          updateInputState(topkCheck, topkInput);
+
+          // 绑定事件
+          tempCheck.onchange = (e) => updateInputState(e.target, tempInput);
+          toppCheck.onchange = (e) => updateInputState(e.target, toppInput);
+          topkCheck.onchange = (e) => updateInputState(e.target, topkInput);
+          // ▲▲▲ 新增结束 ▲▲▲
+
           // 显示模态框
           document
             .getElementById("api-config-editor-modal")
@@ -10071,11 +10177,17 @@
 
         async function saveApiConfig() {
           const id = document.getElementById("config-editor-id").value;
-          
+
           // 获取并验证新参数
-          let temp = parseFloat(document.getElementById("config-temperature-input").value);
-          let topP = parseFloat(document.getElementById("config-topp-input").value);
-          let topK = parseInt(document.getElementById("config-topk-input").value);
+          let temp = parseFloat(
+            document.getElementById("config-temperature-input").value,
+          );
+          let topP = parseFloat(
+            document.getElementById("config-topp-input").value,
+          );
+          let topK = parseInt(
+            document.getElementById("config-topk-input").value,
+          );
 
           if (isNaN(temp)) temp = 0.8;
           if (isNaN(topP)) topP = 1.0;
@@ -10091,6 +10203,12 @@
             temperature: temp,
             topP: topP,
             topK: topK,
+            // 保存独立开关状态
+            enableTemp: document.getElementById("config-enable-temp").checked,
+            enableTopP: document.getElementById("config-enable-topp").checked,
+            enableTopK: document.getElementById("config-enable-topk").checked,
+            // 保留旧字段以备不时之需（或者直接弃用，这里选择更新它为 OR 逻辑，或直接忽略）
+            // 为了整洁，我们不再保存 enableAdvancedParams，因为它已经被拆分了。
             enableStream: document.getElementById("config-stream-switch")
               .checked,
             hideStreamResponse: document.getElementById(
@@ -10123,6 +10241,7 @@
             .getElementById("api-config-editor-modal")
             .classList.remove("visible");
         }
+
 
         async function setActiveApiConfig(configId) {
           state.globalSettings.activeApiConfigId = configId;
@@ -11659,8 +11778,19 @@
           }
 
           try {
-            const { proxyUrl, apiKey, model, temperature, topP, topK } = getActiveApiConfig() || {};
+            const {
+              proxyUrl,
+              apiKey,
+              model,
+              temperature,
+              topP,
+              topK,
+              enableTemp,
+              enableTopP,
+              enableTopK,
+            } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
+
               alert("请先在API设置中配置反代地址、密钥并选择模型。");
               // ★★★★★【核心修改3：无论成功失败，都要隐藏输入提示】★★★★★
               if (chat.isGroup) {
@@ -11728,9 +11858,9 @@
                   "",
                   messagesForDecision,
                   isGemini,
-                  temperature,
-                  topP,
-                  topK
+                  enableTemp ? temperature : undefined,
+                  enableTopP ? topP : undefined,
+                  enableTopK ? topK : undefined,
                 );
                 const response = isGemini
                   ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -11743,14 +11873,12 @@
                       body: JSON.stringify({
                         model: model,
                         messages: messagesForDecision,
-                        temperature: temperature, // 使用配置的 temperature
-                        top_p: topP, // 使用配置的 top_p
-                        // OpenAI标准API通常不使用 top_k，但如果是转发给其他支持的模型，可能会用到
-                        // 为了兼容性，我们可以选择性添加，或者仅在非OpenAI官方endpoint时添加
-                        // 这里我们加上它，因为很多反代/本地模型支持
-                        // top_k: topK, 
+                        temperature: enableTemp ? temperature : undefined,
+                        top_p: enableTopP ? topP : undefined,
+                        top_k: enableTopK ? topK : undefined,
                       }),
                     });
+
 
                 if (!response.ok) {
                   throw new Error(
@@ -12228,10 +12356,11 @@
                     { role: "system", content: systemPrompt },
                     ...messagesPayload,
                   ],
-                  temperature: temperature, // 使用配置
-                  top_p: topP, // 使用配置
-                  // top_k: topK, // 暂不传top_k给OpenAI接口
+                  temperature: enableTemp ? temperature : undefined,
+                  top_p: enableTopP ? topP : undefined,
+                  top_k: enableTopK ? topK : undefined,
                   stream: true, // <--- 开启流式
+
                 }),
               });
 
@@ -12286,9 +12415,9 @@
                 systemPrompt,
                 messagesPayload,
                 isGemini,
-                temperature,
-                topP,
-                topK
+                enableTemp ? temperature : undefined,
+                enableTopP ? topP : undefined,
+                enableTopK ? topK : undefined,
               );
               const response = isGemini
                 ? await fetch(geminiConfig.url, geminiConfig.data)
@@ -12304,12 +12433,13 @@
                         { role: "system", content: systemPrompt },
                         ...messagesPayload,
                       ],
-                      temperature: temperature, // 使用配置
-                      top_p: topP, // 使用配置
-                      // top_k: topK, // 暂不传top_k给OpenAI接口，以免报错
+                      temperature: enableTemp ? temperature : undefined,
+                      top_p: enableTopP ? topP : undefined,
+                      top_k: enableTopK ? topK : undefined,
                       stream: false,
                     }),
                   });
+
               if (!response.ok) {
                 let errorMsg = `API Error: ${response.status}`;
                 try {
