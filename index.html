@@ -19785,20 +19785,6 @@
               chat.settings.summary.count =
                 parseInt(document.getElementById("summary-count-input").value) ||
                 50;
-
-              // 保存总结设置
-              if (!chat.settings.summary) chat.settings.summary = {}; // 防止意外
-              chat.settings.summary.enabled =
-                document.getElementById("summary-toggle").checked;
-              const selectedModeRadio = document.querySelector(
-                'input[name="summary-mode"]:checked',
-              );
-              chat.settings.summary.mode = selectedModeRadio
-                ? selectedModeRadio.value
-                : "manual";
-              chat.settings.summary.count =
-                parseInt(document.getElementById("summary-count-input").value) ||
-                50;
               await db.chats.put(chat);
 
               applyScopedCss(
