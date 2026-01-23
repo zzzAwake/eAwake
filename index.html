@@ -783,8 +783,9 @@
         display: block;
         object-fit: contain;
       }
-      .message-bubble.is-sticker .content,
-      .message-bubble.is-voice-message .content {
+       .message-bubble.is-sticker .content,
+       .message-bubble.is-link-share .content,
+       .message-bubble.is-voice-message .content {
         padding: 0;
         background-color: transparent;
         box-shadow: none;
@@ -19572,7 +19573,57 @@
               document.getElementById("ai-remark-input").value =
                 chat.settings.aiRemark || "";
 
+              // ▼▼▼ 替换为完整逻辑（参考自 -k--main） ▼▼▼
+              const videoCallSettingsGroup = document.getElementById(
+                "video-call-settings-group",
+              );
+              const visualCallSwitch = document.getElementById(
+                "visual-video-call-switch",
+              );
+              const imageUploadsDiv = document.getElementById(
+                "video-call-image-uploads",
+              );
+
+              if (isGroup) {
+                videoCallSettingsGroup.style.display = "none";
+              } else {
+                videoCallSettingsGroup.style.display = "block";
+                visualCallSwitch.checked =
+                  chat.settings.visualVideoCallEnabled || false;
+                imageUploadsDiv.style.display = visualCallSwitch.checked
+                  ? "block"
+                  : "none";
+                document.getElementById("char-video-image-preview").src =
+                  chat.settings.charVideoImage ||
+                  "https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png";
+                document.getElementById("user-video-image-preview").src =
+                  chat.settings.userVideoImage ||
+                  "https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png";
+
+                const voiceAccessSwitch = document.getElementById(
+                  "video-call-voice-access-switch",
+                );
+                if (voiceAccessSwitch) {
+                  voiceAccessSwitch.checked =
+                    chat.settings.videoCallVoiceAccess || false;
+                }
+
+                visualCallSwitch.onchange = () => {
+                  imageUploadsDiv.style.display = visualCallSwitch.checked
+                    ? "block"
+                    : "none";
+                };
+              }
+              const realCameraSwitch = document.getElementById(
+                "user-real-camera-switch",
+              );
+              if (realCameraSwitch) {
+                realCameraSwitch.checked = chat.settings.useRealCamera || false;
+              }
+              // ▲▲▲ 替换结束 ▲▲▲
+
               document.getElementById("my-persona").value =
+
                 chat.settings.myPersona;
               document.getElementById("my-avatar-preview").src =
                 chat.settings.myAvatar ||
@@ -19962,7 +20013,35 @@
               chat.settings.maxMemory =
                 parseInt(document.getElementById("max-memory").value) || 10;
 
+              // ▼▼▼ 替换为完整逻辑（参考自 -k--main） ▼▼▼
+              chat.settings.visualVideoCallEnabled = document.getElementById(
+                "visual-video-call-switch",
+              ).checked;
+              chat.settings.charVideoImage = document.getElementById(
+                "char-video-image-preview",
+              ).src;
+              chat.settings.userVideoImage = document.getElementById(
+                "user-video-image-preview",
+              ).src;
+
+              const voiceAccessSwitchSave = document.getElementById(
+                "video-call-voice-access-switch",
+              );
+              if (voiceAccessSwitchSave) {
+                chat.settings.videoCallVoiceAccess =
+                  voiceAccessSwitchSave.checked;
+              }
+
+              const realCameraSwitchSave = document.getElementById(
+                "user-real-camera-switch",
+              );
+              if (realCameraSwitchSave) {
+                chat.settings.useRealCamera = realCameraSwitchSave.checked;
+              }
+              // ▲▲▲ 替换结束 ▲▲▲
+
               // 保存总结设置
+
               if (!chat.settings.summary) chat.settings.summary = {}; // 防止意外
               chat.settings.summary.enabled =
                 document.getElementById("summary-toggle").checked;
@@ -20059,7 +20138,30 @@
             (base64) =>
               (document.getElementById("ai-avatar-preview").src = base64),
           );
+          // ▼▼▼ 新增：视频通话对方画面上传 ▼▼▼
           setupFileUpload(
+            "char-video-image-input",
+            (base64) =>
+              (document.getElementById("char-video-image-preview").src =
+                base64),
+          );
+          // ▼▼▼ 新增：视频通话用户画面上传 ▼▼▼
+          setupFileUpload(
+            "user-video-image-input",
+            (base64) =>
+              (document.getElementById("user-video-image-preview").src =
+                base64),
+          );
+          // 视频通话开关 UI 交互
+          document
+            .getElementById("visual-video-call-switch")
+            .addEventListener("change", (e) => {
+              document.getElementById("video-call-image-uploads").style.display =
+                e.target.checked ? "block" : "none";
+            });
+          // ▲▲▲ 新增结束 ▲▲▲
+          setupFileUpload(
+
             "my-avatar-input",
             (base64) =>
               (document.getElementById("my-avatar-preview").src = base64),
