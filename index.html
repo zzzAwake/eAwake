@@ -12169,7 +12169,7 @@
               messagesPayload = historySlice
                 .map((msg) => {
                   // 过滤掉不应发送给AI的消息
-                  if (msg.isHidden) return null;
+                  if (msg.isHidden && msg.role !== "system") return null;
 
                   if (msg.type === "share_card") return null;
 
