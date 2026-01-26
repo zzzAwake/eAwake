@@ -1236,7 +1236,12 @@
         font-size: var(--chat-font-size, 16px);
         padding: 8px 12px;
         line-height: 1.5;
-        word-break: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
+        text-wrap: pretty;
+        text-align: justify;
+        width: fit-content;
+        min-width: 0;
       }
       .message-bubble.user .content {
         background-color: rgba(255, 255, 255, 0.75);
@@ -9502,7 +9507,7 @@
               ) {
                 contentHtml = `<img src="${msg.content[0].image_url.url}" class="chat-image">`;
               } else {
-                contentHtml = String(msg.content || "").replace(/\n/g, "<br>");
+            contentHtml = `<div class="message-text-wrapper">${String(msg.content || "").replace(/\n/g, "<br>")}</div>`;
               }
             }
 
