@@ -5044,11 +5044,6 @@
       body.dark-mode .checkboxes-container label:hover {
         background-color: #3a3a3c;
       }
-      body.dark-mode #video-call-image-uploads {
-        background-color: #2c2c2e !important;
-        border: 1px solid #38383a;
-        color: #fff;
-      }
       body.dark-mode #reset-theme-btn,
       body.dark-mode #reset-custom-css-btn,
       body.dark-mode #reset-frame-color-btn,
@@ -5533,7 +5528,6 @@
             <div id="main-time">12:00</div>
             <div id="main-date">星期一, 1月1日</div>
           </div>
-          <!-- ▼▼▼ 用这整块代码替换你原来的 id="app-grid" ▼▼▼ -->
           <div id="app-grid">
             <!-- 第一行：放2个图标 -->
             <div class="app-row">
@@ -5600,7 +5594,6 @@
               </div>
             </div>
           </div>
-          <!-- ▲▲▲ 替换结束 ▲▲▲ -->
         </div> <!-- Close .home-page -->
         
         <div class="home-page">
@@ -5648,14 +5641,12 @@
               />
             </div>
 
-            <!-- ▼▼▼ 【全新】在这里添加分类选择 ▼▼▼ -->
             <div class="form-group">
               <label for="world-book-category-select">分类</label>
               <select id="world-book-category-select">
                 <!-- 选项将由JS动态生成 -->
               </select>
             </div>
-            <!-- ▲▲▲ 添加结束 ▲▲▲ -->
 
             <div class="form-group" style="height: 100%">
               <label for="world-book-content-input">内容</label>
@@ -5778,7 +5769,6 @@
             />
           </div>
         </div>
-        <!-- ▼▼▼ 用下面这段代码，完整替换掉你原来的 chat-list-screen ▼▼▼ -->
         <div id="chat-list-screen" class="screen">
           <!-- 主头部 (只在消息列表显示) -->
           <div class="header" id="main-chat-list-header">
@@ -5927,7 +5917,6 @@
             </div>
           </div>
 
-          <!-- ▼▼▼ 【全新】回忆录界面视图 ▼▼▼ -->
           <div id="memories-view" class="chat-list-view">
             <div class="header">
               <span class="back-btn" id="memories-back-btn">‹</span>
@@ -5947,7 +5936,6 @@
               <!-- 回忆卡片将由JS动态生成在这里 -->
             </div>
           </div>
-          <!-- ▲▲▲ 新增HTML结束 ▲▲▲ -->
 
           <!-- 底部导航栏 -->
           <div id="chat-list-bottom-nav">
@@ -5957,19 +5945,15 @@
             <div class="nav-item" data-view="qzone-screen">
               <span>动态</span>
             </div>
-            <!-- ▼▼▼ 在“动态”和“收藏”之间，加入这个新页签 ▼▼▼ -->
             <div class="nav-item" data-view="memories-view">
               <span>回忆</span>
             </div>
-            <!-- ▲▲▲ 添加结束 ▲▲▲ -->
             <div class="nav-item" data-view="favorites-view">
               <span>收藏</span>
             </div>
           </div>
         </div>
-        <!-- ▲▲▲ 替换区域结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 请将这段新的 HTML 粘贴到 id="chat-list-screen" 的 div 之后 ▼▼▼ -->
         <div id="album-screen" class="screen">
           <!-- 1. 页面头部，包含返回按钮和标题 -->
           <div class="header">
@@ -5985,9 +5969,7 @@
             </div>
           </div>
         </div>
-        <!-- ▲▲▲ 新的 HTML 粘贴结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 请将这段新的 HTML 粘贴到 id="album-screen" 的 div 之后 ▼▼▼ -->
         <div id="album-photos-screen" class="screen">
           <!-- 1. 页面头部 -->
           <div class="header">
@@ -6002,7 +5984,6 @@
               <!-- 照片列表将由 JS 动态生成在这里 -->
             </div>
 
-            <!-- ▼▼▼ 请将这段新的 HTML 粘贴到所有模态框的末尾 ▼▼▼ -->
             <div id="photo-viewer-modal" class="modal">
               <!-- 1. 关闭按钮 -->
               <button id="photo-viewer-close-btn">×</button>
@@ -6018,12 +5999,9 @@
               <!-- 4. 下一张照片按钮 -->
               <button id="photo-viewer-next-btn" class="nav-arrow">›</button>
             </div>
-            <!-- ▲▲▲ 新的 HTML 粘贴结束 ▲▲▲ -->
           </div>
         </div>
-        <!-- ▲▲▲ 新的 HTML 粘贴结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 粘贴到 #album-photos-screen 的 div 之后 ▼▼▼ -->
         <input
           type="file"
           id="album-photo-input"
@@ -6032,7 +6010,6 @@
           hidden
         />
 
-        <!-- ▼▼▼ 请用这【一整块】全新的代码，完整替换掉您文件中旧的 #chat-interface-screen 及其所有内容 ▼▼▼ -->
         <div id="chat-interface-screen" class="screen">
           <!-- 【最终修正版】Header，已将状态栏和搜索功能正确整合 -->
           <div class="header">
@@ -6040,7 +6017,6 @@
             <div class="default-controls">
               <span class="back-btn" id="back-to-list-btn">‹</span>
 
-              <!-- ▼▼▼ 【核心新增】标题和状态的容器 ▼▼▼ -->
               <div id="chat-header-title-wrapper">
                 <span id="chat-header-title">聊天对象</span>
                 <div id="chat-header-status">
@@ -6048,7 +6024,6 @@
                   <span class="status-text">在线</span>
                 </div>
               </div>
-              <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
               <div class="header-actions">
                 <span class="action-btn" id="listen-together-btn" title="一起听"
@@ -6192,7 +6167,6 @@
                   <path d="M8 23h8" />
                 </svg>
               </button>
-              <!-- ▼▼▼ 将这行新代码粘贴到“发送语音”按钮的后面 ▼▼▼ -->
               <button
                 id="send-waimai-request-btn"
                 class="chat-action-icon-btn action-button"
@@ -6216,8 +6190,6 @@
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
               </button>
-              <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
-              <!-- ▼▼▼ 【新增】视频通话按钮 ▼▼▼ -->
               <button
                 id="video-call-btn"
                 class="chat-action-icon-btn action-button"
@@ -6238,8 +6210,6 @@
                   <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
                 </svg>
               </button>
-              <!-- ▲▲▲ 新增结束 ▲▲▲
-<!-- ▼▼▼群视频通话按钮 ▼▼▼ -->
               <button
                 id="group-video-call-btn"
                 class="chat-action-icon-btn action-button"
@@ -6262,8 +6232,6 @@
                   <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
               </button>
-              <!-- ▲▲▲ 全新添加结束 ▲▲▲ -->
-              <!-- ▼▼▼发起投票按钮▼▼▼ -->
               <button
                 id="send-poll-btn"
                 class="chat-action-icon-btn action-button"
@@ -6288,8 +6256,6 @@
                   <path d="M6 18h.01" />
                 </svg>
               </button>
-              <!-- ▲▲▲ 替换结束 ▲▲▲ -->
-              <!-- ▼▼▼ 在 id="chat-input-actions-top" 的末尾，【添加】这个新的按钮 ▼▼▼ -->
               <button
                 id="share-link-btn"
                 class="chat-action-icon-btn action-button"
@@ -6314,7 +6280,6 @@
                   ></path>
                 </svg>
               </button>
-              <!-- ▲▲▲ 新增HTML结束 ▲▲▲ -->
             </div>
             <div id="chat-input-main-row">
               <textarea
@@ -6334,11 +6299,9 @@
             </div>
           </div>
 
-          <!-- ▼▼▼ 在这里新增 ▼▼▼ -->
           <div id="chat-lock-overlay">
             <div id="chat-lock-content"></div>
           </div>
-          <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
           <!-- 表情面板 (保持不变) -->
           <div id="sticker-panel">
@@ -6442,9 +6405,7 @@
             style="display: none"
           />
         </div>
-        <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 用这整块代码替换你原来的 id="wallpaper-screen" ▼▼▼ -->
         <div id="wallpaper-screen" class="screen">
           <div class="header">
             <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
@@ -6465,7 +6426,6 @@
             </button>
             <input type="file" id="wallpaper-upload-input" accept="image/*" />
 
-            <!-- ▼▼▼ 将【上面整块代码】，完整替换为下面这段【全新的代码】 ▼▼▼ -->
             <div
               class="form-group"
               style="
@@ -6482,9 +6442,7 @@
                 <span class="slider"></span>
               </label>
             </div>
-            <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-            <!-- ▼▼▼ 新增：手机边框颜色设置 ▼▼▼ -->
             <div class="form-group">
               <label for="frame-color-input">
                 手机边框颜色
@@ -6523,7 +6481,6 @@
                 >
               </div>
             </div>
-            <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
             <!-- 【核心修改2】新增图标设置区域 -->
             <hr style="width: 80%; opacity: 0.3; margin: 30px 0" />
@@ -6546,9 +6503,7 @@
             </button>
           </div>
         </div>
-        <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 【全新】分享链接功能 HTML ▼▼▼ -->
         <div id="browser-screen" class="screen">
           <div class="header">
             <span class="back-btn" id="browser-back-btn">‹</span>
@@ -6559,7 +6514,6 @@
             <!-- 文章内容将由JS动态生成在这里 -->
           </div>
         </div>
-        <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
         <div id="font-settings-screen" class="screen">
           <div class="header">
@@ -6599,7 +6553,6 @@
           </div>
         </div>
 
-        <!-- ▼▼▼ 【全新】选择联系人以创建群聊的屏幕 ▼▼▼ -->
         <div id="contact-picker-screen" class="screen">
           <div class="header">
             <span class="back-btn" id="cancel-contact-picker-btn">取消</span>
@@ -6612,9 +6565,7 @@
             <!-- 联系人列表将由JS动态生成 -->
           </div>
         </div>
-        <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 【全新】群成员管理屏幕 ▼▼▼ -->
         <div id="member-management-screen" class="screen">
           <div class="header">
             <span class="back-btn" id="back-from-member-management">‹</span>
@@ -6629,9 +6580,7 @@
             <button id="create-new-member-btn">创建群内新成员</button>
           </div>
         </div>
-        <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 【全新】来电请求模态框 ▼▼▼ -->
         <div id="incoming-call-modal" class="modal">
           <div class="incoming-call-content">
             <img id="caller-avatar" class="caller-avatar" src="" />
@@ -6655,104 +6604,8 @@
             </div>
           </div>
         </div>
-        <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 请用这段【全新群聊兼容结构】的代码，完整替换你旧的 #video-call-screen ▼▼▼ -->
         <div id="video-call-screen" class="screen">
-          <!-- ▼▼▼ Visual Interface (Video Mode) ▼▼▼ -->
-          <div
-            id="visual-call-interface"
-            style="display: none; width: 100%; height: 100%; position: relative"
-          >
-            <!-- Visual Timer -->
-            <div
-              style="
-                position: absolute;
-                top: 40px;
-                left: 0;
-                width: 100%;
-                text-align: center;
-                color: white;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-                z-index: 10;
-                pointer-events: none;
-              "
-            >
-              <span id="visual-call-timer">00:00</span>
-            </div>
-
-            <div id="video-main-view" style="width: 100%; height: 100%">
-              <img
-                src=""
-                style="
-                  width: 100%;
-                  height: 100%;
-                  object-fit: cover;
-                  display: block;
-                "
-              />
-            </div>
-            <div
-              id="video-pip-view"
-              style="
-                position: absolute;
-                top: 60px;
-                right: 20px;
-                width: 90px;
-                height: 120px;
-                border: 2px solid white;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                border-radius: 8px;
-                overflow: hidden;
-              "
-            >
-              <img
-                src=""
-                style="
-                  width: 100%;
-                  height: 100%;
-                  object-fit: cover;
-                  display: block;
-                "
-              />
-            </div>
-            <div
-              id="video-call-messages-visual"
-              style="
-                position: absolute;
-                bottom: 100px;
-                left: 0;
-                width: 100%;
-                padding: 15px;
-                color: white;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-                pointer-events: none;
-                text-align: center;
-              "
-            ></div>
-
-            <!-- Visual Mode Controls (Simplified) -->
-            <div
-              class="video-call-controls"
-              style="
-                position: absolute;
-                bottom: 30px;
-                left: 0;
-                width: 100%;
-                background: transparent;
-                pointer-events: auto;
-              "
-            >
-              <button
-                onclick="endVideoCall()"
-                class="control-btn hangup-btn"
-                style="margin: 0 auto; display: block"
-              ></button>
-            </div>
-          </div>
-          <!-- ▲▲▲ Visual Interface End ▲▲▲ -->
-
-          <!-- ▼▼▼ Text Interface (Classic Mode) ▼▼▼ -->
           <div
             id="text-call-interface"
             style="
@@ -6794,11 +6647,8 @@
               ></button>
             </div>
           </div>
-          <!-- ▲▲▲ Text Interface End ▲▲▲ -->
         </div>
-        <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 【全新添加】正在呼叫界面 ▼▼▼ -->
         <div id="outgoing-call-screen" class="screen">
           <div class="outgoing-call-content">
             <img id="outgoing-call-avatar" class="caller-avatar" src="" />
@@ -6813,9 +6663,7 @@
             </div>
           </div>
         </div>
-        <!-- ▲▲▲ 添加结束 ▲▲▲ -->
 
-        <!-- ▼▼▼ 【全新】通话记录页面 ▼▼▼ -->
         <div id="call-history-screen" class="screen">
           <div class="header">
             <span class="back-btn" id="call-history-back-btn">‹</span>
@@ -6836,7 +6684,6 @@
             <!-- 通话记录卡片将由JS动态生成在这里 -->
           </div>
         </div>
-        <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
       </div>
     </div>
 
@@ -6849,14 +6696,11 @@
             ><input type="text" id="chat-name-input" />
           </div>
 
-          <!-- ▼▼▼ 新增：AI备注输入框 ▼▼▼ -->
           <div class="form-group" id="ai-remark-group" style="display: none">
             <label for="ai-remark-input">AI备注 (仅自己可见)</label>
             <input type="text" id="ai-remark-input" placeholder="例如：贴心小棉袄" />
           </div>
-          <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
-          <!-- ▼▼▼ 请将这段新代码粘贴到“备注名”输入框的 form-group 之后 ▼▼▼ -->
           <div
             class="form-group"
             id="assign-group-section"
@@ -6877,7 +6721,6 @@
               </button>
             </div>
           </div>
-          <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 
           <div class="form-group" id="my-group-nickname-group">
             <label for="my-group-nickname-input">我的群昵称</label
@@ -6898,7 +6741,6 @@
             <div class="custom-multiselect">
               <div class="select-box">
                 <span class="selected-options-text">-- 点击选择 --</span>
-                <span class="arrow-down">▼</span>
               </div>
               <div
                 id="world-book-checkboxes-container"
@@ -6924,89 +6766,6 @@
 
           <div class="form-group" id="video-call-settings-group">
             <hr style="opacity: 0.2; margin: 15px 0" />
-            <label
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                font-weight: bold;
-              "
-            >
-              <span>可视视频通话</span>
-              <input
-                type="checkbox"
-                id="visual-video-call-switch"
-                style="width: auto"
-              />
-            </label>
-
-            <div
-              id="video-call-image-uploads"
-              style="
-                display: none;
-                margin-top: 10px;
-                background-color: #f9f9f9;
-                padding: 10px;
-                border-radius: 8px;
-              "
-            >
-              <div style="display: flex; justify-content: space-around">
-                <div style="text-align: center">
-                  <label style="font-size: 12px">对方画面</label>
-                  <div
-                    onclick="
-                      document.getElementById('char-video-image-input').click()
-                    "
-                    style="cursor: pointer; margin-top: 5px"
-                  >
-                    <img
-                      id="char-video-image-preview"
-                      src="https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png"
-                      style="
-                        width: 70px;
-                        height: 70px;
-                        object-fit: cover;
-                        border-radius: 8px;
-                        border: 1px dashed #ccc;
-                      "
-                    />
-                  </div>
-                  <input
-                    type="file"
-                    id="char-video-image-input"
-                    accept="image/*"
-                    hidden
-                  />
-                </div>
-                <div style="text-align: center">
-                  <label style="font-size: 12px">我的画面</label>
-                  <div
-                    onclick="
-                      document.getElementById('user-video-image-input').click()
-                    "
-                    style="cursor: pointer; margin-top: 5px"
-                  >
-                    <img
-                      id="user-video-image-preview"
-                      src="https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png"
-                      style="
-                        width: 70px;
-                        height: 70px;
-                        object-fit: cover;
-                        border-radius: 8px;
-                        border: 1px dashed #ccc;
-                      "
-                    />
-                  </div>
-                  <input
-                    type="file"
-                    id="user-video-image-input"
-                    accept="image/*"
-                    hidden
-                  />
-                </div>
-              </div>
-            </div>
 
             <label
               style="
@@ -7123,7 +6882,6 @@
             </div>
           </div>
 
-          <!-- ▼▼▼ 请将这段新代码粘贴到“聊天气泡主题”的 form-group 之后 ▼▼▼ -->
           <div class="form-group">
             <label for="font-size-slider"
               >聊天字体大小 <span id="font-size-value">13px</span></label
@@ -7138,9 +6896,7 @@
               style="width: 100%; margin-top: 8px"
             />
           </div>
-          <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 
-          <!-- ▼▼▼ 请将这段新代码粘贴到“聊天字体大小”的 form-group 之后 ▼▼▼ -->
           <div class="form-group">
             <label for="custom-css-input">
               自定义气泡样式 (CSS)
@@ -7179,16 +6935,13 @@
 }"
             ></textarea>
           </div>
-          <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 
-          <!-- ▼▼▼ 请将这段新代码粘贴到自定义CSS输入框的 form-group 之后 ▼▼▼ -->
           <div class="form-group">
             <label>实时预览</label>
             <div id="settings-preview-area">
               <!-- JS会在这里生成预览内容 -->
             </div>
           </div>
-          <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 
           <div class="form-group">
             <label>聊天背景</label>
@@ -7211,7 +6964,6 @@
               style="display: none"
             />
           </div>
-          <!-- ▼▼▼ 总结设置区域 ▼▼▼ -->
           <div class="form-group">
             <label
               style="
@@ -7277,7 +7029,6 @@
               </div>
             </div>
           </div>
-          <!-- ▲▲▲ 总结设置区域结束 ▲▲▲ -->
           <hr
             style="margin: 25px 0; border: none; border-top: 1px solid #eee"
           />
@@ -7430,7 +7181,6 @@
               拉取模型列表
             </button>
           </div>
-          <!-- ▼▼▼ 新增：Temperature, Top P, Top K 设置 (独立开关版) ▼▼▼ -->
           <div class="form-group form-group-flex" style="align-items: flex-start">
             <!-- Temperature -->
             <div style="flex: 1; margin-right: 10px">
@@ -7524,7 +7274,6 @@
               />
             </div>
           </div>
-          <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
           <div class="form-group form-group-flex">
             <label for="config-stream-switch" style="margin-bottom: 0"
@@ -7612,7 +7361,6 @@
 
     <audio id="audio-player" style="display: none"></audio>
 
-    <!-- ▼▼▼ 用下面这段【完整】的模态框代码，替换掉你现有的 id="create-post-modal" 的整个 div ▼▼▼ -->
     <div id="create-post-modal" class="modal">
       <div class="modal-content" style="height: auto; max-height: 90%">
         <div class="modal-header">
@@ -7638,7 +7386,6 @@
             </button>
           </div>
 
-          <!-- ▼▼▼ 【修正后】的可见范围设置 ▼▼▼ -->
           <div class="form-group">
             <label>可见范围</label>
             <div
@@ -7669,7 +7416,6 @@
               <!-- 分组多选框将由JS动态生成 -->
             </div>
           </div>
-          <!-- ▲▲▲ 修正结束 ▲▲▲ -->
 
           <!-- === 图片模式区域 === -->
           <div id="image-mode-content" class="post-mode-content active">
@@ -7731,9 +7477,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 请将这个新的模态框HTML粘贴到所有其他模态框之后 ▼▼▼ -->
     <div id="group-management-modal" class="modal">
       <div class="modal-content" style="height: 60%">
         <div class="modal-header">
@@ -7773,9 +7517,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 请将这段新HTML粘贴到所有模态框的末尾 ▼▼▼ -->
     <div id="message-actions-modal" class="modal">
       <div id="custom-modal" style="width: 250px">
         <div class="custom-modal-footer">
@@ -7799,9 +7541,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 请将这段新HTML粘贴到所有模态框的末尾 ▼▼▼ -->
     <div id="post-actions-modal" class="modal">
       <div id="custom-modal" style="width: 250px">
         <div class="custom-modal-footer">
@@ -7811,9 +7551,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】可视化消息编辑器模态框 ▼▼▼ -->
     <div id="message-editor-modal" class="modal">
       <div class="modal-content" style="height: 75%">
         <div class="modal-header">
@@ -7837,9 +7575,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】外卖请求模态框 ▼▼▼ -->
     <div id="waimai-request-modal" class="modal">
       <div class="modal-content" style="width: 290px">
         <div class="modal-header">
@@ -7872,7 +7608,6 @@
       </div>
     </div>
 
-    <!-- ▼▼▼ 【全新】新建约定/倒计时模态框 ▼▼▼ -->
     <div id="create-countdown-modal" class="modal">
       <div class="modal-content" style="height: auto">
         <div class="modal-header">
@@ -7900,9 +7635,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】发红包模态框 ▼▼▼ -->
     <div id="red-packet-modal" class="modal">
       <div class="modal-content" style="width: 300px; height: auto">
         <div class="modal-header">
@@ -8002,9 +7735,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】红包详情模态框 ▼▼▼ -->
     <div id="red-packet-details-modal" class="modal">
       <div
         class="modal-content"
@@ -8066,8 +7797,6 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
-    <!-- ▼▼▼ 【全新】创建投票模态框 ▼▼▼ -->
     <div id="create-poll-modal" class="modal">
       <div class="modal-content" style="width: 300px; height: auto">
         <div class="modal-header">
@@ -8105,9 +7834,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】AI头像库管理模态框 ▼▼▼ -->
     <div id="ai-avatar-library-modal" class="modal">
       <div class="modal-content" style="height: 70%">
         <div class="modal-header">
@@ -8138,9 +7865,7 @@
       </div>
     </div>
 
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】用户分享链接模态框 ▼▼▼ -->
     <div id="share-link-modal" class="modal">
       <div class="modal-content" style="width: 300px; height: auto">
         <div class="modal-header">
@@ -8188,9 +7913,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】精致版转账操作弹窗 ▼▼▼ -->
     <div id="transfer-actions-modal" class="modal">
       <div class="transfer-actions-content">
         <div class="transfer-actions-header">请选择操作</div>
@@ -8211,9 +7934,7 @@
         <button id="transfer-action-cancel" class="cancel-btn">×</button>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】通话记录详情模态框 ▼▼▼ -->
     <div id="call-transcript-modal" class="modal">
       <div class="modal-content" style="height: 70%">
         <div class="modal-header">
@@ -8248,9 +7969,7 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
 
-    <!-- ▼▼▼ 【全新】分享目标选择器模态框 ▼▼▼ -->
     <div id="share-target-modal" class="modal">
       <div class="modal-content" style="height: 70%">
         <div class="modal-header">
@@ -8266,7 +7985,6 @@
       </div>
     </div>
 
-    <!-- ▼▼▼ 【全新】分享记录查看器模态框 ▼▼▼ -->
     <div id="shared-history-viewer-modal" class="modal">
       <div class="modal-content" style="height: 80%">
         <div class="modal-header">
@@ -8291,7 +8009,6 @@
       </div>
     </div>
 
-    <!-- ▼▼▼ 【全新】世界书分类管理模态框 ▼▼▼ -->
     <div id="world-book-category-manager-modal" class="modal">
       <div class="modal-content" style="height: 60%">
         <div class="modal-header">
@@ -8336,7 +8053,6 @@
       </div>
     </div>
 
-    <!-- ▼▼▼ 新增：API配置管理模态框 ▼▼▼ -->
     <div id="api-presets-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -8382,7 +8098,6 @@
         </div>
       </div>
     </div>
-    <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
     <script>
       const GEMINI_API_URL =
@@ -8825,7 +8540,6 @@
           "https://i.postimg.cc/gc3QYCDy/1-NINE7-Five.jpg";
         let notificationTimeout;
 
-        // ▼▼▼ 在JS顶部，变量定义区，添加这个新常量 ▼▼▼
         const DEFAULT_APP_ICONS = {
           "world-book": "https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg",
           qq: "https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg",
@@ -8833,7 +8547,6 @@
           wallpaper: "https://i.postimg.cc/T1j03pQr/IMG-6440.jpg",
           font: "https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg",
         };
-        // ▲▲▲ 添加结束 ▲▲▲
 
         const STICKER_REGEX =
           /^(https:\/\/i\.postimg\.cc\/.+|https:\/\/files\.catbox\.moe\/.+|data:image)/;
@@ -8905,7 +8618,6 @@
           });
         }
 
-        // ▼▼▼ 请用这个【功能增强版】替换旧的 showCustomPrompt 函数 ▼▼▼
         function showCustomPrompt(
           title,
           placeholder,
@@ -8980,7 +8692,6 @@
             }, 150);
           });
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         // ===================================================================
         // 2. 数据库结构定义
@@ -9094,7 +8805,6 @@
               item.classList.toggle("active", item.dataset.view === viewId);
             });
 
-          // ▼▼▼ 【核心修正】在这里统一管理所有UI元素的显隐 ▼▼▼
           if (viewId === "messages-view") {
             mainHeader.style.display = "flex";
             mainBottomNav.style.display = "flex";
@@ -9102,7 +8812,6 @@
             mainHeader.style.display = "none";
             mainBottomNav.style.display = "none";
           }
-          // ▲▲▲ 修正结束 ▲▲▲
 
           if (viewId !== "memories-view") {
             activeCountdownTimers.forEach((timerId) => clearInterval(timerId));
@@ -9166,7 +8875,6 @@
           }
         }
 
-        // ▼▼▼ 请用这个【已添加删除按钮】的函数，完整替换掉你旧的 renderQzonePosts 函数 ▼▼▼
         async function renderQzonePosts() {
           const postsListEl = document.getElementById("qzone-posts-list");
           if (!postsListEl) return;
@@ -9354,9 +9062,7 @@
             });
           });
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 请用下面这个【更新后的】函数，完整替换掉你代码中旧的 displayFilteredFavorites 函数 ▼▼▼
 
         function displayFilteredFavorites(items) {
           const listEl = document.getElementById("favorites-list");
@@ -9420,7 +9126,6 @@
                   : `<img src="https://i.postimg.cc/KYr2qRCK/1.jpg" class="chat-image" style="cursor: pointer;" data-hidden-text="${post.hiddenContent}">`;
               }
 
-              // ▼▼▼ 新增/修改的代码开始 ▼▼▼
 
               // 1. 构造点赞区域的HTML
               let likesHtml = "";
@@ -9453,7 +9158,6 @@
               // 3. 将点赞和评论的HTML组合到 footerHtml 中
               footerHtml = `${likesHtml}${commentsHtml}`;
 
-              // ▲▲▲ 新增/修改的代码结束 ▲▲▲
             } else if (item.type === "chat_message") {
               const msg = item.content;
               const chat = state.chats[item.chatId];
@@ -9511,7 +9215,6 @@
               }
             }
 
-            // ▼▼▼ 修改最终的HTML拼接，加入 footerHtml ▼▼▼
             card.innerHTML = `
                   <div class="fav-card-header">${headerHtml}<div class="source">${sourceText}</div></div>
                   <div class="fav-card-content">${contentHtml}</div>
@@ -9521,7 +9224,6 @@
           }
         }
 
-        // ▲▲▲ 替换区域结束 ▲▲▲
 
         /**
          * 【重构后的函数】: 负责准备数据并触发渲染
@@ -9545,7 +9247,6 @@
           displayFilteredFavorites(allFavoriteItems);
         }
 
-        // ▲▲▲ 粘贴结束 ▲▲▲
 
         function resetCreatePostModal() {
           document.getElementById("post-public-text").value = "";
@@ -9773,7 +9474,6 @@
         }
 
         async function loadAllDataFromDB() {
-          // ▼▼▼ 【核心修改在这里】 ▼▼▼
           const [
             chatsArr,
             apiConfigs, // <-- 修改这里
@@ -9795,7 +9495,6 @@
             db.qzoneSettings.get("main"),
             db.favorites.orderBy("timestamp").reverse().toArray(),
           ]);
-          // ▲▲▲ 【修改结束】 ▲▲▲
 
           state.chats = chatsArr.reduce((acc, chat) => {
             if (typeof chat.unreadCount === "undefined") {
@@ -9825,7 +9524,6 @@
               console.log(`迁移完成 for "${chat.name}"`);
             }
 
-            // --- ▼▼▼ 核心修复就在这里 ▼▼▼ ---
             // 检查1：如果是一个单聊，并且没有 status 属性
             if (!chat.isGroup && !chat.status) {
               // 就为它补上一个默认的 status 对象
@@ -9836,9 +9534,7 @@
               };
               console.log(`为旧角色 "${chat.name}" 补全了status属性。`);
             }
-            // --- ▲▲▲ 修复结束 ▲▲▲
 
-            // --- ▼▼▼ 核心修复就在这里 ▼▼▼ ---
             // 检查2：兼容最新的“关系”功能
             if (!chat.isGroup && !chat.relationship) {
               // 如果是单聊，且没有 relationship 对象，就补上一个默认的
@@ -9849,9 +9545,7 @@
               };
               console.log(`为旧角色 "${chat.name}" 补全了 relationship 属性。`);
             }
-            // --- ▲▲▲ 修复结束 ▲▲▲
 
-            // ▼▼▼ 在这里添加 ▼▼▼
             if (
               !chat.isGroup &&
               (!chat.settings || !chat.settings.aiAvatarLibrary)
@@ -9862,9 +9556,7 @@
                 `为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`,
               );
             }
-            // ▲▲▲ 添加结束 ▲▲▲
 
-            // ▼▼▼ 初始化总结设置 ▼▼▼
             if (!chat.settings.summary) {
               chat.settings.summary = {
                 enabled: false,
@@ -9874,7 +9566,6 @@
                 lastSummaryIndex: -1,
               };
             }
-            // ▲▲▲ 初始化结束 ▲▲▲
 
             if (!chat.musicData) chat.musicData = { totalTime: 0 };
             if (
@@ -9920,9 +9611,7 @@
             banner: "https://files.catbox.moe/r5heyt.gif",
           };
 
-          // ▼▼▼ 【确保这一行在 Promise.all 之后，并使用解构赋值得到的 initialFavorites】 ▼▼▼
           allFavoriteItems = initialFavorites || [];
-          // ▲▲▲ 【修改结束】 ▲▲▲
         }
 
         async function saveGlobalPlaylist() {
@@ -10080,7 +9769,6 @@
             listEl.appendChild(item);
           });
         }
-        // ▼▼▼ [新版本] 请使用此函数进行替换 ▼▼▼
         async function openApiConfigEditor(configId = null) {
           let config = {
             name: "",
@@ -10145,7 +9833,6 @@
           document.getElementById("config-hide-stream-switch").checked =
             config.hideStreamResponse;
 
-          // ▼▼▼ 新增：独立开关逻辑 ▼▼▼
           const tempCheck = document.getElementById("config-enable-temp");
           const toppCheck = document.getElementById("config-enable-topp");
           const topkCheck = document.getElementById("config-enable-topk");
@@ -10172,14 +9859,12 @@
           tempCheck.onchange = (e) => updateInputState(e.target, tempInput);
           toppCheck.onchange = (e) => updateInputState(e.target, toppInput);
           topkCheck.onchange = (e) => updateInputState(e.target, topkInput);
-          // ▲▲▲ 新增结束 ▲▲▲
 
           // 显示模态框
           document
             .getElementById("api-config-editor-modal")
             .classList.add("visible");
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         async function saveApiConfig() {
           const id = document.getElementById("config-editor-id").value;
@@ -10257,7 +9942,6 @@
         }
         window.renderApiSettingsProxy = renderApiSettings;
 
-        // ▼▼▼ 请用这个【全新版本】的函数，完整替换掉你旧的 renderChatList ▼▼▼
         async function renderChatList() {
           const chatListEl = document.getElementById("chat-list");
           chatListEl.innerHTML = "";
@@ -10310,7 +9994,6 @@
             groupContainer.className = "chat-group-container";
             groupContainer.innerHTML = `
                   <div class="chat-group-header">
-                      <span class="arrow">▼</span>
                       <span class="group-name">${group.name}</span>
                   </div>
                   <div class="chat-group-content"></div>
@@ -10344,14 +10027,12 @@
             });
           });
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         function createChatListItem(chat) {
           const lastMsgObj =
             chat.history.filter((msg) => !msg.isHidden).slice(-1)[0] || {};
           let lastMsgDisplay;
 
-          // --- ▼▼▼ 【核心修改】在这里加入对关系状态的判断 ▼▼▼ ---
           if (
             !chat.isGroup &&
             chat.relationship?.status === "pending_user_approval"
@@ -10360,16 +10041,13 @@
               chat.relationship.applicationReason || "请求添加你为好友"
             }</span>`;
           }
-          // --- ▲▲▲ 修改结束 ▲▲▲ ---
 
-          // ▼▼▼ 在这里新增 else if ▼▼▼
           else if (
             !chat.isGroup &&
             chat.relationship?.status === "blocked_by_ai"
           ) {
             lastMsgDisplay = `<span style="color: #dc3545;">[你已被对方拉黑]</span>`;
           }
-          // ▲▲▲ 新增结束 ▲▲▲
 
           // 【核心修改】优先显示状态，而不是最后一条消息
           if (chat.isGroup) {
@@ -10484,7 +10162,6 @@
           return item;
         }
 
-        // ▼▼▼ 请用这个【带诊断功能的全新版本】替换旧的 renderChatInterface 函数 ▼▼▼
         function renderChatInterface(chatId) {
           cleanupWaimaiTimers();
           const chat = state.chats[chatId];
@@ -10653,7 +10330,6 @@
             0,
           );
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         function prependLoadMoreButton(container) {
           const button = document.createElement("button");
@@ -10689,7 +10365,6 @@
           }
         }
 
-        // ▼▼▼ 用这个【新版本】替换旧的 renderWallpaperScreen 函数 ▼▼▼
         function renderWallpaperScreen() {
           const preview = document.getElementById("wallpaper-preview");
           const bg = newWallpaperBase64 || state.globalSettings.wallpaper;
@@ -10703,16 +10378,13 @@
           // 【核心修改】在这里调用图标渲染函数
           renderIconSettings();
 
-          // ▼▼▼ 新增：回显边框颜色设置 ▼▼▼
           const frameColorInput = document.getElementById("frame-color-input");
           const frameColorValue = document.getElementById("frame-color-value");
           const currentFrameColor =
             state.globalSettings.phoneFrameColor || "#ffffff";
           frameColorInput.value = currentFrameColor;
           frameColorValue.textContent = currentFrameColor;
-          // ▲▲▲ 新增结束 ▲▲▲
         }
-        // ▲▲▲ 替换结束 ▲▲▲
         window.renderWallpaperScreenProxy = renderWallpaperScreen;
 
         function applyGlobalWallpaper() {
@@ -10722,7 +10394,6 @@
             homeScreen.style.backgroundImage = `url(${wallpaper})`;
           else if (wallpaper) homeScreen.style.backgroundImage = wallpaper;
 
-          // ▼▼▼ 新增：应用手机边框颜色 ▼▼▼
           const phoneFrame = document.getElementById("phone-frame");
           const customColor = state.globalSettings.phoneFrameColor;
 
@@ -10732,7 +10403,6 @@
             // 如果没有自定义颜色，则清除内联样式，让CSS类（如.dark-mode）生效
             phoneFrame.style.backgroundColor = "";
           }
-          // ▲▲▲ 新增结束 ▲▲▲
         }
 
         async function renderWorldBookScreen() {
@@ -10808,13 +10478,11 @@
 
           groupContainer.innerHTML = `
               <div class="world-book-group-header">
-                  <span class="arrow">▼</span>
                   <span class="group-name">${groupName}</span>
               </div>
               <div class="world-book-group-content"></div>
           `;
 
-          // ▼▼▼ 在这里添加新代码 ▼▼▼
           const headerEl = groupContainer.querySelector(
             ".world-book-group-header",
           );
@@ -10825,7 +10493,6 @@
           // 默认给头部和内容区都加上 collapsed 类
           headerEl.classList.add("collapsed");
           contentEl.classList.add("collapsed");
-          // ▲▲▲ 添加结束 ▲▲▲
 
           books.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
           books.forEach((book) => {
@@ -10943,9 +10610,7 @@
           });
         }
 
-        // ▼▼▼ 用这个【已更新】的版本替换旧的 createMessageElement 函数 ▼▼▼
         function createMessageElement(msg, chat) {
-          // ▼▼▼ 在函数最开头，添加这段新代码 ▼▼▼
           if (msg.type === "recalled_message") {
             const wrapper = document.createElement("div");
             // 1. 【核心】给 wrapper 也加上 timestamp，方便事件委托时查找
@@ -10977,7 +10642,6 @@
 
             return wrapper;
           }
-          // ▲▲▲ 添加结束 ▲▲▲
 
           if (msg.isHidden) {
             return null;
@@ -11032,7 +10696,6 @@
           timestampEl.className = "timestamp";
           timestampEl.textContent = formatTimestamp(msg.timestamp);
 
-          // ▼▼▼【粘贴这段新代码】▼▼▼
           let avatarSrc; // 我们现在只需要头像图片，不再需要头像框了
           if (chat.isGroup) {
             if (isUser) {
@@ -11052,7 +10715,6 @@
           }
           // 直接生成最简单的头像HTML，不再有任何和头像框相关的逻辑
           const avatarHtml = `<img src="${avatarSrc}" class="avatar">`;
-          // ▲▲▲【粘贴结束】▲▲▲
 
           let contentHtml;
 
@@ -11342,7 +11004,6 @@
                   ${claimedInfoHtml}
               </div>
           `;
-            // ▲▲▲ 新增结束 ▲▲▲
           } else if (msg.type === "poll") {
             bubble.classList.add("is-poll");
 
@@ -11407,7 +11068,6 @@
                   ${footerHtml}
               </div>
           `;
-            // ▲▲▲ 替换结束 ▲▲▲
           } else if (
             typeof msg.content === "string" &&
             STICKER_REGEX.test(msg.content)
@@ -11427,7 +11087,6 @@
             contentHtml = String(msg.content || "").replace(/\n/g, "<br>");
           }
 
-          // ▼▼▼ 【最终修正版】请用这整块代码，完整替换掉旧的引用渲染逻辑 ▼▼▼
 
           // 1. 【统一逻辑】检查消息对象中是否存在引用信息 (msg.quote)
           let quoteHtml = "";
@@ -11482,7 +11141,6 @@
 
           return wrapper;
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         function prependMessage(msg, chat) {
           const messagesContainer = document.getElementById("chat-messages");
@@ -11498,7 +11156,6 @@
           }
         }
 
-        // ▼▼▼ 用这个【带动画的版本】替换你原来的 appendMessage 函数 ▼▼▼
         function appendMessage(msg, chat, isInitialLoad = false) {
           const messagesContainer = document.getElementById("chat-messages");
           const messageEl = createMessageElement(msg, chat);
@@ -11518,7 +11175,6 @@
             currentRenderedCount++;
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         async function openChat(chatId) {
           state.activeChatId = chatId;
@@ -11552,9 +11208,7 @@
             ? "flex"
             : "none";
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 总结逻辑函数区域 ▼▼▼
         
         /**
          * 调用API生成总结内容
@@ -11751,7 +11405,6 @@
             console.error("自动总结过程中发生未捕获的错误:", e);
           }
         }
-        // ▲▲▲ 总结逻辑函数区域 ▲▲▲
 
         async function triggerAiResponse() {
           if (!state.activeChatId) return;
@@ -12028,7 +11681,6 @@
             const maxMemory = parseInt(chat.settings.maxMemory) || 10;
             const historySlice = chat.history.slice(-maxMemory);
 
-            // --- ▼▼▼ 全新添加的时间感知代码 ▼▼▼ ---
             let timeContext = `\n- **当前时间**: ${currentTime}`;
             const lastAiMessage = historySlice
               .filter((m) => m.role === "assistant" && !m.isHidden)
@@ -12054,7 +11706,6 @@
             } else {
               timeContext += "\n- **对话状态**: 这是你们的第一次对话。";
             }
-            // --- ▲▲▲ 新代码添加结束 ▲▲▲ ---
 
             // 【核心修改】
             let sharedContext = "";
@@ -12304,7 +11955,6 @@ ${sharedContext}
                   return { role: msg.role, content: contentStr };
                 })
                 .filter(Boolean);
-              // ▲▲▲ 替换结束 ▲▲▲
 
               // 检查 sharedContext 是否有内容（即，用户是否分享了聊天记录）
               if (sharedContext) {
@@ -12585,7 +12235,6 @@ ${sharedContext}
                 continue;
               }
 
-              // ▼▼▼ 在这里添加下面的代码 ▼▼▼
 
               // 【核心修正】在群聊中，如果AI返回的消息没有指定发送者，则直接跳过这条消息
               if (chat.isGroup && !msgData.name) {
@@ -12596,7 +12245,6 @@ ${sharedContext}
                 continue; // continue会立即结束本次循环，处理下一条消息
               }
 
-              // ▲▲▲ 添加结束 ▲▲▲
 
               let aiMessage = null;
               const baseMessage = {
@@ -12840,7 +12488,6 @@ ${sharedContext}
                   if (!chat.isGroup) {
                     chat.relationship.status = "blocked_by_ai";
 
-                    // ▼▼▼ 在这里添加下面的代码 ▼▼▼
                     const hiddenMessage = {
                       role: "system",
                       content: `[系统提示：你刚刚主动拉黑了用户。]`,
@@ -12848,7 +12495,6 @@ ${sharedContext}
                       isHidden: true,
                     };
                     chat.history.push(hiddenMessage);
-                    // ▲▲▲ 添加结束 ▲▲▲
 
                     await db.chats.put(chat);
 
@@ -12918,14 +12564,12 @@ ${sharedContext}
                       pollToVote.votes[msgData.choice] = [];
                     }
 
-                    // ▼▼▼ 在这里添加新代码 ▼▼▼
                     const member = chat.members.find(
                       (m) => m.originalName === msgData.name,
                     );
                     const displayName = member
                       ? member.groupNickname
                       : msgData.name;
-                    // ▲▲▲ 添加结束 ▲▲▲
 
                     if (
                       !pollToVote.votes[msgData.choice].includes(displayName)
@@ -13092,7 +12736,6 @@ ${sharedContext}
                   // 处理完后，继续处理AI可能返回的其他消息
                   continue;
 
-                // ▼▼▼ 在 triggerAiResponse 的 switch 语句中，【添加】这两个全新的 case ▼▼▼
 
                 case "accept_transfer": {
                   // 使用大括号创建块级作用域
@@ -13129,19 +12772,16 @@ ${sharedContext}
                     // 将新消息推入历史记录，它会被后续的循环处理并渲染
                     chat.history.push(refundMessage);
 
-                    // ▼▼▼ 在这里添加下面的代码 ▼▼▼
                     if (isViewingThisChat) {
                       // 因为退款消息是新生成的，所以我们直接将它添加到界面上
                       appendMessage(refundMessage, chat);
                       // 同时，原始的转账消息状态变了，所以要重绘整个界面以更新它
                       renderChatInterface(chatId);
                     }
-                    // ▲▲▲ 添加结束 ▲▲▲
                   }
                   continue; // 继续处理AI返回的文本消息
                 }
 
-                // ▲▲▲ 添加结束 ▲▲▲
 
                 case "system_message":
                   aiMessage = {
@@ -13152,7 +12792,6 @@ ${sharedContext}
                   };
                   break;
 
-                // ▼▼▼ 在 triggerAiResponse 的 switch 语句中，【必须添加】这个新的 case ▼▼▼
 
                 case "share_link":
                   aiMessage = {
@@ -13166,9 +12805,7 @@ ${sharedContext}
                   };
                   break;
 
-                // ▲▲▲ 添加结束 ▲▲▲
 
-                // ▼▼▼ 在 triggerAiResponse 的 switch (msgData.type) 语句中，添加这个新的 case ▼▼▼
                 case "quote_reply":
                   const originalMessage = chat.history.find(
                     (m) => m.timestamp === msgData.target_timestamp,
@@ -13199,9 +12836,7 @@ ${sharedContext}
                     };
                   }
                   break;
-                // ▲▲▲ 新增 case 结束 ▲▲▲
 
-                // ▼▼▼ 在 switch (msgData.type) 语句中，添加这个全新的 case ▼▼▼
                 case "send_and_recall": {
                   // 这是一个纯动画指令，我们需要手动“演”出整个过程
                   if (!isViewingThisChat) continue; // 如果不在当前聊天界面，就直接跳过这个动画
@@ -13276,7 +12911,6 @@ ${sharedContext}
 
                   continue; // 处理完这个动画后，继续处理AI返回的下一条指令
                 }
-                // ▲▲▲ 新 case 添加结束 ▲▲▲
 
                 case "text":
                   aiMessage = {
@@ -13534,7 +13168,6 @@ ${sharedContext}
           selectedMessages.clear();
         }
 
-        // ▼▼▼ 请用这个【最终简化版】替换旧的 toggleMessageSelection 函数 ▼▼▼
         function toggleMessageSelection(timestamp) {
           // 【核心修正】选择器已简化，不再寻找已删除的 .recalled-message-placeholder
           const elementToSelect = document.querySelector(
@@ -13558,7 +13191,6 @@ ${sharedContext}
             exitSelectionMode();
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         function addLongPressListener(element, callback) {
           let pressTimer;
@@ -14188,7 +13820,6 @@ ${sharedContext}
               openAlbum(album.id);
             });
 
-            // ▼▼▼ 新增的核心代码就是这里 ▼▼▼
             addLongPressListener(albumItem, async () => {
               const confirmed = await showCustomConfirm(
                 "删除相册",
@@ -14209,7 +13840,6 @@ ${sharedContext}
                 alert("相册已成功删除。");
               }
             });
-            // ▲▲▲ 新增代码结束 ▲▲▲
 
             albumGrid.appendChild(albumItem);
           });
@@ -14350,7 +13980,6 @@ ${sharedContext}
         }
 
         // --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
-        // ▼▼▼ 请将这个新函数粘贴到你的JS功能函数定义区 ▼▼▼
 
         /**
          * 更新动态小红点的显示
@@ -14404,9 +14033,7 @@ ${sharedContext}
           }
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 将这两个新函数粘贴到你的JS功能函数定义区 ▼▼▼
         function startBackgroundSimulation() {
           if (simulationIntervalId) return;
           const intervalSeconds =
@@ -14424,7 +14051,6 @@ ${sharedContext}
             simulationIntervalId = null;
           }
         }
-        // ▲▲▲ 粘贴结束 ▲▲▲
 
         /**
          * 这是模拟器的“心跳”，每次定时器触发时运行
@@ -14528,7 +14154,6 @@ ${sharedContext}
             ).substring(0, 50)}...”。`;
           }
 
-          // ▼▼▼ 在这里添加下面的代码 ▼▼▼
           let worldBookContent = "";
           if (
             chat.settings.linkedWorldBookIds &&
@@ -14549,7 +14174,6 @@ ${sharedContext}
               worldBookContent = `\n\n# 核心世界观设定 (你必须严格遵守)\n${linkedContents}\n`;
             }
           }
-          // ▲▲▲ 添加结束 ▲▲▲
 
           const systemPrompt = `
       # 你的任务
@@ -14768,7 +14392,6 @@ ${sharedContext}
           }
         }
 
-        // ▼▼▼ 请用这个【终极修正版】函数，完整替换掉你旧的 applyScopedCss 函数 ▼▼▼
 
         /**
          * 将用户自定义的CSS安全地应用到指定的作用域
@@ -14803,7 +14426,6 @@ ${sharedContext}
           styleTag.innerHTML = scopedCss;
         }
 
-        // ▼▼▼ 请用这个【修正版】函数，完整替换掉旧的 updateSettingsPreview 函数 ▼▼▼
 
         function updateSettingsPreview() {
           if (!state.activeChatId) return;
@@ -14864,9 +14486,7 @@ ${sharedContext}
           );
         }
 
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 请将这些【新函数】粘贴到JS功能函数定义区 ▼▼▼
 
         async function openGroupManager() {
           await renderGroupList();
@@ -14894,7 +14514,6 @@ ${sharedContext}
           });
         }
 
-        // ▼▼▼ 请用这个【修正后】的函数，完整替换旧的 addNewGroup 函数 ▼▼▼
         async function addNewGroup() {
           const input = document.getElementById("new-group-name-input");
           const name = input.value.trim();
@@ -14918,7 +14537,6 @@ ${sharedContext}
           input.value = "";
           await renderGroupList();
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         async function deleteGroup(groupId) {
           const confirmed = await showCustomConfirm(
@@ -14942,9 +14560,7 @@ ${sharedContext}
           }
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 请将这【一整块新函数】粘贴到JS功能函数定义区的末尾 ▼▼▼
 
         /**
          * 当长按消息时，显示操作菜单
@@ -14970,7 +14586,6 @@ ${sharedContext}
           activeMessageTimestamp = null;
         }
 
-        // ▼▼▼ 用这个【已更新】的版本，替换旧的 openMessageEditor 函数 ▼▼▼
         async function openMessageEditor() {
           if (!activeMessageTimestamp) return;
 
@@ -15060,7 +14675,6 @@ ${sharedContext}
             await saveEditedMessage(timestampToEdit, newContent, true);
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 复制消息的文本内容到剪贴板
@@ -15090,7 +14704,6 @@ ${sharedContext}
           hideMessageActions();
         }
 
-        // ▼▼▼ 用这个【已更新】的版本，替换旧的 createMessageEditorBlock 函数 ▼▼▼
         /**
          * 创建一个可编辑的消息块（包含文本框、格式助手和删除按钮）
          * @param {string} initialContent - 文本框的初始内容
@@ -15167,9 +14780,7 @@ ${sharedContext}
 
           return block;
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 【全新升级版】请用此函数完整替换旧的 openAdvancedMessageEditor ▼▼▼
         /**
          * 打开全新的、可视化的多消息编辑器，并动态绑定其所有按钮事件
          */
@@ -15252,7 +14863,6 @@ ${sharedContext}
           // 5. 最后，显示模态框
           editorModal.classList.add("visible");
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 解析编辑后的文本，并返回一个标准化的消息片段对象
@@ -15285,7 +14895,6 @@ ${sharedContext}
           return { type: "text", content: trimmedText };
         }
 
-        // ▼▼▼ 请用这个【已彻底修复】的函数，完整替换你现有的 saveEditedMessage 函数 ▼▼▼
 
         async function saveEditedMessage(timestamp, simpleContent = null) {
           if (!timestamp) return;
@@ -15410,9 +15019,7 @@ ${sharedContext}
           await showCustomAlert("成功", "消息已更新！");
         }
 
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 请将这【一整块新函数】粘贴到JS功能函数定义区的末尾 ▼▼▼
 
         /**
          * 当点击“…”时，显示动态操作菜单
@@ -15584,7 +15191,6 @@ ${sharedContext}
           hidePostActions();
         }
 
-        // ▼▼▼ 【全新】创建群聊与拉人功能核心函数 ▼▼▼
         let selectedContacts = new Set();
 
         async function openContactPickerForGroupCreate() {
@@ -15603,7 +15209,6 @@ ${sharedContext}
           await renderContactPicker();
           showScreen("contact-picker-screen");
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 渲染联系人选择列表
@@ -15714,7 +15319,6 @@ ${sharedContext}
           openChat(newChatId);
         }
 
-        // ▼▼▼ 【全新】群成员管理核心函数 ▼▼▼
 
         /**
          * 打开群成员管理屏幕
@@ -15896,7 +15500,6 @@ ${sharedContext}
           alert(`新成员“${name}”已成功加入群聊！`);
         }
 
-        // ▼▼▼ 【全新】外卖请求倒计时函数 ▼▼▼
         function startWaimaiCountdown(element, endTime) {
           const timerId = setInterval(() => {
             const now = Date.now();
@@ -15932,7 +15535,6 @@ ${sharedContext}
           }
           waimaiTimers = {};
         }
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
         async function handleWaimaiResponse(originalTimestamp, choice) {
           const chat = state.chats[state.activeChatId];
@@ -16187,79 +15789,35 @@ ${sharedContext}
             )
             .join("\n");
 
-          // 1. 检查是否启用了可视化界面
-          if (chat.settings.visualVideoCallEnabled) {
-            // --- 启动【新】的可视化界面 ---
-            videoCallState.isActive = true;
-            videoCallState.isAwaitingResponse = false;
-            videoCallState.startTime = Date.now();
-            videoCallState.callHistory = [];
+          videoCallState.isActive = true;
+          videoCallState.isAwaitingResponse = false;
+          videoCallState.startTime = Date.now();
+          videoCallState.callHistory = [];
 
-            const visualInterface = document.getElementById(
-              "visual-call-interface",
-            );
-            const textInterface = document.getElementById(
-              "text-call-interface",
-            );
+          const textInterface = document.getElementById(
+            "text-call-interface",
+          );
 
-            // 显示新界面，隐藏旧界面
-            visualInterface.style.display = "flex";
-            textInterface.style.display = "none";
+          // 显示文字界面
+          textInterface.style.display = "flex";
 
-            // 加载图片
-            document.querySelector("#video-main-view img").src =
-              chat.settings.charVideoImage || defaultAvatar;
-            document.querySelector("#video-pip-view img").src =
-              chat.settings.userVideoImage || defaultAvatar;
+          updateParticipantAvatars();
 
-            // 清空旧的聊天气泡
-            document.getElementById("video-call-messages-visual").innerHTML =
-              `<em>正在接通...</em>`;
-            showScreen("video-call-screen");
+          document.getElementById("video-call-main").innerHTML = `<em>${
+            videoCallState.isGroupCall ? "群聊已建立..." : "正在接通..."
+          }</em>`;
+          showScreen("video-call-screen");
 
-            // 启动计时器
-            if (callTimerInterval) clearInterval(callTimerInterval);
-            callTimerInterval = setInterval(updateCallTimer, 1000);
-            updateCallTimer(); // 立即更新一次
+          document.getElementById("user-speak-btn").style.display =
+            videoCallState.isUserParticipating ? "block" : "none";
+          document.getElementById("join-call-btn").style.display =
+            videoCallState.isUserParticipating ? "none" : "block";
 
-            // 触发AI在通话中的第一句话
-            triggerAiInCallAction();
-          } else {
-            // --- 启动【旧】的纯文字界面 ---
-            videoCallState.isActive = true;
-            videoCallState.isAwaitingResponse = false;
-            videoCallState.startTime = Date.now();
-            videoCallState.callHistory = [];
+          if (callTimerInterval) clearInterval(callTimerInterval);
+          callTimerInterval = setInterval(updateCallTimer, 1000);
+          updateCallTimer();
 
-            const visualInterface = document.getElementById(
-              "visual-call-interface",
-            );
-            const textInterface = document.getElementById(
-              "text-call-interface",
-            );
-
-            // 显示旧界面，隐藏新界面
-            visualInterface.style.display = "none";
-            textInterface.style.display = "flex"; // 旧界面用flex
-
-            updateParticipantAvatars();
-
-            document.getElementById("video-call-main").innerHTML = `<em>${
-              videoCallState.isGroupCall ? "群聊已建立..." : "正在接通..."
-            }</em>`;
-            showScreen("video-call-screen");
-
-            document.getElementById("user-speak-btn").style.display =
-              videoCallState.isUserParticipating ? "block" : "none";
-            document.getElementById("join-call-btn").style.display =
-              videoCallState.isUserParticipating ? "none" : "block";
-
-            if (callTimerInterval) clearInterval(callTimerInterval);
-            callTimerInterval = setInterval(updateCallTimer, 1000);
-            updateCallTimer();
-
-            triggerAiInCallAction();
-          }
+          triggerAiInCallAction();
         }
 
         /**
@@ -16267,9 +15825,6 @@ ${sharedContext}
          */
 
         async function endVideoCall() {
-          document.getElementById("visual-call-interface").style.display =
-            "none";
-
           document.getElementById("video-call-floating-bubble").style.display =
             "none";
           if (!videoCallState.isActive) return;
@@ -16598,9 +16153,8 @@ ${sharedContext}
             seconds,
           ).padStart(2, "0")}`;
 
-          // 同时更新两个界面的计时器
+          // 仅更新文字界面的计时器
           document.getElementById("call-timer").textContent = timeString;
-          document.getElementById("visual-call-timer").textContent = timeString;
         }
 
         function showIncomingCallModal(chatId) {
@@ -16653,10 +16207,7 @@ ${sharedContext}
           const chat = state.chats[videoCallState.activeChatId];
           const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
 
-          const isVisualMode = chat.settings.visualVideoCallEnabled;
-          const callFeed = isVisualMode
-            ? document.getElementById("video-call-messages-visual")
-            : document.getElementById("video-call-main");
+          const callFeed = document.getElementById("video-call-main");
 
           const userNickname = chat.settings.myNickname || "我";
 
@@ -16682,17 +16233,10 @@ ${sharedContext}
           }
 
           if (userInput && videoCallState.isUserParticipating) {
-            if (isVisualMode) {
-              const userBubble = document.createElement("div");
-              userBubble.className = "visual-call-bubble user";
-              userBubble.textContent = userInput;
-              callFeed.appendChild(userBubble);
-            } else {
-              const userBubble = document.createElement("div");
-              userBubble.className = "call-message-bubble user-speech";
-              userBubble.textContent = userInput;
-              callFeed.appendChild(userBubble);
-            }
+            const userBubble = document.createElement("div");
+            userBubble.className = "call-message-bubble user-speech";
+            userBubble.textContent = userInput;
+            callFeed.appendChild(userBubble);
             callFeed.scrollTop = callFeed.scrollHeight;
             videoCallState.callHistory.push({
               role: "user",
@@ -16813,16 +16357,10 @@ ${sharedContext}
 
             let bubble; // 先声明一个 bubble 变量
 
-            // 根据通话模式创建对应的气泡元素
-            if (isVisualMode) {
-              bubble = document.createElement("div");
-              bubble.className = "visual-call-bubble ai";
-            } else {
-              bubble = document.createElement("div");
-              bubble.className = "call-message-bubble ai-speech";
-              if (videoCallState.isGroupCall && turn.name) {
-                bubble.innerHTML = `<strong>${turn.name}:</strong> `;
-              }
+            bubble = document.createElement("div");
+            bubble.className = "call-message-bubble ai-speech";
+            if (videoCallState.isGroupCall && turn.name) {
+              bubble.innerHTML = `<strong>${turn.name}:</strong> `;
             }
             // 将AI的文本内容填充到气泡中
             bubble.appendChild(document.createTextNode(sanitizedResponse));
@@ -16868,12 +16406,7 @@ ${sharedContext}
             const errorBubble = document.createElement("div");
             errorBubble.style.color = "#ff8a80";
             errorBubble.textContent = `[ERROR: ${error.message}]`;
-
-            if (isVisualMode) {
-              errorBubble.className = "visual-call-bubble ai";
-            } else {
-              errorBubble.className = "call-message-bubble ai-speech";
-            }
+            errorBubble.className = "call-message-bubble ai-speech";
 
             callFeed.appendChild(errorBubble);
             callFeed.scrollTop = callFeed.scrollHeight;
@@ -16936,7 +16469,6 @@ ${sharedContext}
             triggerAiResponse();
           }
         }
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
         /**
          * 【全新】处理用户点击头像发起的“拍一-拍”，带有自定义后缀功能
@@ -16998,7 +16530,6 @@ ${sharedContext}
           await renderChatList();
         }
 
-        // ▼▼▼ 请用这个【逻辑重构后】的函数，完整替换掉你旧的 renderMemoriesScreen 函数 ▼▼▼
         /**
          * 【重构版】渲染回忆与约定界面，使用单一循环和清晰的if/else逻辑
          */
@@ -17048,7 +16579,6 @@ ${sharedContext}
           // 4. 启动所有倒计时
           startAllCountdownTimers();
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 创建普通回忆卡片DOM元素
@@ -17135,12 +16665,10 @@ ${sharedContext}
           });
           return card;
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         // 全局变量，用于管理所有倒计时
         let activeCountdownTimers = [];
 
-        // ▼▼▼ 请用这个【已彻底修复】的函数，完整替换掉你代码中旧的 startAllCountdownTimers 函数 ▼▼▼
         function startAllCountdownTimers() {
           // 先清除所有可能存在的旧计时器，防止内存泄漏
           activeCountdownTimers.forEach((timerId) => clearInterval(timerId));
@@ -17185,9 +16713,7 @@ ${sharedContext}
               activeCountdownTimers.push(timerId);
             });
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 请用这个【终极反代兼容版】替换旧的 triggerAiFriendApplication 函数 ▼▼▼
         async function triggerAiFriendApplication(chatId) {
           const chat = state.chats[chatId];
           if (!chat) return;
@@ -17214,7 +16740,6 @@ ${sharedContext}
             })
             .join("\n");
 
-          // ▼▼▼ 在这里添加下面的代码 ▼▼▼
           let worldBookContent = "";
           if (
             chat.settings.linkedWorldBookIds &&
@@ -17235,7 +16760,6 @@ ${sharedContext}
               worldBookContent = `\n\n# 核心世界观设定 (请参考)\n${linkedContents}\n`;
             }
           }
-          // ▲▲▲ 添加结束 ▲▲▲
 
           const systemPrompt = `
       # 你的任务
@@ -17335,9 +16859,7 @@ ${sharedContext}
             renderChatInterface(chatId);
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 【全新】红包功能核心函数 ▼▼▼
 
         /**
          * 【总入口】根据聊天类型，决定打开转账弹窗还是红包弹窗
@@ -17541,7 +17063,6 @@ ${sharedContext}
             showRedPacketDetails(updatedPacket);
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 【核心】处理用户打开红包的逻辑 (V5 - 专注于数据更新)
@@ -17616,7 +17137,6 @@ ${sharedContext}
           // 6. 返回领取的金额，用于后续弹窗
           return claimedAmount;
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 【全新】显示红包领取详情的模态框 (V4 - 已修复参数错误)
@@ -17706,7 +17226,6 @@ ${sharedContext}
 
           modal.classList.add("visible");
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         // 绑定关闭详情按钮的事件
         document
@@ -17720,9 +17239,7 @@ ${sharedContext}
         // 供全局调用的函数，以便红包卡片上的 onclick 能找到它
         window.handlePacketClick = handlePacketClick;
 
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 【全新】投票功能核心函数 ▼▼▼
 
         /**
          * 打开创建投票的模态框并初始化
@@ -17820,7 +17337,6 @@ ${sharedContext}
             .classList.remove("visible");
         }
 
-        // ▼▼▼ 用这个【已修复重复点击问题】的版本替换 handleUserVote 函数 ▼▼▼
         /**
          * 处理用户投票，并将事件作为隐藏消息存入历史记录
          * @param {number} timestamp - 投票消息的时间戳
@@ -17885,7 +17401,6 @@ ${sharedContext}
           await db.chats.put(chat);
           renderChatInterface(state.activeChatId);
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 用户结束投票，并将事件作为隐藏消息存入历史记录
@@ -17921,7 +17436,6 @@ ${sharedContext}
             renderChatInterface(state.activeChatId);
           }
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 显示投票结果详情
@@ -17959,9 +17473,7 @@ ${sharedContext}
           showCustomAlert("投票结果", resultsHtml);
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 【全新】AI头像库管理功能函数 ▼▼▼
 
         /**
          * 打开AI头像库管理模态框
@@ -18063,9 +17575,7 @@ ${sharedContext}
             .classList.remove("visible");
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 请将这两个【新函数】粘贴到JS功能函数定义区 ▼▼▼
 
         /**
          * 【全新】将保存的图标URL应用到主屏幕的App图标上
@@ -18113,9 +17623,7 @@ ${sharedContext}
             grid.appendChild(item);
           }
         }
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 用这块【最终确认版】的代码，替换旧的 openBrowser 和 closeBrowser 函数 ▼▼▼
 
         /**
          * 当用户点击链接卡片时，打开伪浏览器
@@ -18163,9 +17671,7 @@ ${sharedContext}
           showScreen("chat-interface-screen");
         }
 
-        // ▲▲▲ 替换结束 ▲▲▲
 
-        // ▼▼▼ 【全新】用户分享链接功能的核心函数 ▼▼▼
 
         /**
          * 打开让用户填写链接信息的模态框
@@ -18236,7 +17742,6 @@ ${sharedContext}
             .classList.remove("visible");
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
         /**
          * 根据AI的视角，过滤出它能看到的动态
@@ -18307,7 +17812,6 @@ ${sharedContext}
           applyTheme(newTheme);
         }
 
-        // ▼▼▼ 请将这【一整块新函数】粘贴到你的JS功能函数定义区 ▼▼▼
 
         function startReplyToMessage() {
           if (!activeMessageTimestamp) return;
@@ -18372,9 +17876,7 @@ ${sharedContext}
           document.getElementById("reply-preview-bar").style.display = "none";
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 【全新】用户处理转账的核心功能函数 ▼▼▼
 
         let activeTransferTimestamp = null; // 用于暂存被点击的转账消息的时间戳
 
@@ -18464,9 +17966,7 @@ ${sharedContext}
           renderChatList();
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 【全新】通话记录功能核心函数 ▼▼▼
 
         async function renderCallHistoryScreen() {
           showScreen("call-history-screen"); // <--【核心修正】把它移动到最前面！
@@ -18516,7 +18016,6 @@ ${sharedContext}
           });
         }
 
-        // ▼▼▼ 用这个【升级版】函数，完整替换你旧的 createCallRecordCard 函数 ▼▼▼
         /**
          * 【升级版】根据单条记录数据，创建一张能显示聊天对象的通话卡片
          * @param {object} record - 一条通话记录对象
@@ -18572,7 +18071,6 @@ ${sharedContext}
           `;
           return card;
         }
-        // ▲▲▲ 替换结束 ▲▲▲
 
         /**
          * 显示指定通话记录的完整文字稿
@@ -18637,9 +18135,7 @@ ${sharedContext}
           modal.classList.add("visible");
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
-        // ▼▼▼ 请用这个【全新函数】替换掉你旧的 handleStatusResetClick 函数 ▼▼▼
 
         /**
          * 【全新】处理用户点击状态栏，弹出编辑框让用户修改AI的当前状态
@@ -18904,7 +18400,6 @@ ${sharedContext}
           if (isUserRecall) renderChatList(); // 用户撤回时，最后一条消息变了，需要刷新列表
         }
 
-        // ▼▼▼ 【全新】将这些函数粘贴到你的JS功能函数定义区 ▼▼▼
 
         /**
          * 打开分类管理模态框
@@ -18991,33 +18486,24 @@ ${sharedContext}
           }
         }
 
-        // ▲▲▲ 新函数粘贴结束 ▲▲▲
 
         // ===================================================================
         // 4. 初始化函数 init()
         // ===================================================================
         async function init() {
-          // ▼▼▼ 在 init() 函数的【最开头】，粘贴下面这两行代码 ▼▼▼
           const savedTheme = localStorage.getItem("ephone-theme") || "light"; // 默认为日间模式
           applyTheme(savedTheme);
-          // ▲▲▲ 粘贴结束 ▲▲▲
 
-          // ▼▼▼ 新增代码 ▼▼▼
           const customBubbleStyleTag = document.createElement("style");
           customBubbleStyleTag.id = "custom-bubble-style";
           document.head.appendChild(customBubbleStyleTag);
-          // ▲▲▲ 新增结束 ▲▲▲
 
-          // ▼▼▼ 新增代码 ▼▼▼
           const previewBubbleStyleTag = document.createElement("style");
           previewBubbleStyleTag.id = "preview-bubble-style";
           document.head.appendChild(previewBubbleStyleTag);
-          // ▲▲▲ 新增结束 ▲▲▲
 
-          // ▼▼▼ 修改这两行 ▼▼▼
           applyScopedCss("", "#chat-messages", "custom-bubble-style"); // 清除真实聊天界面的自定义样式
           applyScopedCss("", "#settings-preview-area", "preview-bubble-style"); // 清除预览区的自定义样式
-          // ▲▲▲ 修改结束 ▲▲▲
 
           window.showScreen = showScreen;
           window.renderChatListProxy = renderChatList;
@@ -19032,7 +18518,6 @@ ${sharedContext}
             parseInt(localStorage.getItem("unreadPostsCount")) || 0;
           updateUnreadIndicator(storedCount);
 
-          // ▲▲▲ 代码添加结束 ▲▲▲
 
           if (state.globalSettings && state.globalSettings.fontUrl) {
             applyCustomFont(state.globalSettings.fontUrl);
@@ -19071,14 +18556,12 @@ ${sharedContext}
           document
             .getElementById("back-to-list-btn")
             .addEventListener("click", () => {
-              // ▼▼▼ 修改这两行 ▼▼▼
               applyScopedCss("", "#chat-messages", "custom-bubble-style"); // 清除真实聊天界面的自定义样式
               applyScopedCss(
                 "",
                 "#settings-preview-area",
                 "preview-bubble-style",
               ); // 清除预览区的自定义样式
-              // ▲▲▲ 修改结束 ▲▲▲
 
               exitSelectionMode();
               state.activeChatId = null;
@@ -19120,7 +18603,6 @@ ${sharedContext}
                     customCss: "", // <--- 新增这行
                     linkedWorldBookIds: [],
                     aiAvatarLibrary: [],
-                    // ▼▼▼ 总结设置初始化 ▼▼▼
                     summary: {
                       enabled: false,
                       mode: "manual",
@@ -19128,7 +18610,6 @@ ${sharedContext}
                       prompt: "请总结上述对话的主要内容，保留重要信息和情感脉络。",
                       lastSummaryIndex: -1,
                     },
-                    // ▲▲▲ 初始化结束 ▲▲▲
                   },
                   history: [],
                   musicData: { totalTime: 0 },
@@ -19139,11 +18620,9 @@ ${sharedContext}
               }
             });
 
-          // ▼▼▼ 【修正】创建群聊按钮现在打开联系人选择器 ▼▼▼
           document
             .getElementById("add-group-chat-btn")
             .addEventListener("click", openContactPickerForGroupCreate);
-          // ▲▲▲ 替换结束 ▲▲▲
           document
             .getElementById("transfer-cancel-btn")
             .addEventListener("click", () =>
@@ -19217,7 +18696,6 @@ ${sharedContext}
           });
 
           const chatInput = document.getElementById("chat-input");
-          // ▼▼▼ 找到 id="send-btn" 的 click 事件监听器 ▼▼▼
           document
             .getElementById("send-btn")
             .addEventListener("click", async () => {
@@ -19266,7 +18744,6 @@ ${sharedContext}
             chatInput.style.height = chatInput.scrollHeight + "px";
           });
 
-          // ▼▼▼ 新增：手机边框颜色设置相关事件 ▼▼▼
           const frameColorInput = document.getElementById("frame-color-input");
           const frameColorValue = document.getElementById("frame-color-value");
 
@@ -19285,7 +18762,6 @@ ${sharedContext}
               frameColorValue.textContent = "#ffffff";
               document.getElementById("phone-frame").style.backgroundColor = ""; // 清除内联样式
             });
-          // ▲▲▲ 新增结束 ▲▲▲
 
           document
             .getElementById("wallpaper-upload-input")
@@ -19302,7 +18778,6 @@ ${sharedContext}
                 renderWallpaperScreen();
               }
             });
-          // ▼▼▼ 用这整块代码，替换旧的 save-wallpaper-btn 事件监听器 ▼▼▼
           document
             .getElementById("save-wallpaper-btn")
             .addEventListener("click", async () => {
@@ -19314,7 +18789,6 @@ ${sharedContext}
                 changesMade = true;
               }
 
-              // ▼▼▼ 新增：保存手机边框颜色 ▼▼▼
               const currentFrameColor = frameColorInput.value;
               // 如果是默认的白色（且不在夜间模式下），或者用户点了重置（我们需要一个标记），
               // 这里简化处理：如果用户选择了颜色，就保存。
@@ -19331,7 +18805,6 @@ ${sharedContext}
               } else {
                 state.globalSettings.phoneFrameColor = currentFrameColor;
               }
-              // ▲▲▲ 新增结束 ▲▲▲
 
               // 【核心修改】保存图标设置（它已经在内存中了，我们只需要把整个globalSettings存起来）
               await db.globalSettings.put(state.globalSettings);
@@ -19347,7 +18820,6 @@ ${sharedContext}
               alert("外观设置已保存并应用！");
               showScreen("home-screen");
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
           // API Config Event Listeners
           document
@@ -19502,13 +18974,11 @@ ${sharedContext}
                   "world-book-content-input",
                 ).value;
 
-                // ▼▼▼ 【核心修改】在这里保存分类ID ▼▼▼
                 const categoryId = document.getElementById(
                   "world-book-category-select",
                 ).value;
                 // 如果选择了“未分类”，存入 null；否则存入数字ID
                 book.categoryId = categoryId ? parseInt(categoryId) : null;
-                // ▲▲▲ 修改结束 ▲▲▲
 
                 await db.worldBooks.put(book);
                 document.getElementById("world-book-editor-title").textContent =
@@ -19573,7 +19043,6 @@ ${sharedContext}
             }
           });
 
-          // ▼▼▼ 请用这段【完整、全新的代码】替换旧的 chat-settings-btn 点击事件 ▼▼▼
           document
             .getElementById("chat-settings-btn")
             .addEventListener("click", async () => {
@@ -19614,32 +19083,14 @@ ${sharedContext}
               document.getElementById("ai-remark-input").value =
                 chat.settings.aiRemark || "";
 
-              // ▼▼▼ 替换为完整逻辑（参考自 -k--main） ▼▼▼
               const videoCallSettingsGroup = document.getElementById(
                 "video-call-settings-group",
-              );
-              const visualCallSwitch = document.getElementById(
-                "visual-video-call-switch",
-              );
-              const imageUploadsDiv = document.getElementById(
-                "video-call-image-uploads",
               );
 
               if (isGroup) {
                 videoCallSettingsGroup.style.display = "none";
               } else {
                 videoCallSettingsGroup.style.display = "block";
-                visualCallSwitch.checked =
-                  chat.settings.visualVideoCallEnabled || false;
-                imageUploadsDiv.style.display = visualCallSwitch.checked
-                  ? "block"
-                  : "none";
-                document.getElementById("char-video-image-preview").src =
-                  chat.settings.charVideoImage ||
-                  "https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png";
-                document.getElementById("user-video-image-preview").src =
-                  chat.settings.userVideoImage ||
-                  "https://i.postimg.cc/pT2xKzPz/album-cover-placeholder.png";
 
                 const voiceAccessSwitch = document.getElementById(
                   "video-call-voice-access-switch",
@@ -19648,12 +19099,6 @@ ${sharedContext}
                   voiceAccessSwitch.checked =
                     chat.settings.videoCallVoiceAccess || false;
                 }
-
-                visualCallSwitch.onchange = () => {
-                  imageUploadsDiv.style.display = visualCallSwitch.checked
-                    ? "block"
-                    : "none";
-                };
               }
               const realCameraSwitch = document.getElementById(
                 "user-real-camera-switch",
@@ -19661,7 +19106,6 @@ ${sharedContext}
               if (realCameraSwitch) {
                 realCameraSwitch.checked = chat.settings.useRealCamera || false;
               }
-              // ▲▲▲ 替换结束 ▲▲▲
 
               document.getElementById("my-persona").value =
 
@@ -19711,7 +19155,6 @@ ${sharedContext}
               }
 
               // 加载世界书
-              // ▼▼▼ 用下面这段【全新逻辑】替换掉原来简单的 forEach 循环 ▼▼▼
 
               const worldBookCheckboxesContainer = document.getElementById(
                 "world-book-checkboxes-container",
@@ -19750,7 +19193,6 @@ ${sharedContext}
                   const header = document.createElement("div");
                   header.className = "wb-category-header";
                   header.innerHTML = `
-                  <span class="arrow">▼</span>
                   <input type="checkbox" class="wb-category-checkbox" data-category-id="${
                     category.id
                   }" ${allInCategoryChecked ? "checked" : ""}>
@@ -19823,9 +19265,7 @@ ${sharedContext}
                   summarySettings.enabled ? "block" : "none";
               }
 
-              // ▲▲▲ 替换结束 ▲▲▲
 
-              // ▼▼▼ 在 updateWorldBookSelectionDisplay(); 的下一行，粘贴这整块新代码 ▼▼▼
 
               // 使用事件委托来处理所有点击和勾选事件，效率更高
               worldBookCheckboxesContainer.addEventListener("click", (e) => {
@@ -19890,7 +19330,6 @@ ${sharedContext}
                 updateWorldBookSelectionDisplay();
               });
 
-              // ▲▲▲ 粘贴结束 ▲▲▲
 
               // 加载并更新所有预览相关控件
               const themeRadio = document.querySelector(
@@ -19913,7 +19352,6 @@ ${sharedContext}
                 .getElementById("chat-settings-modal")
                 .classList.add("visible");
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
           function renderGroupMemberSettings(members) {
             const container = document.getElementById("group-members-settings");
@@ -20054,17 +19492,6 @@ ${sharedContext}
               chat.settings.maxMemory =
                 parseInt(document.getElementById("max-memory").value) || 10;
 
-              // ▼▼▼ 替换为完整逻辑（参考自 -k--main） ▼▼▼
-              chat.settings.visualVideoCallEnabled = document.getElementById(
-                "visual-video-call-switch",
-              ).checked;
-              chat.settings.charVideoImage = document.getElementById(
-                "char-video-image-preview",
-              ).src;
-              chat.settings.userVideoImage = document.getElementById(
-                "user-video-image-preview",
-              ).src;
-
               const voiceAccessSwitchSave = document.getElementById(
                 "video-call-voice-access-switch",
               );
@@ -20072,14 +19499,6 @@ ${sharedContext}
                 chat.settings.videoCallVoiceAccess =
                   voiceAccessSwitchSave.checked;
               }
-
-              const realCameraSwitchSave = document.getElementById(
-                "user-real-camera-switch",
-              );
-              if (realCameraSwitchSave) {
-                chat.settings.useRealCamera = realCameraSwitchSave.checked;
-              }
-              // ▲▲▲ 替换结束 ▲▲▲
 
               // 保存总结设置
 
@@ -20108,7 +19527,6 @@ ${sharedContext}
               renderChatList();
             });
 
-          // ▼▼▼ 总结设置UI交互 ▼▼▼
           document
             .getElementById("summary-toggle")
             .addEventListener("change", (e) => {
@@ -20137,7 +19555,6 @@ ${sharedContext}
                 );
               }
             });
-          // ▲▲▲ 交互结束 ▲▲▲
           document
             .getElementById("clear-chat-btn")
             .addEventListener("click", async () => {
@@ -20179,30 +19596,7 @@ ${sharedContext}
             (base64) =>
               (document.getElementById("ai-avatar-preview").src = base64),
           );
-          // ▼▼▼ 新增：视频通话对方画面上传 ▼▼▼
           setupFileUpload(
-            "char-video-image-input",
-            (base64) =>
-              (document.getElementById("char-video-image-preview").src =
-                base64),
-          );
-          // ▼▼▼ 新增：视频通话用户画面上传 ▼▼▼
-          setupFileUpload(
-            "user-video-image-input",
-            (base64) =>
-              (document.getElementById("user-video-image-preview").src =
-                base64),
-          );
-          // 视频通话开关 UI 交互
-          document
-            .getElementById("visual-video-call-switch")
-            .addEventListener("change", (e) => {
-              document.getElementById("video-call-image-uploads").style.display =
-                e.target.checked ? "block" : "none";
-            });
-          // ▲▲▲ 新增结束 ▲▲▲
-          setupFileUpload(
-
             "my-avatar-input",
             (base64) =>
               (document.getElementById("my-avatar-preview").src = base64),
@@ -20386,7 +19780,6 @@ ${sharedContext}
               }
             });
 
-          // ▼▼▼ 【全新】外卖请求功能事件绑定 ▼▼▼
           const waimaiModal = document.getElementById("waimai-request-modal");
           document
             .getElementById("send-waimai-request-btn")
@@ -20480,7 +19873,6 @@ ${sharedContext}
             .getElementById("selection-cancel-btn")
             .addEventListener("click", exitSelectionMode);
 
-          // ▼▼▼ 【最终加强版】用这块代码替换旧的 selection-delete-btn 事件监听器 ▼▼▼
           document
             .getElementById("selection-delete-btn")
             .addEventListener("click", async () => {
@@ -20537,7 +19929,6 @@ ${sharedContext}
                 renderChatList();
               }
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
           const fontUrlInput = document.getElementById("font-url-input");
           fontUrlInput.addEventListener("input", () =>
@@ -20629,7 +20020,6 @@ ${sharedContext}
               event.target.value = null;
             });
 
-          // ▼▼▼ 【修正后】的“说说”按钮事件 ▼▼▼
           document
             .getElementById("create-shuoshuo-btn")
             .addEventListener("click", async () => {
@@ -20957,7 +20347,6 @@ ${sharedContext}
             imageModeContent.classList.remove("active");
           });
 
-          // ▼▼▼ 【最终修正版】的“发布”按钮事件，已修复权限漏洞 ▼▼▼
           document
             .getElementById("confirm-create-post-btn")
             .addEventListener("click", async () => {
@@ -21105,7 +20494,6 @@ ${sharedContext}
               alert("动态发布成功！");
             });
 
-          // ▼▼▼ 请用这【一整块】包含所有滑动和点击事件的完整代码，替换掉旧的 postsList 事件监听器 ▼▼▼
 
           const postsList = document.getElementById("qzone-posts-list");
           let swipeState = {
@@ -21422,9 +20810,7 @@ ${sharedContext}
               return;
             }
           });
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 函数的事件监听器区域，粘贴下面这两行 ▼▼▼
 
           // 绑定动态页和收藏页的返回按钮
           document
@@ -21438,9 +20824,7 @@ ${sharedContext}
               switchToChatListView("messages-view"),
             );
 
-          // ▲▲▲ 添加结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 函数的事件监听器区域，检查并确保你有这段完整的代码 ▼▼▼
 
           // 收藏页搜索功能
           const searchInput = document.getElementById("favorites-search-input");
@@ -21508,9 +20892,7 @@ ${sharedContext}
             searchInput.focus();
           });
 
-          // ▲▲▲ 代码检查结束 ▲▲▲
 
-          // ▼▼▼ 新增/修改的事件监听器 ▼▼▼
 
           // 为聊天界面的批量收藏按钮绑定事件
           // 为聊天界面的批量收藏按钮绑定事件 (已修正)
@@ -21585,14 +20967,10 @@ ${sharedContext}
               // --- 进入编辑模式 ---
               favoritesEditBtn.textContent = "完成";
               favoritesActionBar.style.display = "block"; // 显示删除操作栏
-              mainBottomNav.style.display = "none"; // ▼ 新增：隐藏主导航栏
-              favoritesList.style.paddingBottom = "80px"; // ▼ 新增：给列表底部增加空间
             } else {
               // --- 退出编辑模式 ---
               favoritesEditBtn.textContent = "编辑";
               favoritesActionBar.style.display = "none"; // 隐藏删除操作栏
-              mainBottomNav.style.display = "flex"; // ▼ 新增：恢复主导航栏
-              favoritesList.style.paddingBottom = ""; // ▼ 新增：恢复列表默认padding
 
               // 退出时清空所有选择
               selectedFavorites.clear();
@@ -21605,7 +20983,6 @@ ${sharedContext}
             }
           });
 
-          // ▼▼▼ 将它【完整替换】为下面这段修正后的代码 ▼▼▼
           // 收藏列表的点击选择事件 (事件委托)
           document
             .getElementById("favorites-list")
@@ -21644,7 +21021,6 @@ ${sharedContext}
               ).textContent = `删除 (${selectedFavorites.size})`;
             });
 
-          // ▼▼▼ 将它【完整替换】为下面这段修正后的代码 ▼▼▼
           // 收藏页面批量删除按钮事件
           document
             .getElementById("favorites-delete-selected-btn")
@@ -21675,14 +21051,11 @@ ${sharedContext}
               }
             });
 
-          // ▼▼▼ 在 init() 函数末尾添加 ▼▼▼
           if (state.globalSettings.enableBackgroundActivity) {
             startBackgroundSimulation();
             console.log("后台活动模拟已自动启动。");
           }
-          // ▲▲▲ 添加结束 ▲▲▲
 
-          // ▼▼▼ 【这是最终的正确代码】请粘贴这段代码到 init() 的事件监听器区域末尾 ▼▼▼
 
           // --- 统一处理所有影响预览的控件的事件 ---
 
@@ -21726,9 +21099,7 @@ ${sharedContext}
               updateSettingsPreview();
             });
 
-          // ▲▲▲ 粘贴结束 ▲▲▲
 
-          // ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
           document
             .querySelectorAll('input[name="visibility"]')
             .forEach((radio) => {
@@ -21743,9 +21114,7 @@ ${sharedContext}
                 }
               });
             });
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
           document
             .getElementById("manage-groups-btn")
             .addEventListener("click", openGroupManager);
@@ -21778,29 +21147,22 @@ ${sharedContext}
                 deleteGroup(groupId);
               }
             });
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ 请将这段【新代码】粘贴到 init() 的事件监听器区域末尾 ▼▼▼
           // 消息操作菜单的按钮事件
           document
             .getElementById("cancel-message-action-btn")
             .addEventListener("click", hideMessageActions);
-          // ▼▼▼ 【修正】使用新的编辑器入口 ▼▼▼
           document
             .getElementById("edit-message-btn")
             .addEventListener("click", openAdvancedMessageEditor);
-          // ▲▲▲ 替换结束 ▲▲▲
           document
             .getElementById("copy-message-btn")
             .addEventListener("click", copyMessageContent);
 
-          // ▼▼▼ 在这里添加新代码 ▼▼▼
           document
             .getElementById("recall-message-btn")
             .addEventListener("click", handleRecallClick);
-          // ▲▲▲ 添加结束 ▲▲▲
 
-          // ▼▼▼ 请用这段【修正后】的代码替换旧的 select-message-btn 事件监听器 ▼▼▼
           document
             .getElementById("select-message-btn")
             .addEventListener("click", () => {
@@ -21812,9 +21174,7 @@ ${sharedContext}
                 enterSelectionMode(timestampToSelect);
               }
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 函数的事件监听器区域末尾添加 ▼▼▼
 
           // 动态操作菜单的按钮事件
           document
@@ -21827,9 +21187,7 @@ ${sharedContext}
             .getElementById("cancel-post-action-btn")
             .addEventListener("click", hidePostActions);
 
-          // ▲▲▲ 添加结束 ▲▲▲
 
-          // ▼▼▼ 【新增】联系人选择器事件绑定 ▼▼▼
           document
             .getElementById("cancel-contact-picker-btn")
             .addEventListener("click", () => {
@@ -21853,7 +21211,6 @@ ${sharedContext}
               updateContactPickerConfirmButton();
             });
 
-          // ▼▼▼ 【新增】绑定“管理群成员”按钮事件 ▼▼▼
           document
             .getElementById("manage-members-btn")
             .addEventListener("click", () => {
@@ -21864,16 +21221,13 @@ ${sharedContext}
               // 然后再打开成员管理屏幕
               openMemberManagementScreen();
             });
-          // ▲▲▲ 新增代码结束 ▲▲▲
 
-          // ▼▼▼ 【最终完整版】群成员管理功能事件绑定 ▼▼▼
           document
             .getElementById("back-from-member-management")
             .addEventListener("click", () => {
               showScreen("chat-interface-screen");
               document.getElementById("chat-settings-btn").click();
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
           document
             .getElementById("member-management-list")
@@ -21903,9 +21257,7 @@ ${sharedContext}
           document
             .getElementById("create-new-member-btn")
             .addEventListener("click", createNewMemberInGroup);
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 【全新】视频通话功能事件监听器 ▼▼▼
 
           // 绑定单聊和群聊的发起按钮
           document
@@ -21933,7 +21285,6 @@ ${sharedContext}
             .getElementById("join-call-btn")
             .addEventListener("click", handleUserJoinCall);
 
-          // ▼▼▼ 用这个【已修复并激活旁观模式】的版本替换旧的 decline-call-btn 事件监听器 ▼▼▼
           // 绑定来电请求的“拒绝”按钮
           document
             .getElementById("decline-call-btn")
@@ -21980,9 +21331,7 @@ ${sharedContext}
               // 清理状态，以防万一
               videoCallState.isAwaitingResponse = false;
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 用这个【已修复重复头像BUG】的版本替换旧的 accept-call-btn 事件监听器 ▼▼▼
           // 绑定来电请求的“接听”按钮
           document
             .getElementById("accept-call-btn")
@@ -22011,9 +21360,7 @@ ${sharedContext}
               // 无论单聊还是群聊，直接启动通话界面！
               startVideoCall();
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 请用这个【已增加用户高亮】的全新版本，完整替换旧的 user-speak-btn 事件监听器 ▼▼▼
           // 绑定用户在通话中发言的按钮
           document
             .getElementById("user-speak-btn")
@@ -22042,9 +21389,7 @@ ${sharedContext}
                 triggerAiInCallAction(userInput.trim());
               }
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
-          // ▼▼▼ 【新增】回忆录相关事件绑定 ▼▼▼
           // 1. 将“回忆”页签和它的视图连接起来
           document
             .querySelector('.nav-item[data-view="memories-view"]')
@@ -22064,7 +21409,6 @@ ${sharedContext}
               switchToChatListView("messages-view"),
             );
 
-          // ▲▲▲ 新增结束 ▲▲▲
 
           // 【全新】约定/倒计时功能事件绑定
           document
@@ -22139,7 +21483,6 @@ ${sharedContext}
                 chat.relationship.status = "blocked_by_user";
                 chat.relationship.blockedTimestamp = Date.now();
 
-                // ▼▼▼ 在这里添加下面的代码 ▼▼▼
                 const hiddenMessage = {
                   role: "system",
                   content: `[系统提示：你刚刚被用户拉黑了。在对方解除拉黑之前，你无法再主动发起对话，也无法回应。]`,
@@ -22147,7 +21490,6 @@ ${sharedContext}
                   isHidden: true,
                 };
                 chat.history.push(hiddenMessage);
-                // ▲▲▲ 添加结束 ▲▲▲
 
                 await db.chats.put(chat);
 
@@ -22180,7 +21522,6 @@ ${sharedContext}
                 chat.relationship.status = "friend";
                 chat.relationship.blockedTimestamp = null;
 
-                // ▼▼▼ 在这里添加下面的代码 ▼▼▼
                 const hiddenMessage = {
                   role: "system",
                   content: `[系统提示：用户刚刚解除了对你的拉黑。现在你们可以重新开始对话了。]`,
@@ -22188,7 +21529,6 @@ ${sharedContext}
                   isHidden: true,
                 };
                 chat.history.push(hiddenMessage);
-                // ▲▲▲ 添加结束 ▲▲▲
 
                 await db.chats.put(chat);
                 renderChatInterface(chat.id);
@@ -22198,7 +21538,6 @@ ${sharedContext}
                 chat.relationship.status = "friend";
                 chat.relationship.applicationReason = "";
 
-                // ▼▼▼ 在这里添加下面的代码 ▼▼▼
                 const hiddenMessage = {
                   role: "system",
                   content: `[系统提示：用户刚刚通过了你的好友申请。你们现在又可以正常聊天了。]`,
@@ -22206,7 +21545,6 @@ ${sharedContext}
                   isHidden: true,
                 };
                 chat.history.push(hiddenMessage);
-                // ▲▲▲ 添加结束 ▲▲▲
 
                 await db.chats.put(chat);
                 renderChatInterface(chat.id);
@@ -22251,7 +21589,6 @@ ${sharedContext}
               }
             });
 
-          // ▼▼▼ 【全新】红包功能事件绑定 ▼▼▼
 
           // 1. 将原有的转账按钮(￥)的点击事件，重定向到新的总入口函数
           document
@@ -22308,9 +21645,7 @@ ${sharedContext}
                 `¥ ${amount.toFixed(2)}`;
             });
 
-          // ▲▲▲ 新事件绑定结束 ▲▲▲
 
-          // ▼▼▼ 【全新添加】使用事件委托处理红包点击，修复失效问题 ▼▼▼
           document
             .getElementById("chat-messages")
             .addEventListener("click", (e) => {
@@ -22326,9 +21661,7 @@ ${sharedContext}
               const timestamp = parseInt(messageBubble.dataset.timestamp);
               handlePacketClick(timestamp);
             });
-          // ▲▲▲ 新增代码结束 ▲▲▲
 
-          // ▼▼▼ 【全新】投票功能事件监听器 ▼▼▼
           // 在输入框工具栏添加按钮
           document
             .getElementById("send-poll-btn")
@@ -22382,9 +21715,7 @@ ${sharedContext}
                 showPollResults(timestamp);
               }
             });
-          // ▲▲▲ 新事件监听器粘贴结束 ▲▲▲
 
-          // ▼▼▼ 【全新】AI头像库功能事件绑定 ▼▼▼
           document
             .getElementById("manage-ai-avatar-library-btn")
             .addEventListener("click", openAiAvatarLibraryModal);
@@ -22394,9 +21725,7 @@ ${sharedContext}
           document
             .getElementById("close-ai-avatar-library-btn")
             .addEventListener("click", closeAiAvatarLibraryModal);
-          // ▲▲▲ 新增结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 的事件监听区域，粘贴这段【新代码】▼▼▼
           document
             .getElementById("icon-settings-grid")
             .addEventListener("click", async (e) => {
@@ -22423,9 +21752,7 @@ ${sharedContext}
                 }
               }
             });
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 函数的末尾，粘贴这段【全新的事件监听器】 ▼▼▼
 
           document
             .getElementById("chat-messages")
@@ -22447,9 +21774,7 @@ ${sharedContext}
               showScreen("chat-interface-screen");
             });
 
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 函数的末尾，粘贴这段【全新的事件监听器】 ▼▼▼
 
           // 1. 绑定输入框上方“分享链接”按钮的点击事件
           document
@@ -22470,13 +21795,11 @@ ${sharedContext}
             .getElementById("confirm-share-link-btn")
             .addEventListener("click", sendUserLinkShare);
 
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
           document
             .getElementById("theme-toggle-switch")
             .addEventListener("change", toggleTheme);
 
-          // ▼▼▼ 在 init() 的事件监听器区域，粘贴下面这几行 ▼▼▼
           // 绑定消息操作菜单中的“引用”按钮
           document
             .getElementById("quote-message-btn")
@@ -22486,11 +21809,9 @@ ${sharedContext}
           document
             .getElementById("cancel-reply-btn")
             .addEventListener("click", cancelReplyMode);
-          // ▲▲▲ 粘贴结束 ▲▲▲
 
           // 在你的 init() 函数的事件监听器区域...
 
-          // ▼▼▼ 用这段代码替换旧的转账卡片点击事件 ▼▼▼
           document
             .getElementById("chat-messages")
             .addEventListener("click", (e) => {
@@ -22514,7 +21835,6 @@ ${sharedContext}
                 }
               }
             });
-          // ▲▲▲ 替换结束 ▲▲▲
 
           // 在 init() 的事件监听区域添加
           document
@@ -22531,7 +21851,6 @@ ${sharedContext}
             .getElementById("transfer-action-cancel")
             .addEventListener("click", hideTransferActionModal);
 
-          // ▼▼▼ 用这段【新代码】替换旧的通话记录事件绑定 ▼▼▼
 
           document
             .getElementById("chat-list-title")
@@ -22564,7 +21883,6 @@ ${sharedContext}
                 .classList.remove("visible");
             });
 
-          // ▲▲▲ 替换结束 ▲▲▲
 
           document
             .getElementById("chat-messages")
@@ -22822,7 +22140,6 @@ ${sharedContext}
                 (clickX / barWidth) * audioPlayer.duration;
             });
 
-          // ▼▼▼ 在 init() 函数的事件监听器区域，粘贴这段新代码 ▼▼▼
 
           // 使用事件委托来处理所有“已撤回消息”的点击事件
           document
@@ -22858,9 +22175,7 @@ ${sharedContext}
               }
             });
 
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ 在 init() 的事件监听器区域，粘贴这段新代码 ▼▼▼
           document
             .getElementById("manage-world-book-categories-btn")
             .addEventListener("click", openCategoryManager);
@@ -22883,9 +22198,7 @@ ${sharedContext}
                 deleteCategory(categoryId);
               }
             });
-          // ▲▲▲ 新代码粘贴结束 ▲▲▲
 
-          // ▼▼▼ API配置管理相关逻辑 ▼▼▼
           const manageApiPresetsBtn = document.getElementById(
             "manage-api-presets-btn",
           );
@@ -23030,7 +22343,6 @@ ${sharedContext}
             await db.globalSettings.put(state.globalSettings);
             renderApiPresetsList();
           }
-          // ▲▲▲ API配置管理相关逻辑结束 ▲▲▲
 
           // ===================================================================
           // 5. 启动！
