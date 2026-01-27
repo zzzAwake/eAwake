@@ -357,6 +357,100 @@
         min-height: 80px;
         resize: vertical;
       }
+      .settings-group {
+        background-color: #fff;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+      }
+      body.dark-mode .settings-group {
+        background-color: #1c1c1e;
+        border-color: #38383a;
+      }
+      .settings-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: transparent;
+      }
+      body.dark-mode .settings-item {
+        border-bottom-color: #38383a;
+      }
+      .settings-item:last-child {
+        border-bottom: none;
+      }
+      .settings-item .label {
+        font-size: 16px;
+        color: var(--text-primary);
+        flex-grow: 1;
+      }
+      body.dark-mode .settings-item .label {
+        color: #fff;
+      }
+      /* Toggle Switch */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 51px;
+        height: 31px;
+        flex-shrink: 0;
+        margin-top: 10px;
+        margin-right: 10px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e9e9eb;
+        transition: 0.3s;
+        border-radius: 31px;
+      }
+      body.dark-mode .toggle-slider {
+        background-color: #39393d;
+      }
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 27px;
+        width: 27px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      }
+      .toggle-switch input:checked + .toggle-slider {
+        background-color: #34c759;
+      }
+      .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+      }
+      .moe-input {
+        background-color: #f2f2f7;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 15px;
+        color: var(--text-primary);
+        width: 100%;
+        box-sizing: border-box;
+      }
+      body.dark-mode .moe-input {
+        background-color: #2c2c2e;
+        color: #fff;
+      }
       #world-book-content-input {
         height: calc(100% - 120px);
       }
@@ -5612,8 +5706,9 @@
         <div class="home-page">
            <div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;color:rgba(0,0,0,0.3);font-weight:500;">
              <div>更多应用敬请期待</div>
-           </div>
-        </div>
+            </div>
+          </div>
+
       </div> <!-- Close .home-screen-slider -->
       
       <div class="home-screen-dots" style="position: absolute; bottom: 20px; left:0; width:100%; display:flex; justify-content:center; gap:8px; z-index:20; pointer-events:none;">
@@ -6892,6 +6987,35 @@
                 ><input type="radio" name="theme-select" value="green_black" />
                 绿黑</label
               >
+            </div>
+          </div>
+
+          <!-- Offline Mode Section -->
+          <div class="form-group settings-group" id="offline-mode-settings">
+            <div style="font-weight:bold; color:var(--accent-color); display: flex; justify-content: space-between; align-items: center; padding-left: 10px;">
+              线下模式 (Offline Mode)
+              <label class="toggle-switch">
+                <input type="checkbox" id="offline-mode-toggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="offline-mode-config" style="display:none; margin-top: 10px; padding: 10px; border-radius: 8px;">
+               <div class="form-group">
+                 <label>预设场景</label>
+                 <select id="offline-preset-select" class="moe-input" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+                   <option value="custom">自定义 (Custom)</option>
+                   <!-- JS will populate -->
+                 </select>
+               </div>
+               <div class="form-group">
+                   <label>场景描述 (System Prompt)</label>
+                   <textarea id="offline-prompt-input" class="moe-input" rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);"></textarea>
+               </div>
+               <div class="form-group">
+                   <label>描写风格 (Style)</label>
+                   <textarea id="offline-style-input" class="moe-input" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);"></textarea>
+               </div>
+
             </div>
           </div>
 
@@ -8470,6 +8594,15 @@
         // ===================================================================
         const db = new Dexie("GeminiChatDB");
         // --- 已修正 ---
+        const offlinePresets = {
+    custom: { name: "自定义 (Custom)", prompt: "", style: "" },
+    classroom: { name: "教室 (Classroom)", prompt: "我们在教室里，下课时间。窗外阳光正好，同学们在打闹。", style: "青春校园" },
+    bedroom: { name: "卧室 (Bedroom)", prompt: "深夜，我们在卧室里。房间里很安静，只有床头灯亮着。", style: "温馨私密" },
+    park: { name: "公园 (Park)", prompt: "午后的公园，阳光明媚。我们在长椅上坐着，微风吹过。", style: "轻松日常" },
+    cafe: { name: "咖啡馆 (Cafe)", prompt: "热闹的咖啡馆，空气中弥漫着咖啡香。我们面对面坐着。", style: "都市休闲" },
+    street: { name: "街道 (Street)", prompt: "夜晚的街道，霓虹灯闪烁。我们并肩走着。", style: "赛博朋克" }
+};
+
         let state = {
           chats: {},
           activeChatId: null,
@@ -11417,6 +11550,80 @@
           }
         }
 
+        async function processOfflineResponse(chat) {
+             const offlineSettings = chat.settings.offlineMode;
+             // Ensure access to global presets if available, or fallback
+             const presets = typeof offlinePresets !== 'undefined' ? offlinePresets : {};
+             
+             // 1. Construct System Prompt
+             const presetName = offlineSettings.preset === 'custom' ? 'Custom Scenario' : (presets[offlineSettings.preset]?.name || offlineSettings.preset);
+             const offlineSystemPrompt = `
+# 当前模式：线下场景模拟
+# 场景：${presetName}
+# 描述：${offlineSettings.prompt}
+# 风格：${offlineSettings.style}
+
+你正在扮演在这个特定场景中的角色。
+如果之前的关系状态或上下文与该场景冲突，请忽略它们。
+专注于感官细节和提示中描述的互动。
+请使用指定的风格进行回复。
+`;
+
+             // 2. Prepare Messages
+             const maxMemory = parseInt(chat.settings.maxMemory) || 20;
+             const recentHistory = chat.history.filter(m => !m.isHidden).slice(-maxMemory);
+             const messages = [
+                 { role: "system", content: offlineSystemPrompt },
+                 ...recentHistory.map(m => ({
+                     role: m.role === 'user' ? 'user' : 'assistant',
+                     content: String(m.content)
+                 }))
+             ];
+
+             // 3. Call API
+             const { proxyUrl, apiKey, model, temperature, topP, topK, enableTemp, enableTopP, enableTopK } = getActiveApiConfig() || {};
+             
+             let isGemini = proxyUrl === GEMINI_API_URL;
+             let geminiConfig = toGeminiRequestData(model, apiKey, "", messages, isGemini, enableTemp ? temperature : undefined, enableTopP ? topP : undefined, enableTopK ? topK : undefined);
+             
+             let rawContent = "";
+             try {
+                 const response = isGemini
+                     ? await fetch(geminiConfig.url, geminiConfig.data)
+                     : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                         method: "POST",
+                         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+                         body: JSON.stringify({
+                             model: model,
+                             messages: messages,
+                             temperature: enableTemp ? temperature : undefined,
+                             top_p: enableTopP ? topP : undefined,
+                             top_k: enableTopK ? topK : undefined,
+                         }),
+                     });
+
+                 if (!response.ok) throw new Error(`Offline API Failed: ${(await response.json()).error?.message || response.statusText}`);
+                 
+                 const data = await response.json();
+                 rawContent = isGemini ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+             } catch (e) {
+                 console.error(e);
+                 rawContent = "(Offline Mode Error: " + e.message + ")";
+             }
+             
+             // 4. Save & Render
+             const msg = {
+                 role: "assistant",
+                 senderName: chat.name,
+                 content: rawContent,
+                 timestamp: Date.now()
+             };
+             
+             chat.history.push(msg);
+             await db.chats.put(chat);
+             appendMessage(msg, chat);
+        }
+
         async function triggerAiResponse() {
           if (!state.activeChatId) return;
           const chatId = state.activeChatId;
@@ -11472,6 +11679,25 @@
                 }
               }
               return;
+            }
+
+            // --- Offline Mode Interception ---
+            if (!chat.isGroup && chat.settings?.offlineMode?.enabled) {
+                 await processOfflineResponse(chat);
+                 
+                 // Reset UI Indicators
+                 const typingIndicator = document.getElementById("typing-indicator");
+                 const chatHeaderTitle = document.getElementById("chat-header-title");
+                 
+                 if (chat.isGroup) {
+                    if (typingIndicator) typingIndicator.style.display = "none";
+                 } else {
+                    if (chatHeaderTitle) {
+                       chatHeaderTitle.textContent = chat.name;
+                       chatHeaderTitle.classList.remove("typing-status");
+                    }
+                 }
+                 return;
             }
 
             // --- 【核心重构 V2：带有上下文和理由的好友申请处理逻辑】---
@@ -19061,6 +19287,33 @@ ${sharedContext}
               const chat = state.chats[state.activeChatId];
               const isGroup = chat.isGroup;
 
+                            // --- Offline Mode Population ---
+              const offlineSettings = chat.settings.offlineMode || { enabled: false, preset: 'custom', prompt: '', style: '', novelai: false };
+              document.getElementById('offline-mode-toggle').checked = offlineSettings.enabled;
+              document.getElementById('offline-mode-config').style.display = offlineSettings.enabled ? 'block' : 'none';
+
+              const presetSelect = document.getElementById('offline-preset-select');
+              presetSelect.innerHTML = '';
+              Object.keys(offlinePresets).forEach(key => {
+                  const option = document.createElement('option');
+                  option.value = key;
+                  option.textContent = offlinePresets[key].name;
+                  if (offlineSettings.preset === key) option.selected = true;
+                  presetSelect.appendChild(option);
+              });
+
+              document.getElementById('offline-prompt-input').value = offlineSettings.prompt || "";
+               document.getElementById('offline-style-input').value = offlineSettings.style || "";
+              
+               // Helper: Update inputs when preset changes
+              presetSelect.onchange = () => {
+                  const val = presetSelect.value;
+                  if (offlinePresets[val] && val !== 'custom') {
+                      document.getElementById('offline-prompt-input').value = offlinePresets[val].prompt;
+                      document.getElementById('offline-style-input').value = offlinePresets[val].style;
+                  }
+              };
+
               // --- 统一显示/隐藏控件 ---
               document.getElementById("chat-name-group").style.display =
                 "block";
@@ -19522,10 +19775,18 @@ ${sharedContext}
               chat.settings.summary.mode = selectedModeRadio
                 ? selectedModeRadio.value
                 : "manual";
-              chat.settings.summary.count =
-                parseInt(document.getElementById("summary-count-input").value) ||
-                50;
-              await db.chats.put(chat);
+               chat.settings.summary.count =
+                 parseInt(document.getElementById("summary-count-input").value) ||
+                 50;
+
+               // Save Offline Mode
+               chat.settings.offlineMode = {
+                   enabled: document.getElementById('offline-mode-toggle').checked,
+                   preset: document.getElementById('offline-preset-select').value,
+                   prompt: document.getElementById('offline-prompt-input').value,
+                   style: document.getElementById('offline-style-input').value
+               };
+               await db.chats.put(chat);
 
               applyScopedCss(
                 chat.settings.customCss,
@@ -20724,7 +20985,14 @@ ${sharedContext}
                         ),
                     );
                     if (chat.history.length < originalHistoryLength) {
-                      await db.chats.put(chat);
+              chat.settings.offlineMode = {
+                  enabled: document.getElementById('offline-mode-toggle').checked,
+                  preset: document.getElementById('offline-preset-select').value,
+                  prompt: document.getElementById('offline-prompt-input').value,
+                   style: document.getElementById('offline-style-input').value
+               };
+
+              await db.chats.put(chat);
                     }
                   }
                   await renderQzonePosts();
@@ -21295,6 +21563,10 @@ ${sharedContext}
           document
             .getElementById("join-call-btn")
             .addEventListener("click", handleUserJoinCall);
+
+          document.getElementById('offline-mode-toggle').addEventListener('change', (e) => {
+              document.getElementById('offline-mode-config').style.display = e.target.checked ? 'block' : 'none';
+          });
 
           // 绑定来电请求的“拒绝”按钮
           document
