@@ -1023,6 +1023,19 @@
       #preset-actions-modal .custom-modal-footer button:last-child {
         border-bottom: none;
       }
+      #message-actions-modal .custom-modal-footer {
+        flex-direction: column;
+      }
+      #message-actions-modal .custom-modal-footer button {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #dbdbdb;
+        padding: 14px;
+        font-size: 18px;
+      }
+      #message-actions-modal .custom-modal-footer button:last-child {
+        border-bottom: none;
+      }
       .custom-multiselect {
         position: relative;
         user-select: none;
@@ -7531,9 +7544,7 @@
           <button
             id="cancel-message-action-btn"
             style="
-              margin-top: 8px;
               border-radius: 8px;
-              background-color: #f0f0f0;
             "
           >
             取消
