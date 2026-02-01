@@ -20373,12 +20373,36 @@ ${sharedContext}
             .getElementById("manual-summary-btn")
             .addEventListener("click", async () => {
               if (!state.activeChatId) return;
+              const chat = state.chats[state.activeChatId];
+              if (!chat) return;
+
+              const summarySettings = chat.settings?.summary || { lastSummaryIndex: -1 };
+              const lastSummaryIndex =
+                summarySettings.lastSummaryIndex > -1
+                  ? summarySettings.lastSummaryIndex
+                  : 0;
+              const messagesToCheck = chat.history.slice(lastSummaryIndex + 1);
+              const filteredMessages = messagesToCheck.filter(
+                (msg) => msg.type !== "summary",
+              );
+
+              if (filteredMessages.length === 0) {
+                await showCustomAlert(
+                  "无需总结",
+                  "自上次总结以来没有新的对话内容。",
+                );
+                return;
+              }
+
               // 关闭设置弹窗
               document
                 .getElementById("chat-settings-modal")
                 .classList.remove("visible");
 
-              await showCustomAlert("开始总结", "正在为当前对话生成总结...");
+              await showCustomAlert(
+                "开始总结",
+                "正在为当前对话生成总结...",
+              );
               const summaryText = await generateSummary(state.activeChatId);
               if (summaryText) {
                 await saveSummaryAsMemory(state.activeChatId, summaryText);
