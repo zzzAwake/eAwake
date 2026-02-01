@@ -7284,18 +7284,34 @@
                 />
               </div>
               <div style="margin-bottom: 10px">
-                <button
-                  id="manual-summary-btn"
-                  class="form-button-secondary"
-                  style="
-                    font-size: 13px;
-                    padding: 6px 12px;
-                    width: auto;
-                    margin-top: 0;
-                  "
-                >
-                  立即手动总结
-                </button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <button
+                    id="manual-summary-btn"
+                    class="form-button-secondary"
+                    style="
+                      flex: 1;
+                      font-size: 13px;
+                      padding: 6px 12px;
+                      width: auto;
+                      margin-top: 0;
+                    "
+                  >
+                    立即手动总结
+                  </button>
+                  <button
+                    id="view-summary-history-btn"
+                    class="form-button-secondary"
+                    style="
+                      flex: 1;
+                      font-size: 13px;
+                      padding: 6px 12px;
+                      width: auto;
+                      margin-top: 0;
+                    "
+                  >
+                    查看历史总结
+                  </button>
+                </div>
               </div>
 
               <div
@@ -7679,6 +7695,33 @@
           >
             取消
           </button>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="summary-history-modal" class="modal">
+      <div
+        class="modal-content"
+        style="max-height: 80%; display: flex; flex-direction: column"
+      >
+        <div class="modal-header">
+          <span>历史总结</span>
+          <span
+            id="close-summary-history-modal"
+            style="cursor: pointer; font-size: 20px"
+            >×</span
+          >
+        </div>
+        <div
+          class="modal-body"
+          id="summary-history-list"
+          style="flex: 1; overflow-y: auto; max-height: 400px"
+        >
+          <!-- JS动态生成 -->
+        </div>
+        <div class="modal-footer">
+          <button class="cancel" id="close-summary-history-btn">关闭</button>
         </div>
       </div>
     </div>
@@ -11631,6 +11674,66 @@
         /**
          * 调用API生成总结内容
          */
+        function openSummaryHistoryModal() {
+          const chat = state.chats[state.activeChatId];
+          if (!chat) return;
+
+          const summaries = chat.history.filter((msg) => msg.type === "summary");
+          const listEl = document.getElementById("summary-history-list");
+
+          if (summaries.length === 0) {
+            listEl.innerHTML =
+              '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">暂无历史总结</p>';
+          } else {
+            listEl.innerHTML = summaries
+              .sort((a, b) => b.timestamp - a.timestamp)
+              .map((s) => {
+                const date = new Date(s.timestamp);
+                const dateStr = date.toLocaleString("zh-CN", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                const content = (s.content || "")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;");
+                return `
+              <div class="summary-item" style="margin-bottom: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid var(--accent-color);">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500;">
+                  📝 ${dateStr}
+                </div>
+                <div style="font-size: 14px; line-height: 1.6; white-space: pre-wrap; color: var(--text-primary);">
+                  ${content}
+                </div>
+              </div>
+            `;
+              })
+              .join("");
+          }
+
+          document.getElementById("summary-history-modal").classList.add("visible");
+        }
+
+        document
+          .getElementById("view-summary-history-btn")
+          .addEventListener("click", openSummaryHistoryModal);
+        document
+          .getElementById("close-summary-history-modal")
+          .addEventListener("click", () => {
+            document
+              .getElementById("summary-history-modal")
+              .classList.remove("visible");
+          });
+        document
+          .getElementById("close-summary-history-btn")
+          .addEventListener("click", () => {
+            document
+              .getElementById("summary-history-modal")
+              .classList.remove("visible");
+          });
+
         async function generateSummary(chatId, specificMessages = null) {
           const chat = state.chats[chatId];
           const {
