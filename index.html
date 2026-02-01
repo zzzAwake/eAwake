@@ -7297,6 +7297,94 @@
                   立即手动总结
                 </button>
               </div>
+
+              <div
+                style="
+                  margin-top: 15px;
+                  padding-top: 10px;
+                  border-top: 1px dashed #eee;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <label
+                    for="summary-custom-api-toggle"
+                    style="font-size: 13px; margin-bottom: 0"
+                    >使用独立API配置</label
+                  >
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="summary-custom-api-toggle" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div
+                  id="summary-custom-api-options"
+                  style="display: none; flex-direction: column; gap: 10px"
+                >
+                  <div>
+                    <input
+                      type="text"
+                      id="summary-custom-api-url"
+                      class="moe-input"
+                      placeholder="API地址 (例如: https://api.openai.com)"
+                      style="font-size: 13px; padding: 8px"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      id="summary-custom-api-key"
+                      class="moe-input"
+                      placeholder="API Key (sk-...)"
+                      style="font-size: 13px; padding: 8px"
+                    />
+                  </div>
+                  <div style="display: flex; gap: 5px">
+                    <select
+                      id="summary-custom-model-select"
+                      class="moe-input"
+                      style="font-size: 13px; padding: 8px; flex-grow: 1"
+                    ></select>
+                    <button
+                      id="summary-fetch-models-btn"
+                      class="form-button-secondary"
+                      style="
+                        width: auto;
+                        padding: 0 10px;
+                        font-size: 12px;
+                        margin-top: 0;
+                        white-space: nowrap;
+                      "
+                    >
+                      获取
+                    </button>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <label
+                      for="summary-stream-toggle"
+                      style="font-size: 13px; margin-bottom: 0"
+                      >流式请求</label
+                    >
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="summary-stream-toggle" />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <hr
@@ -8793,6 +8881,31 @@
             enableStreaming: activeConfig.enableStream, // Map to old property name for compatibility
           };
         }
+        function getSummaryApiConfig(chatId) {
+          const chat = state.chats[chatId];
+          if (
+            chat &&
+            chat.settings &&
+            chat.settings.summary &&
+            chat.settings.summary.useCustomApi
+          ) {
+            return {
+              proxyUrl: chat.settings.summary.customApiUrl,
+              apiKey: chat.settings.summary.customApiKey,
+              model: chat.settings.summary.customModel,
+              enableStreaming: chat.settings.summary.enableStream,
+              // Summary specific configs don't support advanced params yet, use defaults or globals?
+              // For now, let's stick to defaults for stability
+              temperature: 0.3,
+              topP: 1.0,
+              topK: 40,
+              enableTemp: false,
+              enableTopP: false,
+              enableTopK: false,
+            };
+          }
+          return getActiveApiConfig();
+        }
         // --- 修正结束 ---
         let musicState = {
           isActive: false,
@@ -9860,7 +9973,21 @@
                 count: 50, // summarize every 50 messages
                 prompt: "请总结上述对话的主要内容，保留重要信息和情感脉络。",
                 lastSummaryIndex: -1,
+                useCustomApi: false,
+                customApiUrl: "",
+                customApiKey: "",
+                customModel: "gpt-4o-mini",
+                enableStream: false,
               };
+            } else {
+              // Migration for existing chats
+              if (chat.settings.summary.useCustomApi === undefined) {
+                chat.settings.summary.useCustomApi = false;
+                chat.settings.summary.customApiUrl = "";
+                chat.settings.summary.customApiKey = "";
+                chat.settings.summary.customModel = "gpt-4o-mini";
+                chat.settings.summary.enableStream = false;
+              }
             }
 
             if (!chat.musicData) chat.musicData = { totalTime: 0 };
@@ -11506,7 +11633,8 @@
          */
         async function generateSummary(chatId, specificMessages = null) {
           const chat = state.chats[chatId];
-          const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
+          const { proxyUrl, apiKey, model, enableStreaming } =
+            getSummaryApiConfig(chatId) || {};
 
           if (!proxyUrl || !apiKey || !model) {
             throw new Error("API未配置，无法生成总结。");
@@ -11581,17 +11709,11 @@
 
             const isGemini = proxyUrl === GEMINI_API_URL;
             const messagesForApi = [{ role: "user", content: systemPrompt }];
-            const geminiConfig = toGeminiRequestData(
-              model,
-              apiKey,
-              systemPrompt,
-              messagesForApi,
-              isGemini,
-            );
-
-            const response = isGemini
-              ? await fetch(geminiConfig.url, geminiConfig.data)
-              : await fetch(`${proxyUrl}/v1/chat/completions`, {
+            
+            // Logic change: Use streaming if enabled in config (supports both global and custom)
+            if (enableStreaming && !isGemini) {
+                // ... Existing streaming logic adapted for summary ...
+                 const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -11601,20 +11723,79 @@
                     model: model,
                     messages: messagesForApi,
                     temperature: 0.3,
+                    stream: true,
                   }),
                 });
 
-            if (!response.ok) throw new Error(await response.text());
-            const data = await response.json();
-            const aiContent = isGemini
-              ? data?.candidates?.[0]?.content?.parts?.[0]?.text
-              : data?.choices?.[0]?.message?.content;
+                if (!response.ok) throw new Error(await response.text());
 
-            if (!aiContent) {
-              throw new Error("AI返回了空内容。");
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
+                let fullContent = "";
+
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  
+                  const chunk = decoder.decode(value, { stream: true });
+                  buffer += chunk;
+                  const lines = buffer.split("\n");
+                  buffer = lines.pop();
+
+                  for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith("data: ")) {
+                      const dataStr = trimmed.slice(6);
+                      if (dataStr === "[DONE]") continue;
+                      try {
+                        const dataObj = JSON.parse(dataStr);
+                        const delta = dataObj.choices[0].delta?.content || "";
+                        fullContent += delta;
+                      } catch (e) { }
+                    }
+                  }
+                }
+                
+                if (!fullContent) throw new Error("AI返回了空内容。");
+                return fullContent;
+
+            } else {
+                const geminiConfig = toGeminiRequestData(
+                model,
+                apiKey,
+                systemPrompt,
+                messagesForApi,
+                isGemini,
+                );
+
+                const response = isGemini
+                ? await fetch(geminiConfig.url, geminiConfig.data)
+                : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${apiKey}`,
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: messagesForApi,
+                        temperature: 0.3,
+                    }),
+                    });
+
+                if (!response.ok) throw new Error(await response.text());
+                const data = await response.json();
+                const aiContent = isGemini
+                ? data?.candidates?.[0]?.content?.parts?.[0]?.text
+                : data?.choices?.[0]?.message?.content;
+
+                if (!aiContent) {
+                throw new Error("AI返回了空内容。");
+                }
+
+                return aiContent;
             }
-
-            return aiContent;
           } catch (error) {
             console.error("生成总结失败:", error);
             await showCustomAlert("总结失败", `发生错误: ${error.message}`);
@@ -19701,25 +19882,30 @@ ${sharedContext}
                 // 显示/隐藏详细选项
                 document.getElementById("summary-options").style.display =
                   summarySettings.enabled ? "block" : "none";
-              }
-
-              // 加载总结设置
-              if (chat.settings.summary) {
-                const summarySettings = chat.settings.summary;
-                document.getElementById("summary-toggle").checked =
-                  summarySettings.enabled;
-                const modeRadios = document.getElementsByName("summary-mode");
-                for (const radio of modeRadios) {
-                  if (radio.value === summarySettings.mode) {
-                    radio.checked = true;
-                    break;
-                  }
+                
+                // 加载自定义API设置
+                document.getElementById("summary-custom-api-toggle").checked =
+                  summarySettings.useCustomApi || false;
+                document.getElementById("summary-custom-api-url").value =
+                  summarySettings.customApiUrl || "";
+                document.getElementById("summary-custom-api-key").value =
+                  summarySettings.customApiKey || "";
+                document.getElementById("summary-stream-toggle").checked =
+                  summarySettings.enableStream || false;
+                
+                // 填充模型下拉框
+                const summaryModelSelect = document.getElementById("summary-custom-model-select");
+                summaryModelSelect.innerHTML = "";
+                if (summarySettings.customModel) {
+                  const option = document.createElement("option");
+                  option.value = summarySettings.customModel;
+                  option.textContent = summarySettings.customModel;
+                  summaryModelSelect.appendChild(option);
                 }
-                document.getElementById("summary-count-input").value =
-                  summarySettings.count;
-                // 显示/隐藏详细选项
-                document.getElementById("summary-options").style.display =
-                  summarySettings.enabled ? "block" : "none";
+                
+                // 根据toggle状态显示/隐藏自定义API选项
+                const summaryCustomApiOptions = document.getElementById("summary-custom-api-options");
+                summaryCustomApiOptions.style.display = summarySettings.useCustomApi ? "flex" : "none";
               }
 
               // 使用事件委托来处理所有点击和勾选事件，效率更高
@@ -19802,10 +19988,21 @@ ${sharedContext}
               customCssInput.value = chat.settings.customCss || "";
 
               updateSettingsPreview();
+              
+              // Add event listener for custom API toggle (only add once)
+              const summaryCustomApiToggle = document.getElementById("summary-custom-api-toggle");
+              summaryCustomApiToggle.removeEventListener("change", handleSummaryCustomApiToggle); // Remove if exists
+              summaryCustomApiToggle.addEventListener("change", handleSummaryCustomApiToggle);
+              
               document
                 .getElementById("chat-settings-modal")
                 .classList.add("visible");
             });
+          
+          function handleSummaryCustomApiToggle(e) {
+            const options = document.getElementById("summary-custom-api-options");
+            options.style.display = e.target.checked ? "flex" : "none";
+          }
 
           function renderGroupMemberSettings(members) {
             const container = document.getElementById("group-members-settings");
@@ -19969,6 +20166,25 @@ ${sharedContext}
                 parseInt(
                   document.getElementById("summary-count-input").value,
                 ) || 50;
+
+              // Save custom API settings for summary
+              // Save custom API settings for summary
+              if (!chat.settings.summary) chat.settings.summary = {}; // Ensure summary exists
+              chat.settings.summary.useCustomApi = document.getElementById(
+                "summary-custom-api-toggle",
+              ).checked;
+              chat.settings.summary.customApiUrl = document
+                .getElementById("summary-custom-api-url")
+                .value.trim();
+              chat.settings.summary.customApiKey = document
+                .getElementById("summary-custom-api-key")
+                .value.trim();
+              chat.settings.summary.customModel =
+                document.getElementById("summary-custom-model-select").value ||
+                "gpt-4o-mini";
+              chat.settings.summary.enableStream = document.getElementById(
+                "summary-stream-toggle",
+              ).checked;
 
               // Save Offline Mode
               chat.settings.offlineMode = {
