@@ -11633,8 +11633,13 @@
          */
         async function generateSummary(chatId, specificMessages = null) {
           const chat = state.chats[chatId];
-          const { proxyUrl, apiKey, model, enableStreaming } =
-            getSummaryApiConfig(chatId) || {};
+          const {
+            proxyUrl,
+            apiKey,
+            model,
+            enableStreaming,
+            enableStream,
+          } = getSummaryApiConfig(chatId) || {};
 
           if (!proxyUrl || !apiKey || !model) {
             throw new Error("API未配置，无法生成总结。");
@@ -11709,11 +11714,67 @@
 
             const isGemini = proxyUrl === GEMINI_API_URL;
             const messagesForApi = [{ role: "user", content: systemPrompt }];
-            
-            // Logic change: Use streaming if enabled in config (supports both global and custom)
-            if (enableStreaming && !isGemini) {
-                // ... Existing streaming logic adapted for summary ...
-                 const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+            const shouldStream = (enableStream ?? enableStreaming) === true;
+
+            if (shouldStream && !isGemini) {
+              const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                  model: model,
+                  messages: messagesForApi,
+                  temperature: 0.3,
+                  stream: true,
+                }),
+              });
+
+              if (!response.ok) throw new Error(await response.text());
+
+              const reader = response.body.getReader();
+              const decoder = new TextDecoder("utf-8");
+              let buffer = "";
+              let summaryContent = "";
+
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  const trimmed = line.trim();
+                  if (!trimmed.startsWith("data: ")) continue;
+                  const dataStr = trimmed.slice(6).trim();
+                  if (dataStr === "[DONE]") continue;
+                  try {
+                    const parsed = JSON.parse(dataStr);
+                    const content = parsed.choices?.[0]?.delta?.content || "";
+                    summaryContent += content;
+                  } catch (e) {
+                    // Ignore malformed chunks
+                  }
+                }
+              }
+
+              if (!summaryContent) throw new Error("AI返回了空内容。");
+              return summaryContent;
+            }
+
+            const geminiConfig = toGeminiRequestData(
+              model,
+              apiKey,
+              systemPrompt,
+              messagesForApi,
+              isGemini,
+            );
+
+            const response = isGemini
+              ? await fetch(geminiConfig.url, geminiConfig.data)
+              : await fetch(`${proxyUrl}/v1/chat/completions`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -11723,79 +11784,20 @@
                     model: model,
                     messages: messagesForApi,
                     temperature: 0.3,
-                    stream: true,
                   }),
                 });
 
-                if (!response.ok) throw new Error(await response.text());
+            if (!response.ok) throw new Error(await response.text());
+            const data = await response.json();
+            const aiContent = isGemini
+              ? data?.candidates?.[0]?.content?.parts?.[0]?.text
+              : data?.choices?.[0]?.message?.content;
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder("utf-8");
-                let buffer = "";
-                let fullContent = "";
-
-                while (true) {
-                  const { done, value } = await reader.read();
-                  if (done) break;
-                  
-                  const chunk = decoder.decode(value, { stream: true });
-                  buffer += chunk;
-                  const lines = buffer.split("\n");
-                  buffer = lines.pop();
-
-                  for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith("data: ")) {
-                      const dataStr = trimmed.slice(6);
-                      if (dataStr === "[DONE]") continue;
-                      try {
-                        const dataObj = JSON.parse(dataStr);
-                        const delta = dataObj.choices[0].delta?.content || "";
-                        fullContent += delta;
-                      } catch (e) { }
-                    }
-                  }
-                }
-                
-                if (!fullContent) throw new Error("AI返回了空内容。");
-                return fullContent;
-
-            } else {
-                const geminiConfig = toGeminiRequestData(
-                model,
-                apiKey,
-                systemPrompt,
-                messagesForApi,
-                isGemini,
-                );
-
-                const response = isGemini
-                ? await fetch(geminiConfig.url, geminiConfig.data)
-                : await fetch(`${proxyUrl}/v1/chat/completions`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${apiKey}`,
-                    },
-                    body: JSON.stringify({
-                        model: model,
-                        messages: messagesForApi,
-                        temperature: 0.3,
-                    }),
-                    });
-
-                if (!response.ok) throw new Error(await response.text());
-                const data = await response.json();
-                const aiContent = isGemini
-                ? data?.candidates?.[0]?.content?.parts?.[0]?.text
-                : data?.choices?.[0]?.message?.content;
-
-                if (!aiContent) {
-                throw new Error("AI返回了空内容。");
-                }
-
-                return aiContent;
+            if (!aiContent) {
+              throw new Error("AI返回了空内容。");
             }
+
+            return aiContent;
           } catch (error) {
             console.error("生成总结失败:", error);
             await showCustomAlert("总结失败", `发生错误: ${error.message}`);
