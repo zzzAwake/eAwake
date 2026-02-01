@@ -736,6 +736,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-radius: 15px 15px 0 0;
       }
       .modal-body {
         padding: 15px;
@@ -1510,7 +1511,7 @@
       }
       .transfer-content {
         background-color: #fff0f5;
-        border-radius: 20px;
+        border-radius: 20px 20px 20px 20px;
         width: 290px;
         padding: 20px;
         box-shadow: 0 5px 25px rgba(255, 105, 180, 0.3);
@@ -6311,6 +6312,28 @@
                 title="转账"
               >
                 ￥
+              </button>
+              <button
+                id="red-packet-btn"
+                class="chat-action-icon-btn action-button"
+                title="发红包"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="8" width="18" height="13" rx="2" />
+                  <path d="M3 10h18" />
+                  <path d="M12 8V3" />
+                  <circle cx="12" cy="15" r="2" fill="currentColor" />
+                </svg>
               </button>
               <button
                 id="voice-message-btn"
@@ -17255,6 +17278,7 @@ ${sharedContext}
         function openRedPacketModal() {
           const modal = document.getElementById("red-packet-modal");
           const chat = state.chats[state.activeChatId];
+          const isGroup = chat.members && Array.isArray(chat.members);
 
           // 清理输入框
           document.getElementById("rp-group-amount").value = "";
@@ -17268,17 +17292,48 @@ ${sharedContext}
           // 填充专属红包的接收人列表
           const receiverSelect = document.getElementById("rp-direct-receiver");
           receiverSelect.innerHTML = "";
-          chat.members.forEach((member) => {
-            const option = document.createElement("option");
-            // 【核心】使用 originalName 作为提交给AI的值，因为它独一无二
-            option.value = member.originalName;
-            // 【核心】使用 groupNickname 作为显示给用户看的值
-            option.textContent = member.groupNickname;
-            receiverSelect.appendChild(option);
-          });
+          
+          // 获取页签和内容区域元素
+          const tabsContainer = document.querySelector("#red-packet-modal .frame-tabs");
+          const groupTab = document.getElementById("rp-tab-group");
+          const directTab = document.getElementById("rp-tab-direct");
+          const groupContent = document.getElementById("rp-content-group");
+          const directContent = document.getElementById("rp-content-direct");
 
-          // 默认显示拼手气红包页签
-          document.getElementById("rp-tab-group").click();
+          if (isGroup) {
+            // 群聊：显示两个页签（拼手气 + 专属）
+            tabsContainer.style.display = "flex";
+            
+            // 填充群成员列表
+            chat.members.forEach((member) => {
+              const option = document.createElement("option");
+              option.value = member.originalName;
+              option.textContent = member.groupNickname;
+              receiverSelect.appendChild(option);
+            });
+            
+            // 默认显示拼手气红包页签
+            groupTab.click();
+          } else {
+            // 私聊：隐藏页签，只显示简单的红包输入界面
+            tabsContainer.style.display = "none";
+            
+            // 添加聊天对象作为唯一接收人
+            const option = document.createElement("option");
+            option.value = chat.name;
+            option.textContent = chat.name;
+            receiverSelect.appendChild(option);
+            
+            // 显示专属红包界面（但隐藏"发送给"选择器）
+            groupContent.style.display = "none";
+            directContent.style.display = "block";
+            
+            // 隐藏"发送给"选择器（因为私聊只有一个接收人）
+            const receiverFormGroup = receiverSelect.closest('.form-group');
+            if (receiverFormGroup) {
+              receiverFormGroup.style.display = "none";
+            }
+          }
 
           modal.classList.add("visible");
         }
@@ -21998,12 +22053,21 @@ ${sharedContext}
               }
             });
 
-          // 1. 将原有的转账按钮(￥)的点击事件，重定向到新的总入口函数
+          // 1. 转账按钮 - 打开转账弹窗
           document
             .getElementById("transfer-btn")
-            .addEventListener("click", handlePaymentButtonClick);
+            .addEventListener("click", () => {
+              document.getElementById("transfer-modal").classList.add("visible");
+            });
 
-          // 2. 红包模态框内部的控制按钮
+          // 2. 红包按钮 - 打开红包弹窗
+          document
+            .getElementById("red-packet-btn")
+            .addEventListener("click", () => {
+              openRedPacketModal();
+            });
+
+          // 3. 红包模态框内部的控制按钮
           document
             .getElementById("cancel-red-packet-btn")
             .addEventListener("click", () => {
