@@ -19130,7 +19130,14 @@ ${sharedContext}
               chat.history.push(msg);
               await db.chats.put(chat);
               // 触发总结检查
-              await checkAndTriggerSummary(chat.id);
+              try {
+                await checkAndTriggerSummary(chat.id);
+              } catch (summaryError) {
+                console.error(
+                  "Failed to trigger chat summary after user message:",
+                  summaryError,
+                );
+              }
               appendMessage(msg, chat);
               renderChatList();
               chatInput.value = "";
