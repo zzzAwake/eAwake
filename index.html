@@ -19618,6 +19618,55 @@ ${sharedContext}
               }
             });
 
+          // Summary custom API - Fetch models button
+          document
+            .getElementById("summary-fetch-models-btn")
+            .addEventListener("click", async () => {
+              const url = document
+                .getElementById("summary-custom-api-url")
+                .value.trim();
+              const key = document
+                .getElementById("summary-custom-api-key")
+                .value.trim();
+              if (!url || !key) {
+                alert("请先填写API地址和密钥");
+                return;
+              }
+              try {
+                const isGemini =
+                  url === "https://generativelanguage.googleapis.com/v1beta/models";
+                const response = await fetch(
+                  isGemini ? `${url}?key=${key}` : `${url}/v1/models`,
+                  isGemini
+                    ? undefined
+                    : { headers: { Authorization: `Bearer ${key}` } },
+                );
+                if (!response.ok) throw new Error("无法获取模型列表");
+                const data = await response.json();
+                let models = isGemini ? data.models : data.data;
+                if (isGemini) {
+                  models = models.map((model) => {
+                    const parts = model.name.split("/");
+                    return { id: parts.length > 1 ? parts[1] : model.name };
+                  });
+                }
+                const modelSelect = document.getElementById(
+                  "summary-custom-model-select",
+                );
+                modelSelect.innerHTML = "";
+                models.forEach((model) => {
+                  const option = document.createElement("option");
+                  option.value = model.id;
+                  option.textContent = model.id;
+                  modelSelect.appendChild(option);
+                });
+                alert("模型列表已更新！");
+              } catch (e) {
+                console.error(e);
+                alert("获取模型失败: " + e.message);
+              }
+            });
+
           // Global Settings Auto-save
           document
             .getElementById("background-activity-switch")
