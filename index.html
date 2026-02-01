@@ -877,9 +877,9 @@
         display: block;
         object-fit: contain;
       }
-       .message-bubble.is-sticker .content,
-       .message-bubble.is-link-share .content,
-       .message-bubble.is-voice-message .content {
+      .message-bubble.is-sticker .content,
+      .message-bubble.is-link-share .content,
+      .message-bubble.is-voice-message .content {
         padding: 0;
         background-color: transparent;
         box-shadow: none;
@@ -5581,7 +5581,9 @@
       .home-screen-slider:active {
         cursor: grabbing;
       }
-      .home-screen-slider::-webkit-scrollbar { display: none; }
+      .home-screen-slider::-webkit-scrollbar {
+        display: none;
+      }
       .home-page {
         flex: 0 0 100%;
         width: 100%;
@@ -5632,92 +5634,151 @@
           <div class="home-screen-slider">
             <div class="home-page">
               <div id="clock-container">
-            <div id="main-time">12:00</div>
-            <div id="main-date">星期一, 1月1日</div>
-          </div>
-          <div id="app-grid">
-            <!-- 第一行：放2个图标 -->
-            <div class="app-row">
-              <div class="app-icon" onclick="showScreen('world-book-screen')">
-                <div class="icon-bg">
-                  <!-- 【核心修改1】添加ID -->
-                  <img
-                    id="icon-img-world-book"
-                    src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg"
-                    alt="世界书"
-                  />
-                </div>
-                <span class="label">世界书</span>
+                <div id="main-time">12:00</div>
+                <div id="main-date">星期一, 1月1日</div>
               </div>
-              <div class="app-icon" onclick="showScreen('chat-list-screen')">
-                <div class="icon-bg">
-                  <!-- 【核心修改2】添加ID -->
-                  <img
-                    id="icon-img-qq"
-                    src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg"
-                    alt="QQ"
-                  />
+              <div id="app-grid">
+                <!-- 第一行：放2个图标 -->
+                <div class="app-row">
+                  <div
+                    class="app-icon"
+                    onclick="showScreen('world-book-screen')"
+                  >
+                    <div class="icon-bg">
+                      <!-- 【核心修改1】添加ID -->
+                      <img
+                        id="icon-img-world-book"
+                        src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg"
+                        alt="世界书"
+                      />
+                    </div>
+                    <span class="label">世界书</span>
+                  </div>
+                  <div
+                    class="app-icon"
+                    onclick="showScreen('chat-list-screen')"
+                  >
+                    <div class="icon-bg">
+                      <!-- 【核心修改2】添加ID -->
+                      <img
+                        id="icon-img-qq"
+                        src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg"
+                        alt="QQ"
+                      />
+                    </div>
+                    <span class="label">QQ</span>
+                  </div>
                 </div>
-                <span class="label">QQ</span>
+                <!-- 第二行：放3个图标 -->
+                <div class="app-row">
+                  <div
+                    class="app-icon"
+                    onclick="showScreen('api-settings-screen')"
+                  >
+                    <div class="icon-bg">
+                      <!-- 【核心修改3】添加ID -->
+                      <img
+                        id="icon-img-api-settings"
+                        src="https://i.postimg.cc/MK8rJ8t7/IMG-6438.jpg"
+                        alt="API设置"
+                      />
+                    </div>
+                    <span class="label">API设置</span>
+                  </div>
+                  <div
+                    class="app-icon"
+                    onclick="showScreen('wallpaper-screen')"
+                  >
+                    <div class="icon-bg">
+                      <!-- 【核心修改4】添加ID -->
+                      <img
+                        id="icon-img-wallpaper"
+                        src="https://i.postimg.cc/T1j03pQr/IMG-6440.jpg"
+                        alt="外观设置"
+                      />
+                    </div>
+                    <span class="label">外观设置</span>
+                  </div>
+                  <div
+                    class="app-icon"
+                    onclick="showScreen('font-settings-screen')"
+                  >
+                    <div class="icon-bg">
+                      <!-- 【核心修改5】添加ID -->
+                      <img
+                        id="icon-img-font"
+                        src="https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg"
+                        alt="字体"
+                      />
+                    </div>
+                    <span class="label">字体</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <!-- 第二行：放3个图标 -->
-            <div class="app-row">
-              <div class="app-icon" onclick="showScreen('api-settings-screen')">
-                <div class="icon-bg">
-                  <!-- 【核心修改3】添加ID -->
-                  <img
-                    id="icon-img-api-settings"
-                    src="https://i.postimg.cc/MK8rJ8t7/IMG-6438.jpg"
-                    alt="API设置"
-                  />
-                </div>
-                <span class="label">API设置</span>
-              </div>
-              <div class="app-icon" onclick="showScreen('wallpaper-screen')">
-                <div class="icon-bg">
-                  <!-- 【核心修改4】添加ID -->
-                  <img
-                    id="icon-img-wallpaper"
-                    src="https://i.postimg.cc/T1j03pQr/IMG-6440.jpg"
-                    alt="外观设置"
-                  />
-                </div>
-                <span class="label">外观设置</span>
-              </div>
+            <!-- Close .home-page -->
+
+            <div class="home-page">
               <div
-                class="app-icon"
-                onclick="showScreen('font-settings-screen')"
+                style="
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  flex-direction: column;
+                  color: rgba(0, 0, 0, 0.3);
+                  font-weight: 500;
+                "
               >
-                <div class="icon-bg">
-                  <!-- 【核心修改5】添加ID -->
-                  <img
-                    id="icon-img-font"
-                    src="https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg"
-                    alt="字体"
-                  />
-                </div>
-                <span class="label">字体</span>
+                <div>更多应用敬请期待</div>
               </div>
             </div>
           </div>
-        </div> <!-- Close .home-page -->
-        
-        <div class="home-page">
-           <div style="width:100%;height:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;color:rgba(0,0,0,0.3);font-weight:500;">
-             <div>更多应用敬请期待</div>
-            </div>
+          <!-- Close .home-screen-slider -->
+
+          <div
+            class="home-screen-dots"
+            style="
+              position: absolute;
+              bottom: 20px;
+              left: 0;
+              width: 100%;
+              display: flex;
+              justify-content: center;
+              gap: 8px;
+              z-index: 20;
+              pointer-events: none;
+            "
+          >
+            <div
+              class="dot active"
+              style="
+                width: 8px;
+                height: 8px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                border-radius: 50%;
+                opacity: 1;
+                transition: opacity 0.3s;
+              "
+            ></div>
+            <div
+              class="dot"
+              style="
+                width: 8px;
+                height: 8px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                border-radius: 50%;
+                opacity: 0.4;
+                transition: opacity 0.3s;
+              "
+            ></div>
           </div>
+        </div>
 
-      </div> <!-- Close .home-screen-slider -->
-      
-      <div class="home-screen-dots" style="position: absolute; bottom: 20px; left:0; width:100%; display:flex; justify-content:center; gap:8px; z-index:20; pointer-events:none;">
-          <div class="dot active" style="width:8px; height:8px; background:rgba(255,255,255,0.9); box-shadow:0 1px 2px rgba(0,0,0,0.2); border-radius:50%; opacity:1; transition:opacity 0.3s;"></div>
-          <div class="dot" style="width:8px; height:8px; background:rgba(255,255,255,0.9); box-shadow:0 1px 2px rgba(0,0,0,0.2); border-radius:50%; opacity:0.4; transition:opacity 0.3s;"></div>
-      </div>
-    </div>
-
-    <div id="world-book-screen" class="screen">
+        <div id="world-book-screen" class="screen">
           <div class="header">
             <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
             <span>世界书</span>
@@ -6806,7 +6867,11 @@
 
           <div class="form-group" id="ai-remark-group" style="display: none">
             <label for="ai-remark-input">AI备注 (仅自己可见)</label>
-            <input type="text" id="ai-remark-input" placeholder="例如：贴心小棉袄" />
+            <input
+              type="text"
+              id="ai-remark-input"
+              placeholder="例如：贴心小棉袄"
+            />
           </div>
 
           <div
@@ -6992,30 +7057,75 @@
 
           <!-- Offline Mode Section -->
           <div class="form-group settings-group" id="offline-mode-settings">
-            <div style="font-weight:bold; color:var(--accent-color); display: flex; justify-content: space-between; align-items: center; padding-left: 10px;">
+            <div
+              style="
+                font-weight: bold;
+                color: var(--accent-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-left: 10px;
+              "
+            >
               线下模式 (Offline Mode)
               <label class="toggle-switch">
-                <input type="checkbox" id="offline-mode-toggle">
+                <input type="checkbox" id="offline-mode-toggle" />
                 <span class="slider"></span>
               </label>
             </div>
-            <div id="offline-mode-config" style="display:none; margin-top: 10px; padding: 10px; border-radius: 8px;">
-               <div class="form-group">
-                 <label>预设场景</label>
-                 <select id="offline-preset-select" class="moe-input" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
-                   <option value="custom">自定义 (Custom)</option>
-                   <!-- JS will populate -->
-                 </select>
-               </div>
-               <div class="form-group">
-                   <label>场景描述 (System Prompt)</label>
-                   <textarea id="offline-prompt-input" class="moe-input" rows="4" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);"></textarea>
-               </div>
-               <div class="form-group">
-                   <label>描写风格 (Style)</label>
-                   <textarea id="offline-style-input" class="moe-input" rows="2" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);"></textarea>
-               </div>
-
+            <div
+              id="offline-mode-config"
+              style="
+                display: none;
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 8px;
+              "
+            >
+              <div class="form-group">
+                <label>预设场景</label>
+                <select
+                  id="offline-preset-select"
+                  class="moe-input"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border-radius: 6px;
+                    border: 1px solid var(--border-color);
+                  "
+                >
+                  <option value="custom">自定义 (Custom)</option>
+                  <!-- JS will populate -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label>场景描述 (System Prompt)</label>
+                <textarea
+                  id="offline-prompt-input"
+                  class="moe-input"
+                  rows="4"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border-radius: 6px;
+                    border: 1px solid var(--border-color);
+                  "
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>描写风格 (Style)</label>
+                <textarea
+                  id="offline-style-input"
+                  class="moe-input"
+                  rows="2"
+                  style="
+                    width: 100%;
+                    padding: 8px;
+                    border-radius: 6px;
+                    border: 1px solid var(--border-color);
+                  "
+                ></textarea>
+              </div>
             </div>
           </div>
 
@@ -7318,7 +7428,10 @@
               拉取模型列表
             </button>
           </div>
-          <div class="form-group form-group-flex" style="align-items: flex-start">
+          <div
+            class="form-group form-group-flex"
+            style="align-items: flex-start"
+          >
             <!-- Temperature -->
             <div style="flex: 1; margin-right: 10px">
               <div
@@ -7665,12 +7778,7 @@
           <button id="quote-message-btn">引用</button>
           <button id="select-message-btn">进入多选</button>
           <!-- 取消按钮 -->
-          <button
-            id="cancel-message-action-btn"
-            style="
-              border-radius: 8px;
-            "
-          >
+          <button id="cancel-message-action-btn" style="border-radius: 8px">
             取消
           </button>
         </div>
@@ -7999,7 +8107,6 @@
         </div>
       </div>
     </div>
-
 
     <div id="share-link-modal" class="modal">
       <div class="modal-content" style="width: 300px; height: auto">
@@ -8459,71 +8566,71 @@
         return [{ text: res }];
       }
 
-        function toGeminiRequestData(
-          model,
-          apiKey,
-          systemInstruction,
-          messagesForDecision,
-          isGemini,
-          temperature,
-          topP,
-          topK
-        ) {
-          if (!isGemini) {
-            return undefined;
-          }
-
-          // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
-
-          let roleType = {
-            user: "user",
-            assistant: "model",
-            system: "user", // <--- 新增这一行
-          };
-
-          // 构建 generationConfig
-          const generationConfig = {};
-          if (temperature !== undefined) generationConfig.temperature = temperature;
-          if (topP !== undefined) generationConfig.topP = topP;
-          if (topK !== undefined) generationConfig.topK = topK;
-
-          return {
-            url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
-              apiKey,
-            )}`,
-            data: {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                contents: messagesForDecision.map((item) => {
-                  let includesImages = false;
-                  if (Array.isArray(item.content) && item.content.length === 2) {
-                    includesImages = item.content.some((sub) => {
-                      return sub.type === "image_url" && sub.image_url.url;
-                    });
-                  }
-                  return {
-                    role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
-                    parts: includesImages
-                      ? isImage(item.content[0], item.content[1])
-                      : transformChatData(item),
-                  };
-                }),
-                generationConfig: generationConfig,
-                systemInstruction: {
-
-                  parts: [
-                    {
-                      text: systemInstruction,
-                    },
-                  ],
-                },
-              }),
-            },
-          };
+      function toGeminiRequestData(
+        model,
+        apiKey,
+        systemInstruction,
+        messagesForDecision,
+        isGemini,
+        temperature,
+        topP,
+        topK,
+      ) {
+        if (!isGemini) {
+          return undefined;
         }
+
+        // 【核心修正】在这里，我们将 'system' 角色也映射为 'user'
+
+        let roleType = {
+          user: "user",
+          assistant: "model",
+          system: "user", // <--- 新增这一行
+        };
+
+        // 构建 generationConfig
+        const generationConfig = {};
+        if (temperature !== undefined)
+          generationConfig.temperature = temperature;
+        if (topP !== undefined) generationConfig.topP = topP;
+        if (topK !== undefined) generationConfig.topK = topK;
+
+        return {
+          url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${getRandomValue(
+            apiKey,
+          )}`,
+          data: {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: messagesForDecision.map((item) => {
+                let includesImages = false;
+                if (Array.isArray(item.content) && item.content.length === 2) {
+                  includesImages = item.content.some((sub) => {
+                    return sub.type === "image_url" && sub.image_url.url;
+                  });
+                }
+                return {
+                  role: roleType[item.role], // 现在 'system' 会被正确转换为 'user'
+                  parts: includesImages
+                    ? isImage(item.content[0], item.content[1])
+                    : transformChatData(item),
+                };
+              }),
+              generationConfig: generationConfig,
+              systemInstruction: {
+                parts: [
+                  {
+                    text: systemInstruction,
+                  },
+                ],
+              },
+            }),
+          },
+        };
+      }
       document.addEventListener("DOMContentLoaded", () => {
         // === Lightweight performance helpers ===
         /* visibility safeguard for streaming (patched) */
@@ -8595,13 +8702,33 @@
         const db = new Dexie("GeminiChatDB");
         // --- 已修正 ---
         const offlinePresets = {
-    custom: { name: "自定义 (Custom)", prompt: "", style: "" },
-    classroom: { name: "教室 (Classroom)", prompt: "我们在教室里，下课时间。窗外阳光正好，同学们在打闹。", style: "青春校园" },
-    bedroom: { name: "卧室 (Bedroom)", prompt: "深夜，我们在卧室里。房间里很安静，只有床头灯亮着。", style: "温馨私密" },
-    park: { name: "公园 (Park)", prompt: "午后的公园，阳光明媚。我们在长椅上坐着，微风吹过。", style: "轻松日常" },
-    cafe: { name: "咖啡馆 (Cafe)", prompt: "热闹的咖啡馆，空气中弥漫着咖啡香。我们面对面坐着。", style: "都市休闲" },
-    street: { name: "街道 (Street)", prompt: "夜晚的街道，霓虹灯闪烁。我们并肩走着。", style: "赛博朋克" }
-};
+          custom: { name: "自定义 (Custom)", prompt: "", style: "" },
+          classroom: {
+            name: "教室 (Classroom)",
+            prompt: "我们在教室里，下课时间。窗外阳光正好，同学们在打闹。",
+            style: "青春校园",
+          },
+          bedroom: {
+            name: "卧室 (Bedroom)",
+            prompt: "深夜，我们在卧室里。房间里很安静，只有床头灯亮着。",
+            style: "温馨私密",
+          },
+          park: {
+            name: "公园 (Park)",
+            prompt: "午后的公园，阳光明媚。我们在长椅上坐着，微风吹过。",
+            style: "轻松日常",
+          },
+          cafe: {
+            name: "咖啡馆 (Cafe)",
+            prompt: "热闹的咖啡馆，空气中弥漫着咖啡香。我们面对面坐着。",
+            style: "都市休闲",
+          },
+          street: {
+            name: "街道 (Street)",
+            prompt: "夜晚的街道，霓虹灯闪烁。我们并肩走着。",
+            style: "赛博朋克",
+          },
+        };
 
         let state = {
           chats: {},
@@ -8628,12 +8755,19 @@
             temperature: activeConfig.temperature ?? 0.8, // 传递新参数
             topP: activeConfig.topP ?? 1.0,
             topK: activeConfig.topK ?? 40,
-            enableTemp: activeConfig.enableTemp ?? activeConfig.enableAdvancedParams ?? false,
-            enableTopP: activeConfig.enableTopP ?? activeConfig.enableAdvancedParams ?? false,
-            enableTopK: activeConfig.enableTopK ?? activeConfig.enableAdvancedParams ?? false,
+            enableTemp:
+              activeConfig.enableTemp ??
+              activeConfig.enableAdvancedParams ??
+              false,
+            enableTopP:
+              activeConfig.enableTopP ??
+              activeConfig.enableAdvancedParams ??
+              false,
+            enableTopK:
+              activeConfig.enableTopK ??
+              activeConfig.enableAdvancedParams ??
+              false,
             enableStreaming: activeConfig.enableStream, // Map to old property name for compatibility
-
-
           };
         }
         // --- 修正结束 ---
@@ -9207,7 +9341,6 @@
           });
         }
 
-
         function displayFilteredFavorites(items) {
           const listEl = document.getElementById("favorites-list");
           listEl.innerHTML = "";
@@ -9270,7 +9403,6 @@
                   : `<img src="https://i.postimg.cc/KYr2qRCK/1.jpg" class="chat-image" style="cursor: pointer;" data-hidden-text="${post.hiddenContent}">`;
               }
 
-
               // 1. 构造点赞区域的HTML
               let likesHtml = "";
               // 检查 post 对象中是否存在 likes 数组并且不为空
@@ -9301,7 +9433,6 @@
 
               // 3. 将点赞和评论的HTML组合到 footerHtml 中
               footerHtml = `${likesHtml}${commentsHtml}`;
-
             } else if (item.type === "chat_message") {
               const msg = item.content;
               const chat = state.chats[item.chatId];
@@ -9355,7 +9486,7 @@
               ) {
                 contentHtml = `<img src="${msg.content[0].image_url.url}" class="chat-image">`;
               } else {
-            contentHtml = `<div class="message-text-wrapper">${String(msg.content || "").replace(/\n/g, "<br>")}</div>`;
+                contentHtml = `<div class="message-text-wrapper">${String(msg.content || "").replace(/\n/g, "<br>")}</div>`;
               }
             }
 
@@ -9367,7 +9498,6 @@
             listEl.appendChild(card);
           }
         }
-
 
         /**
          * 【重构后的函数】: 负责准备数据并触发渲染
@@ -9390,7 +9520,6 @@
           // 3. 显示所有收藏项
           displayFilteredFavorites(allFavoriteItems);
         }
-
 
         function resetCreatePostModal() {
           document.getElementById("post-public-text").value = "";
@@ -10077,7 +10206,6 @@
             .classList.remove("visible");
         }
 
-
         async function setActiveApiConfig(configId) {
           state.globalSettings.activeApiConfigId = configId;
           await db.globalSettings.put(state.globalSettings);
@@ -10184,9 +10312,7 @@
             lastMsgDisplay = `<span style="color: #ff8c00;">[好友申请] ${
               chat.relationship.applicationReason || "请求添加你为好友"
             }</span>`;
-          }
-
-          else if (
+          } else if (
             !chat.isGroup &&
             chat.relationship?.status === "blocked_by_ai"
           ) {
@@ -10329,10 +10455,10 @@
             "custom-bubble-style",
           );
 
-          document.getElementById("chat-header-title").textContent =
-            chat.settings.aiRemark
-              ? `${chat.name} | ${chat.settings.aiRemark}`
-              : chat.name;
+          document.getElementById("chat-header-title").textContent = chat
+            .settings.aiRemark
+            ? `${chat.name} | ${chat.settings.aiRemark}`
+            : chat.name;
           const statusContainer = document.getElementById("chat-header-status");
           const statusTextEl = statusContainer.querySelector(".status-text");
 
@@ -11231,7 +11357,6 @@
             contentHtml = String(msg.content || "").replace(/\n/g, "<br>");
           }
 
-
           // 1. 【统一逻辑】检查消息对象中是否存在引用信息 (msg.quote)
           let quoteHtml = "";
           // 无论是用户消息还是AI消息，只要它包含了 .quote 对象，就执行这段逻辑
@@ -11353,7 +11478,6 @@
             : "none";
         }
 
-        
         /**
          * 调用API生成总结内容
          */
@@ -11420,7 +11544,8 @@
 
           // --- 更新系统指令，要求AI使用时间戳 ---
           const systemPrompt =
-            (summarySettings.prompt || "请总结上述对话的主要内容，保留重要信息和情感脉络。") +
+            (summarySettings.prompt ||
+              "请总结上述对话的主要内容，保留重要信息和情感脉络。") +
             `\n\n重要提示：每条消息开头都有一个 [时间] 标记。你在总结时，【必须】参考这些时间，在总结关键事件时附上对应的时间范围或具体时间点，让总结包含时间线索。\n\n--- 对话开始 ---\n${conversationText}\n--- 对话结束 ---`;
 
           try {
@@ -11551,13 +11676,17 @@
         }
 
         async function processOfflineResponse(chat) {
-             const offlineSettings = chat.settings.offlineMode;
-             // Ensure access to global presets if available, or fallback
-             const presets = typeof offlinePresets !== 'undefined' ? offlinePresets : {};
-             
-             // 1. Construct System Prompt
-             const presetName = offlineSettings.preset === 'custom' ? 'Custom Scenario' : (presets[offlineSettings.preset]?.name || offlineSettings.preset);
-             const offlineSystemPrompt = `
+          const offlineSettings = chat.settings.offlineMode;
+          // Ensure access to global presets if available, or fallback
+          const presets =
+            typeof offlinePresets !== "undefined" ? offlinePresets : {};
+
+          // 1. Construct System Prompt
+          const presetName =
+            offlineSettings.preset === "custom"
+              ? "Custom Scenario"
+              : presets[offlineSettings.preset]?.name || offlineSettings.preset;
+          const offlineSystemPrompt = `
 # 当前模式：线下场景模拟
 # 场景：${presetName}
 # 描述：${offlineSettings.prompt}
@@ -11569,59 +11698,88 @@
 请使用指定的风格进行回复。
 `;
 
-             // 2. Prepare Messages
-             const maxMemory = parseInt(chat.settings.maxMemory) || 20;
-             const recentHistory = chat.history.filter(m => !m.isHidden).slice(-maxMemory);
-             const messages = [
-                 { role: "system", content: offlineSystemPrompt },
-                 ...recentHistory.map(m => ({
-                     role: m.role === 'user' ? 'user' : 'assistant',
-                     content: String(m.content)
-                 }))
-             ];
+          // 2. Prepare Messages
+          const maxMemory = parseInt(chat.settings.maxMemory) || 20;
+          const recentHistory = chat.history
+            .filter((m) => !m.isHidden)
+            .slice(-maxMemory);
+          const messages = [
+            { role: "system", content: offlineSystemPrompt },
+            ...recentHistory.map((m) => ({
+              role: m.role === "user" ? "user" : "assistant",
+              content: String(m.content),
+            })),
+          ];
 
-             // 3. Call API
-             const { proxyUrl, apiKey, model, temperature, topP, topK, enableTemp, enableTopP, enableTopK } = getActiveApiConfig() || {};
-             
-             let isGemini = proxyUrl === GEMINI_API_URL;
-             let geminiConfig = toGeminiRequestData(model, apiKey, "", messages, isGemini, enableTemp ? temperature : undefined, enableTopP ? topP : undefined, enableTopK ? topK : undefined);
-             
-             let rawContent = "";
-             try {
-                 const response = isGemini
-                     ? await fetch(geminiConfig.url, geminiConfig.data)
-                     : await fetch(`${proxyUrl}/v1/chat/completions`, {
-                         method: "POST",
-                         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-                         body: JSON.stringify({
-                             model: model,
-                             messages: messages,
-                             temperature: enableTemp ? temperature : undefined,
-                             top_p: enableTopP ? topP : undefined,
-                             top_k: enableTopK ? topK : undefined,
-                         }),
-                     });
+          // 3. Call API
+          const {
+            proxyUrl,
+            apiKey,
+            model,
+            temperature,
+            topP,
+            topK,
+            enableTemp,
+            enableTopP,
+            enableTopK,
+          } = getActiveApiConfig() || {};
 
-                 if (!response.ok) throw new Error(`Offline API Failed: ${(await response.json()).error?.message || response.statusText}`);
-                 
-                 const data = await response.json();
-                 rawContent = isGemini ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
-             } catch (e) {
-                 console.error(e);
-                 rawContent = "(Offline Mode Error: " + e.message + ")";
-             }
-             
-             // 4. Save & Render
-             const msg = {
-                 role: "assistant",
-                 senderName: chat.name,
-                 content: rawContent,
-                 timestamp: Date.now()
-             };
-             
-             chat.history.push(msg);
-             await db.chats.put(chat);
-             appendMessage(msg, chat);
+          let isGemini = proxyUrl === GEMINI_API_URL;
+          let geminiConfig = toGeminiRequestData(
+            model,
+            apiKey,
+            "",
+            messages,
+            isGemini,
+            enableTemp ? temperature : undefined,
+            enableTopP ? topP : undefined,
+            enableTopK ? topK : undefined,
+          );
+
+          let rawContent = "";
+          try {
+            const response = isGemini
+              ? await fetch(geminiConfig.url, geminiConfig.data)
+              : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${apiKey}`,
+                  },
+                  body: JSON.stringify({
+                    model: model,
+                    messages: messages,
+                    temperature: enableTemp ? temperature : undefined,
+                    top_p: enableTopP ? topP : undefined,
+                    top_k: enableTopK ? topK : undefined,
+                  }),
+                });
+
+            if (!response.ok)
+              throw new Error(
+                `Offline API Failed: ${(await response.json()).error?.message || response.statusText}`,
+              );
+
+            const data = await response.json();
+            rawContent = isGemini
+              ? data.candidates[0].content.parts[0].text
+              : data.choices[0].message.content;
+          } catch (e) {
+            console.error(e);
+            rawContent = "(Offline Mode Error: " + e.message + ")";
+          }
+
+          // 4. Save & Render
+          const msg = {
+            role: "assistant",
+            senderName: chat.name,
+            content: rawContent,
+            timestamp: Date.now(),
+          };
+
+          chat.history.push(msg);
+          await db.chats.put(chat);
+          appendMessage(msg, chat);
         }
 
         async function triggerAiResponse() {
@@ -11667,7 +11825,6 @@
               enableTopK,
             } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
-
               alert("请先在API设置中配置反代地址、密钥并选择模型。");
               // ★★★★★【核心修改3：无论成功失败，都要隐藏输入提示】★★★★★
               if (chat.isGroup) {
@@ -11683,21 +11840,23 @@
 
             // --- Offline Mode Interception ---
             if (!chat.isGroup && chat.settings?.offlineMode?.enabled) {
-                 await processOfflineResponse(chat);
-                 
-                 // Reset UI Indicators
-                 const typingIndicator = document.getElementById("typing-indicator");
-                 const chatHeaderTitle = document.getElementById("chat-header-title");
-                 
-                 if (chat.isGroup) {
-                    if (typingIndicator) typingIndicator.style.display = "none";
-                 } else {
-                    if (chatHeaderTitle) {
-                       chatHeaderTitle.textContent = chat.name;
-                       chatHeaderTitle.classList.remove("typing-status");
-                    }
-                 }
-                 return;
+              await processOfflineResponse(chat);
+
+              // Reset UI Indicators
+              const typingIndicator =
+                document.getElementById("typing-indicator");
+              const chatHeaderTitle =
+                document.getElementById("chat-header-title");
+
+              if (chat.isGroup) {
+                if (typingIndicator) typingIndicator.style.display = "none";
+              } else {
+                if (chatHeaderTitle) {
+                  chatHeaderTitle.textContent = chat.name;
+                  chatHeaderTitle.classList.remove("typing-status");
+                }
+              }
+              return;
             }
 
             // --- 【核心重构 V2：带有上下文和理由的好友申请处理逻辑】---
@@ -11775,7 +11934,6 @@
                       }),
                     });
 
-
                 if (!response.ok) {
                   throw new Error(
                     `API失败: ${(await response.json()).error.message}`,
@@ -11836,7 +11994,8 @@
 
             // 强制转换为北京时间
             const localNow = new Date();
-            const utcMilliseconds = localNow.getTime() + localNow.getTimezoneOffset() * 60000;
+            const utcMilliseconds =
+              localNow.getTime() + localNow.getTimezoneOffset() * 60000;
             const beijingMilliseconds = utcMilliseconds + 3600000 * 8;
             const now = new Date(beijingMilliseconds);
             const currentTime = now.toLocaleString("zh-CN", {
@@ -12008,7 +12167,7 @@
                 .map((m) => `- **${m.originalName}**: ${m.persona}`)
                 .join("\n");
 
-  systemPrompt = `你是一个群聊AI，负责扮演【除了用户以外】的所有角色。
+              systemPrompt = `你是一个群聊AI，负责扮演【除了用户以外】的所有角色。
 # 核心规则
 1.  **【【【身份铁律】】】**: 用户的身份是【${myNickname}】。你【绝对、永远、在任何情况下都不能】生成 \`name\` 字段为 **"${myNickname}"** 或 **"${chat.name}"(群聊名称本身)** 的消息。你的唯一任务是扮演且仅能扮演下方“群成员列表”中明确列出的角色。任何不属于该列表的名字都不允许出现。
 2.  **【【【输出格式】】】**: 你的回复【必须】是一个JSON数组格式的字符串。数组中的【每一个元素都必须是一个带有 "type" 和 "name" 字段的JSON对象】。
@@ -12061,7 +12220,7 @@ ${membersList}
 
 现在，请根据以上规则和下面的对话历史，继续进行对话。`;
             } else {
-  systemPrompt = `你现在要扮演一个名为【${chat.name}】的角色。
+              systemPrompt = `你现在要扮演一个名为【${chat.name}】的角色。
 # 你的基本人设
 ${chat.persona || "暂无具体人设，请自由发挥。"}
 
@@ -12096,131 +12255,129 @@ ${sharedContext}
 现在，请根据以上规则和下面的对话历史，继续进行对话。`;
             }
 
-              messagesPayload = historySlice
-                .map((msg) => {
-                  // 过滤掉不应发送给AI的消息
-                  if (msg.isHidden && msg.role !== "system") return null;
+            messagesPayload = historySlice
+              .map((msg) => {
+                // 过滤掉不应发送给AI的消息
+                if (msg.isHidden && msg.role !== "system") return null;
 
-                  if (msg.type === "share_card") return null;
+                if (msg.type === "share_card") return null;
 
-                  // 1. 如果是AI自己的消息，我们将其转换为AI能理解的JSON字符串格式
-                  if (msg.role === "assistant") {
-                    let assistantMsgObject = { type: msg.type || "text" };
-                    if (msg.type === "sticker") {
-                      assistantMsgObject.url = msg.content;
-                      assistantMsgObject.meaning = msg.meaning;
-                    } else if (msg.type === "transfer") {
-                      assistantMsgObject.amount = msg.amount;
-                      assistantMsgObject.note = msg.note;
-                    } else if (msg.type === "waimai_request") {
-                      assistantMsgObject.productInfo = msg.productInfo;
-                      assistantMsgObject.amount = msg.amount;
-                    } else {
-                      if (msg.quote) {
-                        assistantMsgObject.quote_reply = {
-                          target_sender: msg.quote.senderName,
-                          target_content: msg.quote.content,
-                          reply_content: msg.content,
-                        };
-                      } else {
-                        assistantMsgObject.content = msg.content;
-                      }
-                    }
-                    // 【核心修改】在这里为AI提供它自己消息的时间戳
-                    const assistantContent = JSON.stringify([
-                      assistantMsgObject,
-                    ]);
-                    return {
-                      role: "assistant",
-                      content: `(Timestamp: ${msg.timestamp}) ${assistantContent}`,
-                    };
-                  }
-
-                  // 2. 如果是用户的消息，我们将其转换为带上下文的纯文本
-                  let contentStr = "";
-
-                  // 【核心修改】在所有内容前，都先加上时间戳！
-                  contentStr += `(Timestamp: ${msg.timestamp}) `;
-
-                  if (msg.quote) {
-                    contentStr += `(回复 ${msg.quote.senderName}): ${msg.content}`;
+                // 1. 如果是AI自己的消息，我们将其转换为AI能理解的JSON字符串格式
+                if (msg.role === "assistant") {
+                  let assistantMsgObject = { type: msg.type || "text" };
+                  if (msg.type === "sticker") {
+                    assistantMsgObject.url = msg.content;
+                    assistantMsgObject.meaning = msg.meaning;
+                  } else if (msg.type === "transfer") {
+                    assistantMsgObject.amount = msg.amount;
+                    assistantMsgObject.note = msg.note;
+                  } else if (msg.type === "waimai_request") {
+                    assistantMsgObject.productInfo = msg.productInfo;
+                    assistantMsgObject.amount = msg.amount;
                   } else {
-                    contentStr += msg.content;
+                    if (msg.quote) {
+                      assistantMsgObject.quote_reply = {
+                        target_sender: msg.quote.senderName,
+                        target_content: msg.quote.content,
+                        reply_content: msg.content,
+                      };
+                    } else {
+                      assistantMsgObject.content = msg.content;
+                    }
                   }
+                  // 【核心修改】在这里为AI提供它自己消息的时间戳
+                  const assistantContent = JSON.stringify([assistantMsgObject]);
+                  return {
+                    role: "assistant",
+                    content: `(Timestamp: ${msg.timestamp}) ${assistantContent}`,
+                  };
+                }
 
-                  // 特殊消息类型的文本化处理
-                  if (msg.type === "user_photo")
-                    return {
-                      role: "user",
-                      content: `(Timestamp: ${msg.timestamp}) [你收到了一张用户描述的照片，内容是：'${msg.content}']`,
-                    };
-                  if (msg.type === "voice_message")
-                    return {
-                      role: "user",
-                      content: `(Timestamp: ${msg.timestamp}) [用户发来一条语音消息，内容是：'${msg.content}']`,
-                    };
-                  if (msg.type === "transfer")
-                    return {
-                      role: "user",
-                      content: `(Timestamp: ${msg.timestamp}) [系统提示：你于时间戳 ${msg.timestamp} 收到了来自用户的转账: ${msg.amount}元, 备注: ${msg.note}。请你决策并使用 'accept_transfer' 或 'decline_transfer' 指令回应。]`,
-                    };
-                  if (msg.type === "waimai_request")
-                    return {
-                      role: "user",
-                      content: `(Timestamp: ${msg.timestamp}) [系统提示：用户于时间戳 ${msg.timestamp} 发起了外卖代付请求，商品是“${msg.productInfo}”，金额是 ${msg.amount} 元。请你决策并使用 waimai_response 指令回应。]`,
-                    };
+                // 2. 如果是用户的消息，我们将其转换为带上下文的纯文本
+                let contentStr = "";
 
-                  if (
-                    Array.isArray(msg.content) &&
-                    msg.content[0]?.type === "image_url"
-                  ) {
-                    const prefix = `(Timestamp: ${msg.timestamp}) `;
-                    // 将文本前缀和图片内容打包成一个数组，这才是正确的格式
-                    return {
-                      role: "user",
-                      content: [{ type: "text", text: prefix }, ...msg.content],
-                    };
-                  }
+                // 【核心修改】在所有内容前，都先加上时间戳！
+                contentStr += `(Timestamp: ${msg.timestamp}) `;
 
-                  if (msg.meaning)
-                    return {
-                      role: "user",
-                      content: `(Timestamp: ${msg.timestamp}) [用户发送了一个表情，意思是：'${msg.meaning}']`,
-                    };
+                if (msg.quote) {
+                  contentStr += `(回复 ${msg.quote.senderName}): ${msg.content}`;
+                } else {
+                  contentStr += msg.content;
+                }
 
-                  // 对于普通文本和带引用的文本，统一返回
-                  return { role: msg.role, content: contentStr };
+                // 特殊消息类型的文本化处理
+                if (msg.type === "user_photo")
+                  return {
+                    role: "user",
+                    content: `(Timestamp: ${msg.timestamp}) [你收到了一张用户描述的照片，内容是：'${msg.content}']`,
+                  };
+                if (msg.type === "voice_message")
+                  return {
+                    role: "user",
+                    content: `(Timestamp: ${msg.timestamp}) [用户发来一条语音消息，内容是：'${msg.content}']`,
+                  };
+                if (msg.type === "transfer")
+                  return {
+                    role: "user",
+                    content: `(Timestamp: ${msg.timestamp}) [系统提示：你于时间戳 ${msg.timestamp} 收到了来自用户的转账: ${msg.amount}元, 备注: ${msg.note}。请你决策并使用 'accept_transfer' 或 'decline_transfer' 指令回应。]`,
+                  };
+                if (msg.type === "waimai_request")
+                  return {
+                    role: "user",
+                    content: `(Timestamp: ${msg.timestamp}) [系统提示：用户于时间戳 ${msg.timestamp} 发起了外卖代付请求，商品是“${msg.productInfo}”，金额是 ${msg.amount} 元。请你决策并使用 waimai_response 指令回应。]`,
+                  };
+
+                if (
+                  Array.isArray(msg.content) &&
+                  msg.content[0]?.type === "image_url"
+                ) {
+                  const prefix = `(Timestamp: ${msg.timestamp}) `;
+                  // 将文本前缀和图片内容打包成一个数组，这才是正确的格式
+                  return {
+                    role: "user",
+                    content: [{ type: "text", text: prefix }, ...msg.content],
+                  };
+                }
+
+                if (msg.meaning)
+                  return {
+                    role: "user",
+                    content: `(Timestamp: ${msg.timestamp}) [用户发送了一个表情，意思是：'${msg.meaning}']`,
+                  };
+
+                // 对于普通文本和带引用的文本，统一返回
+                return { role: msg.role, content: contentStr };
+              })
+              .filter(Boolean);
+
+            // 检查 sharedContext 是否有内容（即，用户是否分享了聊天记录）
+            if (sharedContext) {
+              // 如果有，就把它包装成一条全新的、高优先级的用户消息，追加到历史记录的末尾
+              messagesPayload.push({
+                role: "user",
+                content: sharedContext,
+              });
+            }
+
+            if (
+              !chat.isGroup &&
+              chat.relationship?.status === "pending_ai_approval"
+            ) {
+              const contextSummaryForApproval = chat.history
+                .filter((m) => !m.isHidden)
+                .slice(-10)
+                .map((msg) => {
+                  const sender = msg.role === "user" ? "用户" : chat.name;
+                  return `${sender}: ${String(msg.content).substring(
+                    0,
+                    50,
+                  )}...`;
                 })
-                .filter(Boolean);
+                .join("\n");
 
-              // 检查 sharedContext 是否有内容（即，用户是否分享了聊天记录）
-              if (sharedContext) {
-                // 如果有，就把它包装成一条全新的、高优先级的用户消息，追加到历史记录的末尾
-                messagesPayload.push({
-                  role: "user",
-                  content: sharedContext,
-                });
-              }
-
-              if (
-                !chat.isGroup &&
-                chat.relationship?.status === "pending_ai_approval"
-              ) {
-                const contextSummaryForApproval = chat.history
-                  .filter((m) => !m.isHidden)
-                  .slice(-10)
-                  .map((msg) => {
-                    const sender = msg.role === "user" ? "用户" : chat.name;
-                    return `${sender}: ${String(msg.content).substring(
-                      0,
-                      50,
-                    )}...`;
-                  })
-                  .join("\n");
-
-                const friendRequestInstruction = {
-                  role: "user",
-                  content: `
+              const friendRequestInstruction = {
+                role: "user",
+                content: `
       [系统重要指令]
       用户向你发送了好友申请，理由是：“${chat.relationship.applicationReason}”。
       作为参考，这是你们之前的最后一段聊天记录：
@@ -12229,9 +12386,9 @@ ${sharedContext}
       ---
       请你根据以上所有信息，以及你的人设，使用 friend_request_response 指令，并设置 decision 为 'accept' 或 'reject' 来决定是否通过。
       `,
-                };
-                messagesPayload.push(friendRequestInstruction);
-              }
+              };
+              messagesPayload.push(friendRequestInstruction);
+            }
 
             const allRecentPosts = await db.qzonePosts
               .orderBy("timestamp")
@@ -12289,7 +12446,6 @@ ${sharedContext}
                   top_p: enableTopP ? topP : undefined,
                   top_k: enableTopK ? topK : undefined,
                   stream: true, // <--- 开启流式
-
                 }),
               });
 
@@ -12472,7 +12628,6 @@ ${sharedContext}
                 continue;
               }
 
-
               // 【核心修正】在群聊中，如果AI返回的消息没有指定发送者，则直接跳过这条消息
               if (chat.isGroup && !msgData.name) {
                 console.error(
@@ -12481,7 +12636,6 @@ ${sharedContext}
                 );
                 continue; // continue会立即结束本次循环，处理下一条消息
               }
-
 
               let aiMessage = null;
               const baseMessage = {
@@ -12973,7 +13127,6 @@ ${sharedContext}
                   // 处理完后，继续处理AI可能返回的其他消息
                   continue;
 
-
                 case "accept_transfer": {
                   // 使用大括号创建块级作用域
                   const originalTransferMsgIndex = chat.history.findIndex(
@@ -13019,7 +13172,6 @@ ${sharedContext}
                   continue; // 继续处理AI返回的文本消息
                 }
 
-
                 case "system_message":
                   aiMessage = {
                     role: "system",
@@ -13028,7 +13180,6 @@ ${sharedContext}
                     timestamp: Date.now(),
                   };
                   break;
-
 
                 case "share_link":
                   aiMessage = {
@@ -13041,7 +13192,6 @@ ${sharedContext}
                     content: msgData.content, // 这是文章正文，点击卡片后显示的内容
                   };
                   break;
-
 
                 case "quote_reply":
                   const originalMessage = chat.history.find(
@@ -14270,7 +14420,6 @@ ${sharedContext}
           }
         }
 
-
         function startBackgroundSimulation() {
           if (simulationIntervalId) return;
           const intervalSeconds =
@@ -14363,7 +14512,8 @@ ${sharedContext}
 
           // 强制转换为北京时间
           const localNow = new Date();
-          const utcMilliseconds = localNow.getTime() + localNow.getTimezoneOffset() * 60000;
+          const utcMilliseconds =
+            localNow.getTime() + localNow.getTimezoneOffset() * 60000;
           const beijingMilliseconds = utcMilliseconds + 3600000 * 8;
           const now = new Date(beijingMilliseconds);
           const currentTime = now.toLocaleTimeString("zh-CN", {
@@ -14629,7 +14779,6 @@ ${sharedContext}
           }
         }
 
-
         /**
          * 将用户自定义的CSS安全地应用到指定的作用域
          * @param {string} cssString 用户输入的原始CSS字符串
@@ -14662,7 +14811,6 @@ ${sharedContext}
 
           styleTag.innerHTML = scopedCss;
         }
-
 
         function updateSettingsPreview() {
           if (!state.activeChatId) return;
@@ -14722,8 +14870,6 @@ ${sharedContext}
             "preview-bubble-style",
           );
         }
-
-
 
         async function openGroupManager() {
           await renderGroupList();
@@ -14796,8 +14942,6 @@ ${sharedContext}
             await renderGroupList();
           }
         }
-
-
 
         /**
          * 当长按消息时，显示操作菜单
@@ -15132,7 +15276,6 @@ ${sharedContext}
           return { type: "text", content: trimmedText };
         }
 
-
         async function saveEditedMessage(timestamp, simpleContent = null) {
           if (!timestamp) return;
 
@@ -15255,8 +15398,6 @@ ${sharedContext}
           renderChatInterface(state.activeChatId);
           await showCustomAlert("成功", "消息已更新！");
         }
-
-
 
         /**
          * 当点击“…”时，显示动态操作菜单
@@ -15555,7 +15696,6 @@ ${sharedContext}
           showScreen("chat-list-screen");
           openChat(newChatId);
         }
-
 
         /**
          * 打开群成员管理屏幕
@@ -16031,9 +16171,7 @@ ${sharedContext}
           videoCallState.startTime = Date.now();
           videoCallState.callHistory = [];
 
-          const textInterface = document.getElementById(
-            "text-call-interface",
-          );
+          const textInterface = document.getElementById("text-call-interface");
 
           // 显示文字界面
           textInterface.style.display = "flex";
@@ -17097,7 +17235,6 @@ ${sharedContext}
           }
         }
 
-
         /**
          * 【总入口】根据聊天类型，决定打开转账弹窗还是红包弹窗
          */
@@ -17476,8 +17613,6 @@ ${sharedContext}
         // 供全局调用的函数，以便红包卡片上的 onclick 能找到它
         window.handlePacketClick = handlePacketClick;
 
-
-
         /**
          * 打开创建投票的模态框并初始化
          */
@@ -17710,8 +17845,6 @@ ${sharedContext}
           showCustomAlert("投票结果", resultsHtml);
         }
 
-
-
         /**
          * 打开AI头像库管理模态框
          */
@@ -17812,8 +17945,6 @@ ${sharedContext}
             .classList.remove("visible");
         }
 
-
-
         /**
          * 【全新】将保存的图标URL应用到主屏幕的App图标上
          */
@@ -17861,7 +17992,6 @@ ${sharedContext}
           }
         }
 
-
         /**
          * 当用户点击链接卡片时，打开伪浏览器
          * @param {number} timestamp - 被点击消息的时间戳
@@ -17907,8 +18037,6 @@ ${sharedContext}
         function closeBrowser() {
           showScreen("chat-interface-screen");
         }
-
-
 
         /**
          * 打开让用户填写链接信息的模态框
@@ -17979,7 +18107,6 @@ ${sharedContext}
             .classList.remove("visible");
         }
 
-
         /**
          * 根据AI的视角，过滤出它能看到的动态
          * @param {Array} allPosts - 所有待检查的动态帖子
@@ -18049,7 +18176,6 @@ ${sharedContext}
           applyTheme(newTheme);
         }
 
-
         function startReplyToMessage() {
           if (!activeMessageTimestamp) return;
 
@@ -18112,8 +18238,6 @@ ${sharedContext}
           currentReplyContext = null;
           document.getElementById("reply-preview-bar").style.display = "none";
         }
-
-
 
         let activeTransferTimestamp = null; // 用于暂存被点击的转账消息的时间戳
 
@@ -18202,8 +18326,6 @@ ${sharedContext}
           renderChatInterface(state.activeChatId);
           renderChatList();
         }
-
-
 
         async function renderCallHistoryScreen() {
           showScreen("call-history-screen"); // <--【核心修正】把它移动到最前面！
@@ -18371,8 +18493,6 @@ ${sharedContext}
           });
           modal.classList.add("visible");
         }
-
-
 
         /**
          * 【全新】处理用户点击状态栏，弹出编辑框让用户修改AI的当前状态
@@ -18637,7 +18757,6 @@ ${sharedContext}
           if (isUserRecall) renderChatList(); // 用户撤回时，最后一条消息变了，需要刷新列表
         }
 
-
         /**
          * 打开分类管理模态框
          */
@@ -18723,7 +18842,6 @@ ${sharedContext}
           }
         }
 
-
         // ===================================================================
         // 4. 初始化函数 init()
         // ===================================================================
@@ -18754,7 +18872,6 @@ ${sharedContext}
           const storedCount =
             parseInt(localStorage.getItem("unreadPostsCount")) || 0;
           updateUnreadIndicator(storedCount);
-
 
           if (state.globalSettings && state.globalSettings.fontUrl) {
             applyCustomFont(state.globalSettings.fontUrl);
@@ -18844,7 +18961,8 @@ ${sharedContext}
                       enabled: false,
                       mode: "manual",
                       count: 50,
-                      prompt: "请总结上述对话的主要内容，保留重要信息和情感脉络。",
+                      prompt:
+                        "请总结上述对话的主要内容，保留重要信息和情感脉络。",
                       lastSummaryIndex: -1,
                     },
                   },
@@ -19287,31 +19405,45 @@ ${sharedContext}
               const chat = state.chats[state.activeChatId];
               const isGroup = chat.isGroup;
 
-                            // --- Offline Mode Population ---
-              const offlineSettings = chat.settings.offlineMode || { enabled: false, preset: 'custom', prompt: '', style: '', novelai: false };
-              document.getElementById('offline-mode-toggle').checked = offlineSettings.enabled;
-              document.getElementById('offline-mode-config').style.display = offlineSettings.enabled ? 'block' : 'none';
+              // --- Offline Mode Population ---
+              const offlineSettings = chat.settings.offlineMode || {
+                enabled: false,
+                preset: "custom",
+                prompt: "",
+                style: "",
+                novelai: false,
+              };
+              document.getElementById("offline-mode-toggle").checked =
+                offlineSettings.enabled;
+              document.getElementById("offline-mode-config").style.display =
+                offlineSettings.enabled ? "block" : "none";
 
-              const presetSelect = document.getElementById('offline-preset-select');
-              presetSelect.innerHTML = '';
-              Object.keys(offlinePresets).forEach(key => {
-                  const option = document.createElement('option');
-                  option.value = key;
-                  option.textContent = offlinePresets[key].name;
-                  if (offlineSettings.preset === key) option.selected = true;
-                  presetSelect.appendChild(option);
+              const presetSelect = document.getElementById(
+                "offline-preset-select",
+              );
+              presetSelect.innerHTML = "";
+              Object.keys(offlinePresets).forEach((key) => {
+                const option = document.createElement("option");
+                option.value = key;
+                option.textContent = offlinePresets[key].name;
+                if (offlineSettings.preset === key) option.selected = true;
+                presetSelect.appendChild(option);
               });
 
-              document.getElementById('offline-prompt-input').value = offlineSettings.prompt || "";
-               document.getElementById('offline-style-input').value = offlineSettings.style || "";
-              
-               // Helper: Update inputs when preset changes
+              document.getElementById("offline-prompt-input").value =
+                offlineSettings.prompt || "";
+              document.getElementById("offline-style-input").value =
+                offlineSettings.style || "";
+
+              // Helper: Update inputs when preset changes
               presetSelect.onchange = () => {
-                  const val = presetSelect.value;
-                  if (offlinePresets[val] && val !== 'custom') {
-                      document.getElementById('offline-prompt-input').value = offlinePresets[val].prompt;
-                      document.getElementById('offline-style-input').value = offlinePresets[val].style;
-                  }
+                const val = presetSelect.value;
+                if (offlinePresets[val] && val !== "custom") {
+                  document.getElementById("offline-prompt-input").value =
+                    offlinePresets[val].prompt;
+                  document.getElementById("offline-style-input").value =
+                    offlinePresets[val].style;
+                }
               };
 
               // --- 统一显示/隐藏控件 ---
@@ -19372,7 +19504,6 @@ ${sharedContext}
               }
 
               document.getElementById("my-persona").value =
-
                 chat.settings.myPersona;
               document.getElementById("my-avatar-preview").src =
                 chat.settings.myAvatar ||
@@ -19529,8 +19660,6 @@ ${sharedContext}
                   summarySettings.enabled ? "block" : "none";
               }
 
-
-
               // 使用事件委托来处理所有点击和勾选事件，效率更高
               worldBookCheckboxesContainer.addEventListener("click", (e) => {
                 const header = e.target.closest(".wb-category-header");
@@ -19593,7 +19722,6 @@ ${sharedContext}
                 // 每次变更后都更新顶部的已选数量显示
                 updateWorldBookSelectionDisplay();
               });
-
 
               // 加载并更新所有预览相关控件
               const themeRadio = document.querySelector(
@@ -19775,18 +19903,19 @@ ${sharedContext}
               chat.settings.summary.mode = selectedModeRadio
                 ? selectedModeRadio.value
                 : "manual";
-               chat.settings.summary.count =
-                 parseInt(document.getElementById("summary-count-input").value) ||
-                 50;
+              chat.settings.summary.count =
+                parseInt(
+                  document.getElementById("summary-count-input").value,
+                ) || 50;
 
-               // Save Offline Mode
-               chat.settings.offlineMode = {
-                   enabled: document.getElementById('offline-mode-toggle').checked,
-                   preset: document.getElementById('offline-preset-select').value,
-                   prompt: document.getElementById('offline-prompt-input').value,
-                   style: document.getElementById('offline-style-input').value
-               };
-               await db.chats.put(chat);
+              // Save Offline Mode
+              chat.settings.offlineMode = {
+                enabled: document.getElementById("offline-mode-toggle").checked,
+                preset: document.getElementById("offline-preset-select").value,
+                prompt: document.getElementById("offline-prompt-input").value,
+                style: document.getElementById("offline-style-input").value,
+              };
+              await db.chats.put(chat);
 
               applyScopedCss(
                 chat.settings.customCss,
@@ -19802,8 +19931,8 @@ ${sharedContext}
           document
             .getElementById("summary-toggle")
             .addEventListener("change", (e) => {
-              document.getElementById("summary-options").style.display = e.target
-                .checked
+              document.getElementById("summary-options").style.display = e
+                .target.checked
                 ? "block"
                 : "none";
             });
@@ -20766,7 +20895,6 @@ ${sharedContext}
               alert("动态发布成功！");
             });
 
-
           const postsList = document.getElementById("qzone-posts-list");
           let swipeState = {
             isDragging: false,
@@ -20985,14 +21113,18 @@ ${sharedContext}
                         ),
                     );
                     if (chat.history.length < originalHistoryLength) {
-              chat.settings.offlineMode = {
-                  enabled: document.getElementById('offline-mode-toggle').checked,
-                  preset: document.getElementById('offline-preset-select').value,
-                  prompt: document.getElementById('offline-prompt-input').value,
-                   style: document.getElementById('offline-style-input').value
-               };
+                      chat.settings.offlineMode = {
+                        enabled: document.getElementById("offline-mode-toggle")
+                          .checked,
+                        preset: document.getElementById("offline-preset-select")
+                          .value,
+                        prompt: document.getElementById("offline-prompt-input")
+                          .value,
+                        style: document.getElementById("offline-style-input")
+                          .value,
+                      };
 
-              await db.chats.put(chat);
+                      await db.chats.put(chat);
                     }
                   }
                   await renderQzonePosts();
@@ -21090,7 +21222,6 @@ ${sharedContext}
             }
           });
 
-
           // 绑定动态页和收藏页的返回按钮
           document
             .getElementById("qzone-back-btn")
@@ -21102,8 +21233,6 @@ ${sharedContext}
             .addEventListener("click", () =>
               switchToChatListView("messages-view"),
             );
-
-
 
           // 收藏页搜索功能
           const searchInput = document.getElementById("favorites-search-input");
@@ -21170,8 +21299,6 @@ ${sharedContext}
             displayFilteredFavorites(allFavoriteItems);
             searchInput.focus();
           });
-
-
 
           // 为聊天界面的批量收藏按钮绑定事件
           // 为聊天界面的批量收藏按钮绑定事件 (已修正)
@@ -21335,7 +21462,6 @@ ${sharedContext}
             console.log("后台活动模拟已自动启动。");
           }
 
-
           // --- 统一处理所有影响预览的控件的事件 ---
 
           // 1. 监听主题选择
@@ -21377,7 +21503,6 @@ ${sharedContext}
               document.getElementById("custom-css-input").value = "";
               updateSettingsPreview();
             });
-
 
           document
             .querySelectorAll('input[name="visibility"]')
@@ -21454,7 +21579,6 @@ ${sharedContext}
               }
             });
 
-
           // 动态操作菜单的按钮事件
           document
             .getElementById("edit-post-btn")
@@ -21465,7 +21589,6 @@ ${sharedContext}
           document
             .getElementById("cancel-post-action-btn")
             .addEventListener("click", hidePostActions);
-
 
           document
             .getElementById("cancel-contact-picker-btn")
@@ -21537,7 +21660,6 @@ ${sharedContext}
             .getElementById("create-new-member-btn")
             .addEventListener("click", createNewMemberInGroup);
 
-
           // 绑定单聊和群聊的发起按钮
           document
             .getElementById("video-call-btn")
@@ -21564,9 +21686,14 @@ ${sharedContext}
             .getElementById("join-call-btn")
             .addEventListener("click", handleUserJoinCall);
 
-          document.getElementById('offline-mode-toggle').addEventListener('change', (e) => {
-              document.getElementById('offline-mode-config').style.display = e.target.checked ? 'block' : 'none';
-          });
+          document
+            .getElementById("offline-mode-toggle")
+            .addEventListener("change", (e) => {
+              document.getElementById("offline-mode-config").style.display = e
+                .target.checked
+                ? "block"
+                : "none";
+            });
 
           // 绑定来电请求的“拒绝”按钮
           document
@@ -21691,7 +21818,6 @@ ${sharedContext}
             .addEventListener("click", () =>
               switchToChatListView("messages-view"),
             );
-
 
           // 【全新】约定/倒计时功能事件绑定
           document
@@ -21872,7 +21998,6 @@ ${sharedContext}
               }
             });
 
-
           // 1. 将原有的转账按钮(￥)的点击事件，重定向到新的总入口函数
           document
             .getElementById("transfer-btn")
@@ -21927,7 +22052,6 @@ ${sharedContext}
               document.getElementById("rp-direct-total").textContent =
                 `¥ ${amount.toFixed(2)}`;
             });
-
 
           document
             .getElementById("chat-messages")
@@ -22036,7 +22160,6 @@ ${sharedContext}
               }
             });
 
-
           document
             .getElementById("chat-messages")
             .addEventListener("click", (e) => {
@@ -22057,8 +22180,6 @@ ${sharedContext}
               showScreen("chat-interface-screen");
             });
 
-
-
           // 1. 绑定输入框上方“分享链接”按钮的点击事件
           document
             .getElementById("share-link-btn")
@@ -22077,7 +22198,6 @@ ${sharedContext}
           document
             .getElementById("confirm-share-link-btn")
             .addEventListener("click", sendUserLinkShare);
-
 
           document
             .getElementById("theme-toggle-switch")
@@ -22134,7 +22254,6 @@ ${sharedContext}
             .getElementById("transfer-action-cancel")
             .addEventListener("click", hideTransferActionModal);
 
-
           document
             .getElementById("chat-list-title")
             .addEventListener("click", renderCallHistoryScreen);
@@ -22165,7 +22284,6 @@ ${sharedContext}
                 .getElementById("call-transcript-modal")
                 .classList.remove("visible");
             });
-
 
           document
             .getElementById("chat-messages")
@@ -22423,7 +22541,6 @@ ${sharedContext}
                 (clickX / barWidth) * audioPlayer.duration;
             });
 
-
           // 使用事件委托来处理所有“已撤回消息”的点击事件
           document
             .getElementById("chat-messages")
@@ -22457,7 +22574,6 @@ ${sharedContext}
                 }
               }
             });
-
 
           document
             .getElementById("manage-world-book-categories-btn")
