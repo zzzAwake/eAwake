@@ -9,7 +9,6 @@
   "scope": "./",
   "icons": [
     {
-<<<<<<< HEAD
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
@@ -35,16 +34,3 @@
     }
   ]
 }
-=======
-      "src": "https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://i.postimg.cc/Kj8JnRcp/267611-CC01-F8-A3-B4910-A2-C2-FFDE479-DC.jpg",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
->>>>>>> c11d83084f9d182e483f4cf62b832c5dcbfc8866

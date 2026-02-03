@@ -46,6 +46,7 @@
         --text-primary: #1f1f1f;
         --text-secondary: #8a8a8a;
         --accent-color: #007bff;
+        --phone-offset: 15px;
       }
       html {
         height: 100%;
@@ -80,7 +81,14 @@
       body.dark-mode {
         background-color: #121212;
       }
+      /* 
+       * Phone vertical offset adjustment:
+       * To move phone UP: decrease --phone-offset (e.g., 0px, -10px)
+       * To move phone DOWN: increase --phone-offset (e.g., 30px, 50px)
+       * Adjust in :root { --phone-offset: XXpx; }
+       */
       #phone-frame {
+        margin-top: var(--phone-offset, 0);
         padding: 12px;
         background-color: #fff;
         border-radius: 50px;
@@ -6402,12 +6410,6 @@
               </div>
 
               <div class="header-actions">
-                <span class="action-btn" id="chat-search-btn" title="搜索消息">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </span>
                 <span class="action-btn" id="listen-together-btn" title="一起听"
                   ><img
                     src="https://i.postimg.cc/dV8sdNcx/210-20250618115221.png"
@@ -6486,6 +6488,16 @@
                 title="表情面板"
               >
                 +
+              </button>
+              <button
+                id="chat-search-btn"
+                class="chat-action-icon-btn action-button"
+                title="搜索消息"
+              >
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
               </button>
               <button
                 id="send-photo-btn"
@@ -9143,6 +9155,49 @@
           isOpen: false,
         };
 
+        let notificationTimeout;
+
+        function showNotification(chatId, messageContent) {
+          playNotificationSound();
+          clearTimeout(notificationTimeout);
+          const chat = state.chats[chatId];
+          if (!chat) return;
+          const bar = document.getElementById('notification-bar');
+          document.getElementById('notification-avatar').src =
+            chat.settings.aiAvatar || chat.settings.groupAvatar || defaultAvatar;
+          document.getElementById('notification-content').querySelector('.name').textContent = chat.name;
+          document.getElementById('notification-content').querySelector('.message').textContent = messageContent;
+          const newBar = bar.cloneNode(true);
+          bar.parentNode.replaceChild(newBar, bar);
+          newBar.addEventListener('click', () => {
+            openChat(chatId);
+            newBar.classList.remove('visible');
+          });
+          newBar.classList.add('visible');
+          notificationTimeout = setTimeout(() => {
+            newBar.classList.remove('visible');
+          }, 4000);
+        }
+
+        function playNotificationSound() {
+          const soundUrl =
+            state.globalSettings.notificationSoundUrl || 'https://laddy-lulu.github.io/Ephone-stuffs/message.mp3';
+          if (!soundUrl || !soundUrl.trim()) return;
+          try {
+            const audio = new Audio(soundUrl);
+            audio.volume = 0.7;
+            audio.play().catch(error => {
+              if (error.name === 'NotAllowedError') {
+                console.warn('播放消息提示音失败：用户需要先与页面进行一次交互才能自动播放音频。');
+              } else {
+                console.error(`播放消息提示音失败 (${error.name}): ${error.message}`);
+              }
+            });
+          } catch (error) {
+            console.error('创建提示音Audio对象时出错:', error);
+          }
+        }
+
         // Debounce 函数
         function debounce(func, wait) {
           let timeout;
@@ -9456,7 +9511,6 @@
         const defaultGroupMemberAvatar = "https://i.postimg.cc/VkQfgzGJ/1.jpg";
         const defaultGroupAvatar =
           "https://i.postimg.cc/gc3QYCDy/1-NINE7-Five.jpg";
-        let notificationTimeout;
 
         const DEFAULT_APP_ICONS = {
           "world-book": "https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg",
@@ -11939,18 +11993,20 @@
                 `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-details-btn`,
               );
               if (detailsBtn) {
-                detailsBtn.addEventListener("click", (e) => {
-                  e.stopPropagation();
-                  const paidByText = msg.paidBy
-                    ? `<br><br><b>状态：</b>由 ${msg.paidBy} 为您代付成功`
-                    : "";
-                  showCustomAlert(
-                    "订单详情",
-                    `<b>商品：</b>${msg.productInfo}<br><b>金额：</b>¥${Number(
-                      msg.amount,
-                    ).toFixed(2)}${paidByText}`,
-                  );
-                });
+                 detailsBtn.addEventListener("click", (e) => {
+                   e.stopPropagation();
+                   const paidByText = msg.paidBy
+                     ? `<br><b>状态：</b>由 ${msg.paidBy} 为您代付成功`
+                     : "";
+                   showCustomAlert(
+                     "订单详情",
+                     `<div style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+       <div><b>商品：</b>${msg.productInfo}</div>
+       <div><b>金额：</b>¥${Number(msg.amount).toFixed(2)}</div>
+       ${msg.paidBy ? `<div><b>状态：</b>由 ${msg.paidBy} 为您代付成功</div>` : ''}
+     </div>`,
+                   );
+                 });
               }
               const actionButtons = document.querySelectorAll(
                 `.message-bubble[data-timestamp="${msg.timestamp}"] .waimai-user-actions button`,
