@@ -9442,7 +9442,39 @@
           );
 
           if (targetMsg) {
-            targetMsg.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            // iOS-safe scrolling: manually calculate and set scrollTop
+            // This works reliably on iOS Safari where scrollIntoView() fails in scrollable containers
+            const targetRect = targetMsg.getBoundingClientRect();
+            const containerRect = messagesContainer.getBoundingClientRect();
+            
+            // Calculate offset from container top
+            const offset = targetRect.top - containerRect.top;
+            
+            // Scroll to center the message in viewport (with smooth behavior)
+            const targetScrollTop = messagesContainer.scrollTop + offset - (containerRect.height / 2) + (targetRect.height / 2);
+            
+            // Smooth scroll using requestAnimationFrame for better iOS compatibility
+            const startScrollTop = messagesContainer.scrollTop;
+            const distance = targetScrollTop - startScrollTop;
+            const duration = 300; // ms
+            const startTime = performance.now();
+            
+            function smoothScrollStep(currentTime) {
+              const elapsed = currentTime - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              
+              // Ease-out cubic for smooth deceleration
+              const easeProgress = 1 - Math.pow(1 - progress, 3);
+              
+              messagesContainer.scrollTop = startScrollTop + (distance * easeProgress);
+              
+              if (progress < 1) {
+                requestAnimationFrame(smoothScrollStep);
+              }
+            }
+            
+            requestAnimationFrame(smoothScrollStep);
+            
             targetMsg.classList.add("search-highlight");
 
             setTimeout(() => {
