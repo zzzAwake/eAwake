@@ -6948,6 +6948,51 @@
               <!-- 图标设置项将由JS动态生成在这里 -->
             </div>
 
+            <!-- 手机尺寸与位置设置 -->
+            <hr style="width: 80%; opacity: 0.3; margin: 30px 0" />
+            <div style="width: 100%; text-align: left; margin-bottom: 15px">
+              <label style="font-weight: 500; color: var(--text-secondary)">
+                手机尺寸与位置
+              </label>
+            </div>
+            <div class="settings-group">
+              <div class="settings-item">
+                <div class="label" style="flex-direction: column; align-items: flex-start; gap: 10px; width: 100%;">
+                  <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span>手机宽度</span>
+                    <span id="screen-width-value" style="color: var(--accent-color); font-weight: 600;">365px</span>
+                  </div>
+                  <input type="range" id="screen-width-input" min="320" max="400" value="365" style="width: 100%;">
+                </div>
+              </div>
+              
+              <div class="settings-item">
+                <div class="label" style="flex-direction: column; align-items: flex-start; gap: 10px; width: 100%;">
+                  <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span>手机高度</span>
+                    <span id="screen-height-value" style="color: var(--accent-color); font-weight: 600;">680px</span>
+                  </div>
+                  <input type="range" id="screen-height-input" min="600" max="750" value="680" style="width: 100%;">
+                </div>
+              </div>
+              
+              <div class="settings-item">
+                <div class="label" style="flex-direction: column; align-items: flex-start; gap: 10px; width: 100%;">
+                  <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span>垂直偏移</span>
+                    <span id="phone-offset-value" style="color: var(--accent-color); font-weight: 600;">15px</span>
+                  </div>
+                  <input type="range" id="phone-offset-input" min="-30" max="50" value="15" style="width: 100%;">
+                </div>
+              </div>
+              
+              <div class="settings-item">
+                <button class="form-button form-button-secondary" id="reset-phone-size-btn" style="margin-top: 10px; width: 100%;">
+                  恢复默认尺寸
+                </button>
+              </div>
+            </div>
+
             <!-- 【核心修改3】按钮文字也改一下 -->
             <button
               class="form-button"
@@ -19917,6 +19962,74 @@ ${sharedContext}
 
           applyAppIcons();
 
+          state.globalSettings = state.globalSettings || {};
+          const screenWidthInput = document.getElementById(
+            "screen-width-input",
+          );
+          const screenHeightInput = document.getElementById(
+            "screen-height-input",
+          );
+          const phoneOffsetInput = document.getElementById(
+            "phone-offset-input",
+          );
+          const screenWidthValue = document.getElementById(
+            "screen-width-value",
+          );
+          const screenHeightValue = document.getElementById(
+            "screen-height-value",
+          );
+          const phoneOffsetValue = document.getElementById(
+            "phone-offset-value",
+          );
+          const resetPhoneSizeBtn = document.getElementById(
+            "reset-phone-size-btn",
+          );
+
+          const screenWidth =
+            state.globalSettings.screenWidth !== undefined
+              ? state.globalSettings.screenWidth
+              : 365;
+          const screenHeight =
+            state.globalSettings.screenHeight !== undefined
+              ? state.globalSettings.screenHeight
+              : 680;
+          const phoneOffset =
+            state.globalSettings.phoneOffset !== undefined
+              ? state.globalSettings.phoneOffset
+              : 15;
+
+          document.documentElement.style.setProperty(
+            "--screen-width",
+            `${screenWidth}px`,
+          );
+          document.documentElement.style.setProperty(
+            "--screen-height",
+            `${screenHeight}px`,
+          );
+          document.documentElement.style.setProperty(
+            "--phone-offset",
+            `${phoneOffset}px`,
+          );
+
+          if (screenWidthInput) {
+            screenWidthInput.value = screenWidth;
+            if (screenWidthValue) {
+              screenWidthValue.textContent = `${screenWidth}px`;
+            }
+          }
+          if (screenHeightInput) {
+            screenHeightInput.value = screenHeight;
+            if (screenHeightValue) {
+              screenHeightValue.textContent = `${screenHeight}px`;
+            }
+          }
+          if (phoneOffsetInput) {
+            phoneOffsetInput.value = phoneOffset;
+            if (phoneOffsetValue) {
+              phoneOffsetValue.textContent = `${phoneOffset}px`;
+            }
+          }
+
           // ==========================================================
           // --- 各种事件监听器 ---
           // ==========================================================
@@ -20157,6 +20270,96 @@ ${sharedContext}
               frameColorValue.textContent = "#ffffff";
               document.getElementById("phone-frame").style.backgroundColor = ""; // 清除内联样式
             });
+
+          if (screenWidthInput) {
+            screenWidthInput.addEventListener("input", (e) => {
+              const value = parseInt(e.target.value, 10);
+              document.documentElement.style.setProperty(
+                "--screen-width",
+                `${value}px`,
+              );
+              if (screenWidthValue) {
+                screenWidthValue.textContent = `${value}px`;
+              }
+              state.globalSettings.screenWidth = value;
+              db.globalSettings.put({ id: 1, ...state.globalSettings });
+            });
+          }
+          if (screenHeightInput) {
+            screenHeightInput.addEventListener("input", (e) => {
+              const value = parseInt(e.target.value, 10);
+              document.documentElement.style.setProperty(
+                "--screen-height",
+                `${value}px`,
+              );
+              if (screenHeightValue) {
+                screenHeightValue.textContent = `${value}px`;
+              }
+              state.globalSettings.screenHeight = value;
+              db.globalSettings.put({ id: 1, ...state.globalSettings });
+            });
+          }
+          if (phoneOffsetInput) {
+            phoneOffsetInput.addEventListener("input", (e) => {
+              const value = parseInt(e.target.value, 10);
+              document.documentElement.style.setProperty(
+                "--phone-offset",
+                `${value}px`,
+              );
+              if (phoneOffsetValue) {
+                phoneOffsetValue.textContent = `${value}px`;
+              }
+              state.globalSettings.phoneOffset = value;
+              db.globalSettings.put({ id: 1, ...state.globalSettings });
+            });
+          }
+
+          if (resetPhoneSizeBtn) {
+            resetPhoneSizeBtn.addEventListener("click", () => {
+              const defaultWidth = 365;
+              const defaultHeight = 680;
+              const defaultOffset = 15;
+
+              document.documentElement.style.setProperty(
+                "--screen-width",
+                `${defaultWidth}px`,
+              );
+              document.documentElement.style.setProperty(
+                "--screen-height",
+                `${defaultHeight}px`,
+              );
+              document.documentElement.style.setProperty(
+                "--phone-offset",
+                `${defaultOffset}px`,
+              );
+
+              if (screenWidthInput) {
+                screenWidthInput.value = defaultWidth;
+              }
+              if (screenHeightInput) {
+                screenHeightInput.value = defaultHeight;
+              }
+              if (phoneOffsetInput) {
+                phoneOffsetInput.value = defaultOffset;
+              }
+              if (screenWidthValue) {
+                screenWidthValue.textContent = `${defaultWidth}px`;
+              }
+              if (screenHeightValue) {
+                screenHeightValue.textContent = `${defaultHeight}px`;
+              }
+              if (phoneOffsetValue) {
+                phoneOffsetValue.textContent = `${defaultOffset}px`;
+              }
+
+              state.globalSettings.screenWidth = defaultWidth;
+              state.globalSettings.screenHeight = defaultHeight;
+              state.globalSettings.phoneOffset = defaultOffset;
+              db.globalSettings.put({ id: 1, ...state.globalSettings });
+
+              showCustomAlert("提示", "已恢复默认尺寸");
+            });
+          }
 
           document
             .getElementById("wallpaper-upload-input")
