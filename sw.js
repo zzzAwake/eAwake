@@ -85,3 +85,26 @@ self.addEventListener('fetch', (event) => {
       .catch(() => caches.match(event.request))
   );
 });
+
+// Notification Click Event
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const urlToOpen = event.notification.data?.url || '/index.html';
+  const chatId = event.notification.data?.chatId;
+
+  event.waitUntil(
+    (async () => {
+      const windowClients = await clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+      for (const client of windowClients) {
+        if (client.url.includes('index.html') && 'focus' in client) {
+          if (chatId) client.postMessage({ type: 'OPEN_CHAT', chatId: chatId });
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(urlToOpen);
+    })(),
+  );
+});
