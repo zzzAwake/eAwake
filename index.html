@@ -63,6 +63,7 @@
       html {
         height: 100%;
         overflow: hidden;
+        background-color: #dcdcdc;
       }
       body {
         height: 100%;
@@ -97,6 +98,9 @@
         --text-primary: #f5f5f5;
         --text-secondary: #b3b3b3;
         --accent-color: #57a9ff;
+      }
+      html.dark-mode {
+        background-color: #121212;
       }
 
       body.dark-mode #phone-size-control-panel {
@@ -19365,10 +19369,11 @@ ${sharedContext}
           const phoneScreen = document.getElementById("phone-screen");
           const toggleSwitch = document.getElementById("theme-toggle-switch");
 
-          const isDark = theme === "dark";
+        const isDark = theme === "dark";
 
-          phoneScreen.classList.toggle("dark-mode", isDark);
-          document.body.classList.toggle("dark-mode", isDark);
+        phoneScreen.classList.toggle("dark-mode", isDark);
+        document.body.classList.toggle("dark-mode", isDark);
+        document.documentElement.classList.toggle("dark-mode", isDark);
 
           // 如果开关存在，就同步它的状态
           if (toggleSwitch) {
