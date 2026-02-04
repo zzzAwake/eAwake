@@ -9180,13 +9180,13 @@
           return await Notification.requestPermission();
         }
 
-        async function sendLocalNotification(title, body, chatId) {
+        async function sendLocalNotification(title, body, chatId, avatarUrl) {
           if (Notification.permission === 'granted') {
             try {
               const reg = await navigator.serviceWorker.ready;
               await reg.showNotification(title, {
                 body: body,
-                icon: 'icons/icon-192.png',
+                icon: avatarUrl || 'icons/icon-192.png',
                 badge: 'icons/icon-maskable-192.png',
                 tag: 'ephone-msg-' + Date.now(),
                 data: { url: window.location.href, chatId: chatId }
@@ -14383,30 +14383,32 @@ ${sharedContext}
                   // 1. 将新消息存入历史记录
                   chat.history.push(aiMessage);
                   // 后台通知
-                  if (
-                    document.hidden &&
-                    state.globalSettings.enableBackgroundActivity
-                  ) {
-                    const notificationTitle = chat.isGroup
-                      ? `[群聊] ${chat.name}`
-                      : chat.name;
-                    let notificationBody = "收到了一条新消息";
-                    try {
-                      const lastMsg = chat.history[chat.history.length - 1];
-                      if (
-                        lastMsg &&
-                        lastMsg.content &&
-                        typeof lastMsg.content === "string"
-                      ) {
-                        notificationBody = lastMsg.content.substring(0, 100);
-                      }
-                    } catch (e) {}
-                    sendLocalNotification(
-                      notificationTitle,
-                      notificationBody,
-                      state.activeChatId,
-                    );
-                  }
+                    if (
+                      document.hidden &&
+                      state.globalSettings.enableBackgroundActivity
+                    ) {
+                      const notificationTitle = chat.isGroup
+                        ? `[群聊] ${chat.name}`
+                        : chat.name;
+                      const avatarUrl = chat.isGroup ? chat.groupAvatar : chat.avatar;
+                      let notificationBody = "收到了一条新消息";
+                      try {
+                        const lastMsg = chat.history[chat.history.length - 1];
+                        if (
+                          lastMsg &&
+                          lastMsg.content &&
+                          typeof lastMsg.content === "string"
+                        ) {
+                          notificationBody = lastMsg.content.substring(0, 100);
+                        }
+                      } catch (e) {}
+                      sendLocalNotification(
+                        notificationTitle,
+                        notificationBody,
+                        state.activeChatId,
+                        avatarUrl,
+                      );
+                    }
 
                   if (!isViewingThisChat && !notificationShown) {
                   let notificationText;
@@ -14451,29 +14453,31 @@ ${sharedContext}
                 if (isViewingThisChat) {
                   appendMessage(aiMessage, chat);
                   // 后台通知
-                  if (document.hidden && state.globalSettings.enableBackgroundActivity) {
-                    const notificationTitle = chat.isGroup
-                      ? `[群聊] ${chat.name}`
-                      : chat.name;
-                    let notificationBody = "收到了一条新消息";
-                    try {
-                      const lastMsg = chat.messages && chat.messages.length
-                        ? chat.messages[chat.messages.length - 1]
-                        : chat.history[chat.history.length - 1];
-                      if (
-                        lastMsg &&
-                        lastMsg.content &&
-                        typeof lastMsg.content === "string"
-                      ) {
-                        notificationBody = lastMsg.content.substring(0, 100);
-                      }
-                    } catch (e) {}
-                    sendLocalNotification(
-                      notificationTitle,
-                      notificationBody,
-                      state.activeChatId,
-                    );
-                  }
+                    if (document.hidden && state.globalSettings.enableBackgroundActivity) {
+                      const notificationTitle = chat.isGroup
+                        ? `[群聊] ${chat.name}`
+                        : chat.name;
+                      const avatarUrl = chat.isGroup ? chat.groupAvatar : chat.avatar;
+                      let notificationBody = "收到了一条新消息";
+                      try {
+                        const lastMsg = chat.messages && chat.messages.length
+                          ? chat.messages[chat.messages.length - 1]
+                          : chat.history[chat.history.length - 1];
+                        if (
+                          lastMsg &&
+                          lastMsg.content &&
+                          typeof lastMsg.content === "string"
+                        ) {
+                          notificationBody = lastMsg.content.substring(0, 100);
+                        }
+                      } catch (e) {}
+                      sendLocalNotification(
+                        notificationTitle,
+                        notificationBody,
+                        state.activeChatId,
+                        avatarUrl,
+                      );
+                    }
                   // 3. 【关键】在这里暂停一小会儿，给动画播放的时间
                   await new Promise((resolve) =>
                     setTimeout(resolve, Math.random() * 1800 + 1000),
