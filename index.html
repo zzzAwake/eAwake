@@ -6898,6 +6898,23 @@
               </label>
             </div>
 
+            <div
+              class="form-group"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <label for="show-size-panel-toggle" style="margin-bottom: 0"
+                >显示尺寸调整面板</label
+              >
+              <label class="toggle-switch">
+                <input type="checkbox" id="show-size-panel-toggle" />
+                <span class="slider"></span>
+              </label>
+            </div>
+
             <div class="form-group">
               <label for="frame-color-input">
                 手机边框颜色
@@ -10586,6 +10603,7 @@
             appIcons: { ...DEFAULT_APP_ICONS }, // 【核心修改】确保appIcons存在并有默认值
             framelessOnMobile: false, // 【核心新增】默认不开启无边框模式
             frameColor: "#ffffff", // 【核心新增】默认外框颜色
+            showSizePanel: false, // 新增：默认隐藏尺寸控制面板
           };
           // 【核心修改】合并已保存的图标和默认图标，防止更新后旧数据丢失新图标
           state.globalSettings.appIcons = {
@@ -19199,6 +19217,13 @@ ${sharedContext}
           localStorage.setItem("ephone-theme", theme);
         }
 
+        function applyPhoneSizePanelVisibility(show) {
+          const panel = document.getElementById("phone-size-control-panel");
+          if (panel) {
+            panel.style.display = show ? "block" : "none";
+          }
+        }
+
         /**
          * 切换当前的主题
          */
@@ -19918,6 +19943,9 @@ ${sharedContext}
           applyAppIcons();
 
           state.globalSettings = state.globalSettings || {};
+          state.globalSettings.showSizePanel =
+            state.globalSettings.showSizePanel ?? false;
+          applyPhoneSizePanelVisibility(state.globalSettings.showSizePanel);
           const screenWidthInput = document.getElementById(
             "screen-width-input",
           );
@@ -23536,6 +23564,19 @@ ${sharedContext}
           document
             .getElementById("theme-toggle-switch")
             .addEventListener("change", toggleTheme);
+
+          const sizePanelToggle = document.getElementById("show-size-panel-toggle");
+          if (sizePanelToggle) {
+            sizePanelToggle.checked = state.globalSettings.showSizePanel ?? false;
+            sizePanelToggle.addEventListener("change", async () => {
+              const settings =
+                (await db.globalSettings.get("main")) || state.globalSettings;
+              settings.showSizePanel = sizePanelToggle.checked;
+              state.globalSettings.showSizePanel = sizePanelToggle.checked;
+              await db.globalSettings.put(settings);
+              applyPhoneSizePanelVisibility(sizePanelToggle.checked);
+            });
+          }
 
           // 绑定消息操作菜单中的“引用”按钮
           document
