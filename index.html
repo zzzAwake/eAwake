@@ -45,21 +45,23 @@
          *   --screen-width: 控制手机屏幕宽度 (默认: 365px，建议范围: 320px-400px)
          *   --screen-height: 控制手机屏幕高度 (默认: 680px，建议范围: 600px-750px)
          *
-         * 调整手机位置:
-         *   --phone-offset: 控制手机垂直偏移量 (默认: 15px，正值向下，负值向上)
-         *
-         * 注意: #phone-frame 的 padding: 12px 控制边框厚度
-         */
-        :root {
-          --screen-width: 365px;
-          --screen-height: 680px;
-          --secondary-bg: #ffffff;
-          --border-color: #e0e0e0;
-          --text-primary: #1f1f1f;
-          --text-secondary: #8a8a8a;
-          --accent-color: #007bff;
-          --phone-offset: 15px;
-        }
+       * 调整手机位置:
+       *   --phone-offset: 控制手机垂直偏移量 (默认: 15px，正值向下，负值向上)
+       *
+       * 注意: #phone-frame 的 padding: 12px 控制边框厚度
+       */
+      :root {
+        --screen-width: 365px;
+        --screen-height: 680px;
+        --secondary-bg: #ffffff;
+        --border-color: #e0e0e0;
+        --text-primary: #1f1f1f;
+        --text-secondary: #8a8a8a;
+        --accent-color: #007bff;
+        --phone-offset: 15px;
+        --phone-offset-x: 0;
+        --phone-offset-y: var(--phone-offset, 0);
+      }
       html {
         height: 100%;
         overflow: hidden;
@@ -821,6 +823,7 @@
         justify-content: center;
         align-items: center;
         z-index: 100;
+        transform: translate(var(--phone-offset-x, 0), var(--phone-offset-y, 0));
       }
       .modal.visible {
         display: flex;
@@ -1145,6 +1148,7 @@
         z-index: 1000;
         opacity: 0;
         transition: opacity 0.2s ease-in-out;
+        transform: translate(var(--phone-offset-x, 0), var(--phone-offset-y, 0));
       }
       #custom-modal-overlay.visible {
         display: flex;
@@ -1610,6 +1614,7 @@
         align-items: center;
         justify-content: center;
         z-index: 1001;
+        transform: translate(var(--phone-offset-x, 0), var(--phone-offset-y, 0));
       }
       #transfer-modal.visible {
         display: flex;
@@ -1911,6 +1916,7 @@
         z-index: 2000;
         opacity: 0;
         transition: opacity 0.3s ease;
+        transform: translate(var(--phone-offset-x, 0), var(--phone-offset-y, 0));
       }
       #battery-alert-modal.visible {
         display: flex;
