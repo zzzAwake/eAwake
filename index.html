@@ -30,24 +30,36 @@
 
     <title>EPhone</title>
     <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
-    <style>
-      @font-face {
-        font-family: "bulangni";
-        src: url("") format("truetype");
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
-      }
-      :root {
-        --screen-width: 350px;
-        --screen-height: 650px;
-        --secondary-bg: #ffffff;
-        --border-color: #e0e0e0;
-        --text-primary: #1f1f1f;
-        --text-secondary: #8a8a8a;
-        --accent-color: #007bff;
-        --phone-offset: 15px;
-      }
+      <style>
+        @font-face {
+          font-family: "bulangni";
+          src: url("") format("truetype");
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        /*
+         * 手机尺寸调整指南 (Phone Size Adjustment Guide):
+         *
+         * 调整屏幕大小:
+         *   --screen-width: 控制手机屏幕宽度 (默认: 365px，建议范围: 320px-400px)
+         *   --screen-height: 控制手机屏幕高度 (默认: 680px，建议范围: 600px-750px)
+         *
+         * 调整手机位置:
+         *   --phone-offset: 控制手机垂直偏移量 (默认: 15px，正值向下，负值向上)
+         *
+         * 注意: #phone-frame 的 padding: 12px 控制边框厚度
+         */
+        :root {
+          --screen-width: 365px;
+          --screen-height: 680px;
+          --secondary-bg: #ffffff;
+          --border-color: #e0e0e0;
+          --text-primary: #1f1f1f;
+          --text-secondary: #8a8a8a;
+          --accent-color: #007bff;
+          --phone-offset: 15px;
+        }
       html {
         height: 100%;
         overflow: hidden;
@@ -1393,7 +1405,7 @@
         word-break: normal;
         overflow-wrap: break-word;
         text-wrap: pretty;
-        text-align: justify;
+        text-align: left;
         width: fit-content;
         min-width: 0;
       }
