@@ -5,10 +5,17 @@
     <script>
       // === 关键样式预加载器（阻止 FOUC）===
       (function() {
-        // 1. 同步应用主题
+        // 1. 同步应用主题到所有必要元素
         const theme = localStorage.getItem('ephone-theme');
-        if (theme === 'dark') {
+        const isDark = theme === 'dark';
+        
+        if (isDark) {
+          // 添加到 html, body (phoneScreen 在 DOMContentLoaded 后才存在，通过 CSS 处理)
           document.documentElement.classList.add('dark-mode');
+          // body 可能还不存在，使用 DOMContentLoaded 前的技巧
+          const style = document.createElement('style');
+          style.textContent = 'body { background-color: #121212; }';
+          document.head.appendChild(style);
         }
         
         // 2. 同步应用布局尺寸
@@ -23,6 +30,23 @@
           }
         } catch (e) {
           console.warn('Layout cache parse error:', e);
+        }
+
+        // 3. 预加载面板可见性（避免闪烁）
+        try {
+          const settings = localStorage.getItem('ephone-panel-visibility');
+          if (settings) {
+            const config = JSON.parse(settings);
+            if (config.showPhoneSizePanel === false) {
+              // 通过 CSS 隐藏面板
+              const style = document.createElement('style');
+              style.id = 'preload-panel-hidden';
+              style.textContent = '#phone-size-control-panel { display: none !important; }';
+              document.head.appendChild(style);
+            }
+          }
+        } catch (e) {
+          console.warn('Panel visibility cache parse error:', e);
         }
       })();
     </script>
@@ -131,6 +155,12 @@
 
       body.dark-mode {
         background-color: #121212;
+      }
+      /* 确保 #phone-screen 继承深色模式 */
+      :root.dark-mode #phone-screen,
+      html.dark-mode #phone-screen,
+      body.dark-mode #phone-screen {
+        background-color: #000;
       }
       #phone-size-control-panel {
         background: rgba(255, 255, 255, 0.95);
@@ -19460,6 +19490,17 @@ ${sharedContext}
           const panel = document.getElementById("phone-size-control-panel");
           if (panel) {
             panel.style.display = show ? "block" : "none";
+            
+            // === 新增：同步到 localStorage ===
+            localStorage.setItem('ephone-panel-visibility', JSON.stringify({
+              showPhoneSizePanel: show
+            }));
+            
+            // 移除预加载时添加的临时样式
+            const preloadStyle = document.getElementById('preload-panel-hidden');
+            if (preloadStyle) {
+              preloadStyle.remove();
+            }
           }
         }
 
@@ -23844,6 +23885,12 @@ ${sharedContext}
               settings.showSizePanel = sizePanelToggle.checked;
               state.globalSettings.showSizePanel = sizePanelToggle.checked;
               await db.globalSettings.put(settings);
+              
+              // === 新增：同步面板可见性缓存 ===
+              localStorage.setItem('ephone-panel-visibility', JSON.stringify({
+                showPhoneSizePanel: sizePanelToggle.checked
+              }));
+              
               applyPhoneSizePanelVisibility(sizePanelToggle.checked);
             });
           }
