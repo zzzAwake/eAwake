@@ -2,6 +2,30 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // === 关键样式预加载器（阻止 FOUC）===
+      (function() {
+        // 1. 同步应用主题
+        const theme = localStorage.getItem('ephone-theme');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        }
+        
+        // 2. 同步应用布局尺寸
+        try {
+          const cache = localStorage.getItem('ephone-layout-cache');
+          if (cache) {
+            const layout = JSON.parse(cache);
+            const style = document.documentElement.style;
+            if (layout.screenWidth) style.setProperty('--screen-width', layout.screenWidth + 'px');
+            if (layout.screenHeight) style.setProperty('--screen-height', layout.screenHeight + 'px');
+            if (layout.phoneOffset !== undefined) style.setProperty('--phone-offset', layout.phoneOffset + 'px');
+          }
+        } catch (e) {
+          console.warn('Layout cache parse error:', e);
+        }
+      })();
+    </script>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
@@ -93,13 +117,20 @@
         box-sizing: border-box;
         transition: background-color 0.3s ease;
       }
-      body.dark-mode {
-        background-color: #121212;
+      :root.dark-mode {
         --secondary-bg: #101010;
         --border-color: rgba(255, 255, 255, 0.18);
         --text-primary: #f5f5f5;
         --text-secondary: #b3b3b3;
         --accent-color: #57a9ff;
+      }
+
+      html.dark-mode {
+        background-color: #121212;
+      }
+
+      body.dark-mode {
+        background-color: #121212;
       }
       #phone-size-control-panel {
         background: rgba(255, 255, 255, 0.95);
@@ -20474,6 +20505,13 @@ ${sharedContext}
               }
               state.globalSettings.screenWidth = value;
               db.globalSettings.put({ id: 1, ...state.globalSettings });
+
+              // 同步布局缓存到 localStorage
+              try {
+                  const cache = JSON.parse(localStorage.getItem('ephone-layout-cache') || '{}');
+                  cache.screenWidth = value;
+                  localStorage.setItem('ephone-layout-cache', JSON.stringify(cache));
+              } catch(e) { console.warn('Layout cache error', e); }
             });
           }
           if (screenHeightInput) {
@@ -20488,6 +20526,13 @@ ${sharedContext}
               }
               state.globalSettings.screenHeight = value;
               db.globalSettings.put({ id: 1, ...state.globalSettings });
+
+              // 同步布局缓存到 localStorage
+              try {
+                  const cache = JSON.parse(localStorage.getItem('ephone-layout-cache') || '{}');
+                  cache.screenHeight = value;
+                  localStorage.setItem('ephone-layout-cache', JSON.stringify(cache));
+              } catch(e) { console.warn('Layout cache error', e); }
             });
           }
           if (phoneOffsetInput) {
@@ -20502,6 +20547,13 @@ ${sharedContext}
               }
               state.globalSettings.phoneOffset = value;
               db.globalSettings.put({ id: 1, ...state.globalSettings });
+
+              // 同步布局缓存到 localStorage
+              try {
+                  const cache = JSON.parse(localStorage.getItem('ephone-layout-cache') || '{}');
+                  cache.phoneOffset = value;
+                  localStorage.setItem('ephone-layout-cache', JSON.stringify(cache));
+              } catch(e) { console.warn('Layout cache error', e); }
             });
           }
 
@@ -20547,6 +20599,16 @@ ${sharedContext}
               state.globalSettings.screenHeight = defaultHeight;
               state.globalSettings.phoneOffset = defaultOffset;
               db.globalSettings.put({ id: 1, ...state.globalSettings });
+
+              // 同步布局缓存到 localStorage (Reset)
+              try {
+                  const cache = {
+                      screenWidth: defaultWidth,
+                      screenHeight: defaultHeight,
+                      phoneOffset: defaultOffset
+                  };
+                  localStorage.setItem('ephone-layout-cache', JSON.stringify(cache));
+              } catch(e) { console.warn('Layout cache error', e); }
 
               showCustomAlert("提示", "已恢复默认尺寸");
             });
