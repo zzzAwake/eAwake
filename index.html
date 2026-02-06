@@ -12945,6 +12945,7 @@
             senderName: chat.name,
             content: rawContent,
             timestamp: Date.now(),
+            isOfflineMode: true,
           };
 
           chat.history.push(msg);
@@ -13245,7 +13246,10 @@
             }
             let systemPrompt, messagesPayload;
             const maxMemory = parseInt(chat.settings.maxMemory) || 10;
-            const historySlice = chat.history.slice(-maxMemory);
+            const isOfflineModeActive = chat.settings?.offlineMode?.enabled;
+            const historySlice = chat.history
+              .filter((msg) => isOfflineModeActive || !msg.isOfflineMode)
+              .slice(-maxMemory);
 
             let timeContext = `\n- **当前时间**: ${currentTime}`;
             const lastAiMessage = historySlice
