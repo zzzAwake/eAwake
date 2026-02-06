@@ -7565,6 +7565,15 @@
             />
           </div>
 
+          <div class="settings-row">
+            <label for="user-bubble-color-picker">用户气泡颜色</label>
+            <input type="color" id="user-bubble-color-picker" value="#ffffff" />
+          </div>
+          <div class="settings-row">
+            <label for="ai-bubble-color-picker">AI气泡颜色</label>
+            <input type="color" id="ai-bubble-color-picker" value="#ffffff" />
+          </div>
+
           <div class="form-group">
             <label for="custom-css-input">
               自定义气泡样式 (CSS)
@@ -21469,6 +21478,14 @@ ${sharedContext}
               chat.settings.customCss = document
                 .getElementById("custom-css-input")
                 .value.trim();
+
+              const userBubbleColorValue =
+                (document.querySelector("#user-bubble-color-picker")?.value || "").trim();
+              const aiBubbleColorValue =
+                (document.querySelector("#ai-bubble-color-picker")?.value || "").trim();
+
+              chat.settings.userBubbleColor = userBubbleColorValue || null;
+              chat.settings.aiBubbleColor = aiBubbleColorValue || null;
 
               chat.settings.myPersona =
                 document.getElementById("my-persona").value;
