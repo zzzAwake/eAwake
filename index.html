@@ -21096,6 +21096,11 @@ ${sharedContext}
               // 【新增】加载AI备注
               document.getElementById("ai-remark-input").value =
                 chat.settings.aiRemark || "";
+              // 加载自定义气泡颜色
+              document.getElementById("user-bubble-color-picker").value =
+                chat.settings.userBubbleColor || "#ffffff";
+              document.getElementById("ai-bubble-color-picker").value =
+                chat.settings.aiBubbleColor || "#ffffff";
 
               const videoCallSettingsGroup = document.getElementById(
                 "video-call-settings-group",
