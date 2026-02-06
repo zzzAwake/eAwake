@@ -1526,14 +1526,21 @@
         min-width: 0;
       }
       .message-bubble.user .content {
-        background-color: rgba(255, 255, 255, 0.75);
+        background-color: var(--user-bubble-color, rgba(255, 255, 255, 0.75));
         color: #585858;
         border-radius: 8px 2px 8px 8px;
       }
       .message-bubble.ai .content {
-        background-color: rgba(255, 255, 255, 0.7);
+        background-color: var(--ai-bubble-color, rgba(255, 255, 255, 0.7));
         color: #585858;
         border-radius: 2px 8px 8px 8px;
+      }
+      /* 自定义气泡颜色覆盖 */
+      #chat-messages[style*="--user-bubble-color"] .message-bubble.user .content {
+        background-color: var(--user-bubble-color) !important;
+      }
+      #chat-messages[style*="--ai-bubble-color"] .message-bubble.ai .content {
+        background-color: var(--ai-bubble-color) !important;
       }
       .message-bubble::after {
         content: "";
@@ -11479,6 +11486,23 @@
             "--chat-font-size",
             `${fontSize}px`,
           );
+          // 应用自定义气泡颜色
+          if (chat.settings?.userBubbleColor) {
+            messagesContainer.style.setProperty(
+              "--user-bubble-color",
+              chat.settings.userBubbleColor,
+            );
+          } else {
+            messagesContainer.style.removeProperty("--user-bubble-color");
+          }
+          if (chat.settings?.aiBubbleColor) {
+            messagesContainer.style.setProperty(
+              "--ai-bubble-color",
+              chat.settings.aiBubbleColor,
+            );
+          } else {
+            messagesContainer.style.removeProperty("--ai-bubble-color");
+          }
           applyScopedCss(
             chat.settings.customCss || "",
             "#chat-messages",
