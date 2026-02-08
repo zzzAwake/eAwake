@@ -12615,15 +12615,14 @@ ${sharedContext}
                     return { id: parts.length > 1 ? parts[1] : model.name };
                   });
                 }
-                const modelSelect = document.getElementById(
-                  "config-model-select",
+                const modelList = document.getElementById(
+                  "config-model-list",
                 );
-                modelSelect.innerHTML = "";
+                modelList.innerHTML = "";
                 models.forEach((model) => {
                   const option = document.createElement("option");
                   option.value = model.id;
-                  option.textContent = model.id;
-                  modelSelect.appendChild(option);
+                  modelList.appendChild(option);
                 });
                 alert("模型列表已更新！");
               } catch (e) {
@@ -12664,15 +12663,12 @@ ${sharedContext}
                     return { id: parts.length > 1 ? parts[1] : model.name };
                   });
                 }
-                const modelSelect = document.getElementById(
-                  "summary-custom-model-select",
-                );
-                modelSelect.innerHTML = "";
+                const modelList = document.getElementById("summary-model-list");
+                modelList.innerHTML = "";
                 models.forEach((model) => {
                   const option = document.createElement("option");
                   option.value = model.id;
-                  option.textContent = model.id;
-                  modelSelect.appendChild(option);
+                  modelList.appendChild(option);
                 });
                 alert("模型列表已更新！");
               } catch (e) {
