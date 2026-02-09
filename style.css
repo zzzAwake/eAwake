@@ -21,6 +21,7 @@
         --screen-width: 365px;
         --screen-height: 680px;
         --secondary-bg: #ffffff;
+        --ios-grouped-bg: #F2F2F7;
         --border-color: #e0e0e0;
         --text-primary: #1f1f1f;
         --text-secondary: #8a8a8a;
@@ -61,7 +62,8 @@
         transition: background-color 0.3s ease;
       }
       :root.dark-mode {
-        --secondary-bg: #101010;
+        --secondary-bg: #1c1c1e;
+        --ios-grouped-bg: #000000;
         --border-color: rgba(255, 255, 255, 0.18);
         --text-primary: #f5f5f5;
         --text-secondary: #b3b3b3;
@@ -299,11 +301,20 @@
       .header .action-btn img {
         height: 26px;
       }
-      .header .save-btn {
-        font-size: 16px;
-        color: var(--accent-color);
-        font-weight: 600;
-        cursor: pointer;
+      #chat-settings-screen {
+        z-index: 20;
+        background-color: var(--ios-grouped-bg);
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity 0.3s, visibility 0.3s;
+      }
+      #chat-settings-screen.active {
+        transform: translateX(0);
+      }
+      #chat-interface-screen.settings-open {
+        transform: translateX(-30%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: brightness(0.8);
       }
       #home-screen {
         display: flex;
@@ -809,7 +820,280 @@
         z-index: 100;
         transform: translate(var(--phone-offset-x, 0), var(--phone-offset-y, 0));
       }
-      .modal.visible {
+       /* Chat Settings Modal Redesign */
+       @keyframes modalFadeIn {
+         from {
+           opacity: 0;
+           transform: scale(0.95);
+         }
+         to {
+           opacity: 1;
+           transform: scale(1);
+         }
+       }
+
+        /* Chat Settings Modal - Deprecated (transitioning to screen) */
+        /*
+        #chat-settings-modal .modal-content {
+          border-radius: 20px;
+          box-shadow:
+            0 10px 40px -10px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(0, 0, 0, 0.05);
+          animation: modalFadeIn 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+          max-height: 85vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          background-color: var(--ios-grouped-bg);
+        }
+        */
+
+        /* Re-implementing as screen styles while keeping internal structure */
+        #chat-settings-screen .content-container {
+             flex: 1;
+             overflow-y: auto;
+             padding: 20px;
+             /* Ensure consistent background */
+             background-color: var(--ios-grouped-bg); 
+        }
+
+        #chat-settings-screen .form-group {
+             /* Reuse existing form-group styles but ensure context */
+             margin-bottom: 24px;
+             background-color: var(--secondary-bg);
+             border-radius: 10px;
+             overflow: hidden;
+        }
+
+        /* iOS Segmented Control Style for Bubble Tabs - Adapted for Screen */
+        #chat-settings-screen .bubble-tabs {
+          display: flex;
+          background-color: rgba(118, 118, 128, 0.12);
+          border-radius: 9px;
+          padding: 2px;
+          margin-bottom: 24px !important;
+          border-bottom: none !important;
+          position: relative;
+          z-index: 1;
+        }
+
+        body.dark-mode #chat-settings-screen .bubble-tabs {
+          background-color: rgba(118, 118, 128, 0.24);
+        }
+
+        #chat-settings-screen .bubble-tabs .bubble-tab {
+          flex: 1;
+          text-align: center;
+          padding: 6px 10px !important;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 500 !important;
+          color: var(--text-primary) !important;
+          border-bottom: none !important;
+          border-radius: 7px;
+          position: relative;
+          z-index: 2;
+          transition: color 0.2s;
+        }
+
+        #chat-settings-screen .bubble-tabs .bubble-tab.active {
+          background-color: var(--secondary-bg);
+          box-shadow: 
+            0 3px 1px rgba(0, 0, 0, 0.04), 
+            0 3px 8px rgba(0, 0, 0, 0.12);
+          font-weight: 600 !important;
+        }
+
+       body.dark-mode #chat-settings-screen .bubble-tabs .bubble-tab.active {
+          background-color: #636366;
+          color: white !important;
+        }
+
+        /* Inner Segmented Control (Target Switcher) */
+        #chat-settings-screen .segment-control {
+          display: flex;
+          background-color: rgba(118, 118, 128, 0.12) !important;
+          border-radius: 9px !important;
+          padding: 2px !important;
+          margin-bottom: 20px !important;
+        }
+
+        body.dark-mode #chat-settings-screen .segment-control {
+          background-color: rgba(118, 118, 128, 0.24) !important;
+        }
+
+        #chat-settings-screen .segment-control button {
+          flex: 1;
+          border: none !important;
+          background: transparent !important;
+          padding: 6px !important;
+          border-radius: 7px !important;
+          font-size: 13px !important;
+          color: var(--text-primary) !important;
+          cursor: pointer;
+          box-shadow: none !important;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+
+        #chat-settings-screen .segment-control button.active {
+          background-color: var(--secondary-bg) !important;
+          box-shadow: 
+            0 3px 1px rgba(0, 0, 0, 0.04), 
+            0 3px 8px rgba(0, 0, 0, 0.12) !important;
+          font-weight: 600;
+        }
+
+        body.dark-mode #chat-settings-screen .segment-control button.active {
+          background-color: #636366 !important;
+          color: white !important;
+        }
+
+        /* iOS Grouped Style for Chat Settings */
+        #chat-settings-screen .form-group {
+           background-color: transparent;
+           border-radius: 0;
+           padding: 0;
+           margin-bottom: 24px;
+           border: none;
+        }
+
+        #chat-settings-screen .form-group label {
+           margin-left: 16px;
+           margin-bottom: 6px;
+           font-size: 13px;
+           color: var(--text-secondary);
+           text-transform: none;
+           font-weight: normal;
+        }
+
+        #chat-settings-screen .form-group input[type="text"], 
+        #chat-settings-screen .form-group input[type="number"],
+        #chat-settings-screen .form-group textarea,
+        #chat-settings-screen .form-group select,
+        #chat-settings-screen .form-group .avatar-upload,
+        #chat-settings-screen .form-group .custom-multiselect,
+        #chat-settings-screen .settings-row {
+           display: block;
+           width: 100%;
+           background-color: var(--secondary-bg);
+           border-radius: 10px;
+           padding: 12px 16px;
+           border: none;
+           box-sizing: border-box;
+           font-size: 17px;
+           color: var(--text-primary);
+        }
+
+        #chat-settings-screen .settings-row {
+          display: flex !important;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
+        }
+
+        #chat-settings-screen .setting-subsection {
+          margin-bottom: 20px !important;
+        }
+        
+        #chat-settings-screen input[type="color"] {
+          -webkit-appearance: none;
+          border: none;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          overflow: hidden;
+          padding: 0;
+          background: none;
+        }
+
+        #chat-settings-screen input[type="color"]::-webkit-color-swatch-wrapper {
+          padding: 0;
+        }
+
+        #chat-settings-screen input[type="color"]::-webkit-color-swatch {
+          border: 2px solid rgba(0,0,0,0.1);
+          border-radius: 50%;
+        }
+
+        #chat-settings-screen .form-group .avatar-upload {
+           display: flex;
+           align-items: center;
+           justify-content: space-between;
+        }
+        
+        #chat-settings-screen .form-group .avatar-upload img {
+           width: 44px;
+           height: 44px;
+        }
+
+        #chat-settings-screen .form-group select {
+           appearance: none;
+           background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C7C7CC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+           background-repeat: no-repeat;
+           background-position: right 16px center;
+           background-size: 16px;
+        }
+
+        #chat-settings-screen #video-call-settings-group label {
+           background-color: var(--secondary-bg);
+           border-radius: 12px;
+           padding: 12px 16px;
+           margin: 0;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           color: var(--text-primary);
+           font-size: 17px;
+           font-weight: normal;
+        }
+        
+        #chat-settings-screen #video-call-settings-group hr {
+           display: none;
+        }
+
+
+        /* Ensure footer doesn't overlap rounded corners when scrolling */
+        #chat-settings-screen .modal-footer {
+           border-radius: 0 0 20px 20px;
+         }
+
+        /* Dark Mode overrides for Chat Settings Modal */
+        body.dark-mode #chat-settings-screen .modal-header {
+          background-color: var(--secondary-bg);
+          border-bottom-color: #38383a;
+          color: var(--text-primary);
+        }
+
+        body.dark-mode #chat-settings-screen .modal-body {
+          background-color: var(--ios-grouped-bg);
+        }
+
+        body.dark-mode #chat-settings-screen .form-group input[type="text"], 
+        body.dark-mode #chat-settings-screen .form-group input[type="number"],
+        body.dark-mode #chat-settings-screen .form-group textarea,
+        body.dark-mode #chat-settings-screen .form-group select,
+        body.dark-mode #chat-settings-screen .form-group .avatar-upload,
+        body.dark-mode #chat-settings-screen .form-group .custom-multiselect,
+        body.dark-mode #chat-settings-screen .settings-row {
+           background-color: var(--secondary-bg);
+           color: var(--text-primary);
+        }
+        
+        body.dark-mode #chat-settings-screen .form-group label {
+          color: var(--text-secondary);
+        }
+
+        body.dark-mode #chat-settings-screen #video-call-settings-group label {
+           background-color: var(--secondary-bg);
+           color: var(--text-primary);
+        }
+
+        body.dark-mode #chat-settings-screen input[type="color"]::-webkit-color-swatch {
+           border-color: rgba(255, 255, 255, 0.2);
+        }
+
+       .modal.visible {
         display: flex;
       }
       .modal-content {

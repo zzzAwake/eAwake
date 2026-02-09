@@ -1556,8 +1556,12 @@
             .forEach((s) => s.classList.remove("active"));
           const screenToShow = document.getElementById(screenId);
           if (screenToShow) screenToShow.classList.add("active");
-          if (screenId === "chat-interface-screen")
+          if (screenId === "chat-interface-screen") {
+            document
+              .getElementById("chat-interface-screen")
+              .classList.remove("settings-open");
             window.updateListenTogetherIconProxy(state.activeChatId);
+          }
           if (screenId === "font-settings-screen") {
             document.getElementById("font-url-input").value =
               state.globalSettings.fontUrl || "";
@@ -12842,8 +12846,8 @@ ${membersList}
               }
             });
 
-          const chatSettingsModal = document.getElementById(
-            "chat-settings-modal",
+          const chatSettingsScreen = document.getElementById(
+            "chat-settings-screen",
           );
           const worldBookSelectBox = document.querySelector(
             ".custom-multiselect .select-box",
@@ -12923,6 +12927,7 @@ ${membersList}
               document.getElementById("offline-style-input").value =
                 offlineSettings.style || "";
 
+
               // Helper: Update inputs when preset changes
               presetSelect.onchange = () => {
                 const val = presetSelect.value;
@@ -12933,6 +12938,16 @@ ${membersList}
                     offlinePresets[val].style;
                 }
               };
+
+              // Bind offline mode toggle event listener (must be re-bound each time settings open)
+              document
+                .getElementById("offline-mode-toggle")
+                .addEventListener("change", (e) => {
+                  document.getElementById("offline-mode-config").style.display = e
+                    .target.checked
+                    ? "block"
+                    : "none";
+                });
 
               // --- 统一显示/隐藏控件 ---
               document.getElementById("chat-name-group").style.display =
@@ -13243,9 +13258,17 @@ ${membersList}
               summaryCustomApiToggle.removeEventListener("change", handleSummaryCustomApiToggle); // Remove if exists
               summaryCustomApiToggle.addEventListener("change", handleSummaryCustomApiToggle);
               
-              document
-                .getElementById("chat-settings-modal")
-                .classList.add("visible");
+              showScreen('chat-settings-screen');
+              // 可选：添加视差效果
+              document.getElementById('chat-interface-screen').classList.add('settings-open');
+            });
+          
+          // Chat settings back button
+          document
+            .getElementById("chat-settings-back-btn")
+            .addEventListener("click", () => {
+              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              showScreen("chat-interface-screen");
             });
           
           function handleSummaryCustomApiToggle(e) {
@@ -13326,7 +13349,8 @@ ${membersList}
           document
             .getElementById("cancel-chat-settings-btn")
             .addEventListener("click", () => {
-              chatSettingsModal.classList.remove("visible");
+              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              showScreen('chat-interface-screen');
             });
 
           document
@@ -13458,7 +13482,8 @@ ${membersList}
                 "custom-bubble-style",
               );
 
-              chatSettingsModal.classList.remove("visible");
+              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              showScreen('chat-interface-screen');
               renderChatInterface(state.activeChatId);
               renderChatList();
             });
@@ -13497,10 +13522,9 @@ ${membersList}
                 return;
               }
 
-              // 关闭设置弹窗
-              document
-                .getElementById("chat-settings-modal")
-                .classList.remove("visible");
+              // 关闭设置屏幕
+              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              showScreen('chat-interface-screen');
 
               await showCustomAlert(
                 "开始总结",
@@ -15092,8 +15116,8 @@ ${membersList}
                 document.getElementById("chat-settings-btn");
               if (
                 document
-                  .getElementById("chat-settings-modal")
-                  .classList.contains("visible")
+                  .getElementById("chat-settings-screen")
+                  .classList.contains("active")
               ) {
                 chatSettingsBtn.click(); // 再次点击以重新打开
               }
@@ -15175,19 +15199,13 @@ ${membersList}
           document
             .getElementById("manage-members-btn")
             .addEventListener("click", () => {
-              // 在切换屏幕前，先隐藏当前的聊天设置弹窗
-              document
-                .getElementById("chat-settings-modal")
-                .classList.remove("visible");
-              // 然后再打开成员管理屏幕
               openMemberManagementScreen();
             });
 
           document
             .getElementById("back-from-member-management")
             .addEventListener("click", () => {
-              showScreen("chat-interface-screen");
-              document.getElementById("chat-settings-btn").click();
+              showScreen("chat-settings-screen");
             });
 
           document
@@ -15245,14 +15263,6 @@ ${membersList}
             .getElementById("join-call-btn")
             .addEventListener("click", handleUserJoinCall);
 
-          document
-            .getElementById("offline-mode-toggle")
-            .addEventListener("change", (e) => {
-              document.getElementById("offline-mode-config").style.display = e
-                .target.checked
-                ? "block"
-                : "none";
-            });
 
           // 绑定来电请求的“拒绝”按钮
           document
@@ -15461,10 +15471,9 @@ ${membersList}
 
                 await db.chats.put(chat);
 
-                // 关闭设置弹窗，并刷新聊天界面
-                document
-                  .getElementById("chat-settings-modal")
-                  .classList.remove("visible");
+                // 关闭设置屏幕，并刷新聊天界面
+                document.getElementById('chat-interface-screen').classList.remove('settings-open');
+                showScreen('chat-interface-screen');
                 renderChatInterface(state.activeChatId);
                 // 刷新聊天列表，可能会有UI变化
                 renderChatList();

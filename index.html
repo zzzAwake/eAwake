@@ -1411,730 +1411,734 @@
             <!-- 通话记录卡片将由JS动态生成在这里 -->
           </div>
         </div>
+    <div id="chat-settings-screen" class="screen">
+      <div class="header">
+        <span class="back-btn" id="chat-settings-back-btn">‹</span>
+        <span>聊天设置</span>
+        <span style="width: 30px"></span>
       </div>
-    </div>
+      <div class="content-container">
+        <div class="form-group" id="chat-name-group">
+          <label for="chat-name-input">备注名 / 群名</label
+          ><input type="text" id="chat-name-input" />
+        </div>
 
-    <div id="chat-settings-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header"><span>聊天设置</span></div>
-        <div class="modal-body">
-          <div class="form-group" id="chat-name-group">
-            <label for="chat-name-input">备注名 / 群名</label
-            ><input type="text" id="chat-name-input" />
-          </div>
+        <div class="form-group" id="ai-remark-group" style="display: none">
+          <label for="ai-remark-input">AI备注 (仅自己可见)</label>
+          <input
+            type="text"
+            id="ai-remark-input"
+            placeholder="例如：贴心小棉袄"
+          />
+        </div>
 
-          <div class="form-group" id="ai-remark-group" style="display: none">
-            <label for="ai-remark-input">AI备注 (仅自己可见)</label>
-            <input
-              type="text"
-              id="ai-remark-input"
-              placeholder="例如：贴心小棉袄"
-            />
-          </div>
-
-          <div
-            class="form-group"
-            id="assign-group-section"
-            style="display: none"
-          >
-            <!-- 默认隐藏，只对单聊显示 -->
-            <label for="assign-group-select">好友分组</label>
-            <div style="display: flex; align-items: center; gap: 10px">
-              <select id="assign-group-select" style="flex-grow: 1">
-                <!-- 分组选项将由JS动态生成 -->
-              </select>
-              <button
-                id="manage-groups-btn"
-                class="form-button-secondary"
-                style="margin-top: 0; padding: 12px"
-              >
-                管理分组
-              </button>
-            </div>
-          </div>
-
-          <div class="form-group" id="my-group-nickname-group">
-            <label for="my-group-nickname-input">我的群昵称</label
-            ><input type="text" id="my-group-nickname-input" />
-          </div>
-          <div class="form-group" id="group-avatar-group">
-            <label>群头像</label>
-            <div class="avatar-upload">
-              <img id="group-avatar-preview" /><button
-                onclick="document.getElementById('group-avatar-input').click()"
-              >
-                上传群头像</button
-              ><input type="file" id="group-avatar-input" accept="image/*" />
-            </div>
-          </div>
-          <div class="form-group" id="world-book-link-group">
-            <label>关联世界书 (可多选)</label>
-            <div class="custom-multiselect">
-              <div class="select-box">
-                <span class="selected-options-text">-- 点击选择 --</span>
-              </div>
-              <div
-                id="world-book-checkboxes-container"
-                class="checkboxes-container"
-              ></div>
-            </div>
-          </div>
-          <div class="form-group" id="ai-persona-group">
-            <label for="ai-persona">对方人设 (AI Persona)</label
-            ><textarea id="ai-persona" rows="3"></textarea>
-          </div>
-          <div class="form-group" id="ai-avatar-group">
-            <label>对方头像</label>
-            <div class="avatar-upload">
-              <img id="ai-avatar-preview" /><button
-                onclick="document.getElementById('ai-avatar-input').click()"
-              >
-                上传对方头像</button
-              ><button id="manage-ai-avatar-library-btn">管理头像库</button>
-              <input type="file" id="ai-avatar-input" accept="image/*" />
-            </div>
-          </div>
-
-          <div class="form-group" id="video-call-settings-group">
-            <hr style="opacity: 0.2; margin: 15px 0" />
-
-            <label
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-top: 15px;
-              "
-            >
-              <span>语音接入 (Minimax)</span>
-              <input
-                type="checkbox"
-                id="video-call-voice-access-switch"
-                style="width: auto"
-              />
-            </label>
-          </div>
-          <div class="form-group" id="my-persona-group">
-            <label for="my-persona">我的人设 (My Persona)</label
-            ><textarea id="my-persona" rows="3"></textarea>
-          </div>
-          <div class="form-group" id="my-avatar-group">
-            <label>我的头像</label>
-            <div class="avatar-upload">
-              <img id="my-avatar-preview" /><button
-                onclick="document.getElementById('my-avatar-input').click()"
-              >
-                上传我的头像</button
-              ><button id="open-persona-library-btn">预设</button
-              ><input type="file" id="my-avatar-input" accept="image/*" />
-            </div>
-          </div>
-          <div class="form-group" id="group-members-group">
-            <label>群成员人设</label>
-            <div id="group-members-settings"></div>
-
-            <!-- 【新增】管理成员按钮 -->
+        <div
+          class="form-group"
+          id="assign-group-section"
+          style="display: none"
+        >
+          <!-- 默认隐藏，只对单聊显示 -->
+          <label for="assign-group-select">好友分组</label>
+          <div style="display: flex; align-items: center; gap: 10px">
+            <select id="assign-group-select" style="flex-grow: 1">
+              <!-- 分组选项将由JS动态生成 -->
+            </select>
             <button
-              id="manage-members-btn"
-              class="form-button form-button-secondary"
-              style="margin-top: 15px"
+              id="manage-groups-btn"
+              class="form-button-secondary"
+              style="margin-top: 0; padding: 12px"
             >
-              管理群成员
+              管理分组
             </button>
           </div>
-          <div class="form-group">
-            <label for="max-memory">上下文记忆条数</label
-            ><input type="number" id="max-memory" value="10" />
-          </div>
-          <div class="form-group">
-            <label
-              >聊天气泡主题
-              <button id="reset-theme-btn" type="button">重置</button></label
-            >
-            <div class="theme-selector">
-              <label
-                ><input
-                  type="radio"
-                  name="theme-select"
-                  value="default"
-                  id="theme-default"
-                />
-                默认</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_blue" />
-                粉蓝</label
-              ><label
-                ><input type="radio" name="theme-select" value="blue_white" />
-                蓝白</label
-              ><label
-                ><input
-                  type="radio"
-                  name="theme-select"
-                  value="purple_yellow"
-                />
-                紫黄</label
-              ><label
-                ><input type="radio" name="theme-select" value="black_white" />
-                黑白</label
-              ><label
-                ><input type="radio" name="theme-select" value="yellow_white" />
-                黄白</label
-              ><label
-                ><input type="radio" name="theme-select" value="red_black" />
-                红黑</label
-              ><label
-                ><input type="radio" name="theme-select" value="blue_yellow" />
-                蓝黄</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_yellow" />
-                粉黄</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_purple" />
-                粉紫</label
-              ><label
-                ><input type="radio" name="theme-select" value="gray_white" />
-                灰白</label
-              ><label
-                ><input type="radio" name="theme-select" value="blue_green" />
-                蓝绿</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_white" />
-                粉白</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_black" />
-                粉黑</label
-              ><label
-                ><input type="radio" name="theme-select" value="pink_green" />
-                粉绿</label
-              ><label
-                ><input type="radio" name="theme-select" value="green_black" />
-                绿黑</label
-              >
-            </div>
-          </div>
+        </div>
 
-          <!-- Offline Mode Section -->
-          <div class="form-group settings-group" id="offline-mode-settings">
-            <div
-              style="
-                font-weight: bold;
-                color: var(--accent-color);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-left: 10px;
-              "
+        <div class="form-group" id="my-group-nickname-group">
+          <label for="my-group-nickname-input">我的群昵称</label
+          ><input type="text" id="my-group-nickname-input" />
+        </div>
+        <div class="form-group" id="group-avatar-group">
+          <label>群头像</label>
+          <div class="avatar-upload">
+            <img id="group-avatar-preview" /><button
+              onclick="document.getElementById('group-avatar-input').click()"
             >
-              线下模式 (Offline Mode)
-              <label class="toggle-switch">
-                <input type="checkbox" id="offline-mode-toggle" />
-                <span class="slider"></span>
-              </label>
+              上传群头像</button
+            ><input type="file" id="group-avatar-input" accept="image/*" />
+          </div>
+        </div>
+        <div class="form-group" id="world-book-link-group">
+          <label>关联世界书 (可多选)</label>
+          <div class="custom-multiselect">
+            <div class="select-box">
+              <span class="selected-options-text">-- 点击选择 --</span>
             </div>
             <div
-              id="offline-mode-config"
-              style="
-                display: none;
-                margin-top: 10px;
-                padding: 10px;
-                border-radius: 8px;
-              "
-            >
-              <div class="form-group">
-                <label>预设场景</label>
-                <select
-                  id="offline-preset-select"
-                  class="moe-input"
-                  style="
-                    width: 100%;
-                    padding: 8px;
-                    border-radius: 6px;
-                    border: 1px solid var(--border-color);
-                  "
-                >
-                  <option value="custom">自定义 (Custom)</option>
-                  <!-- JS will populate -->
-                </select>
-              </div>
-              <div class="form-group">
-                <label>场景描述 (System Prompt)</label>
-                <textarea
-                  id="offline-prompt-input"
-                  class="moe-input"
-                  rows="4"
-                  style="
-                    width: 100%;
-                    padding: 8px;
-                    border-radius: 6px;
-                    border: 1px solid var(--border-color);
-                  "
-                ></textarea>
-              </div>
-              <div class="form-group">
-                <label>描写风格 (Style)</label>
-                <textarea
-                  id="offline-style-input"
-                  class="moe-input"
-                  rows="2"
-                  style="
-                    width: 100%;
-                    padding: 8px;
-                    border-radius: 6px;
-                    border: 1px solid var(--border-color);
-                  "
-                ></textarea>
-              </div>
-            </div>
+              id="world-book-checkboxes-container"
+              class="checkboxes-container"
+            ></div>
           </div>
-
-          <div class="form-group">
-            <label for="font-size-slider"
-              >聊天字体大小 <span id="font-size-value">13px</span></label
+        </div>
+        <div class="form-group" id="ai-persona-group">
+          <label for="ai-persona">对方人设 (AI Persona)</label
+          ><textarea id="ai-persona" rows="3"></textarea>
+        </div>
+        <div class="form-group" id="ai-avatar-group">
+          <label>对方头像</label>
+          <div class="avatar-upload">
+            <img id="ai-avatar-preview" /><button
+              onclick="document.getElementById('ai-avatar-input').click()"
             >
+              上传对方头像</button
+            ><button id="manage-ai-avatar-library-btn">管理头像库</button>
+            <input type="file" id="ai-avatar-input" accept="image/*" />
+          </div>
+        </div>
+
+        <div class="form-group" id="video-call-settings-group">
+          <hr style="opacity: 0.2; margin: 15px 0" />
+
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-top: 15px;
+            "
+          >
+            <span>语音接入 (Minimax)</span>
             <input
-              type="range"
-              id="font-size-slider"
-              min="12"
-              max="20"
-              step="1"
-              value="13"
-              style="width: 100%; margin-top: 8px"
+              type="checkbox"
+              id="video-call-voice-access-switch"
+              style="width: auto"
             />
+          </label>
+        </div>
+        <div class="form-group" id="my-persona-group">
+          <label for="my-persona">我的人设 (My Persona)</label
+          ><textarea id="my-persona" rows="3"></textarea>
+        </div>
+        <div class="form-group" id="my-avatar-group">
+          <label>我的头像</label>
+          <div class="avatar-upload">
+            <img id="my-avatar-preview" /><button
+              onclick="document.getElementById('my-avatar-input').click()"
+            >
+              上传我的头像</button
+            ><button id="open-persona-library-btn">预设</button
+            ><input type="file" id="my-avatar-input" accept="image/*" />
           </div>
+        </div>
+        <div class="form-group" id="group-members-group">
+          <label>群成员人设</label>
+          <div id="group-members-settings"></div>
 
-          <div class="settings-group" style="margin-bottom: 20px;">
-            <!-- Tab Header -->
-            <div class="bubble-tabs" style="display: flex; border-bottom: 1px solid #eee; margin-bottom: 15px;">
-              <div id="tab-text-bubble" class="bubble-tab active" onclick="switchBubbleTab('text')" 
-                   style="flex: 1; text-align: center; padding: 10px; cursor: pointer; border-bottom: 2px solid var(--primary-color); font-weight: bold;">
-                文字气泡
-              </div>
-              <div id="tab-voice-bubble" class="bubble-tab" onclick="switchBubbleTab('voice')" 
-                   style="flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #999;">
-                语音气泡
-              </div>
-            </div>
-
-            <!-- Text Bubble Panel -->
-            <div id="panel-text-bubble">
-              <!-- Target Switcher (Me vs AI) -->
-              <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
-                <button id="btn-target-user" onclick="switchBubbleTarget('user')" class="active" 
-                        style="flex: 1; border: none; background: #fff; padding: 6px; border-radius: 6px; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
-                  我 (User)
-                </button>
-                <button id="btn-target-ai" onclick="switchBubbleTarget('ai')" 
-                        style="flex: 1; border: none; background: transparent; padding: 6px; border-radius: 6px; font-size: 13px; color: #666; cursor: pointer;">
-                  对方 (AI)
-                </button>
-              </div>
-
-              <!-- Main Settings Container -->
-              <div id="bubble-settings-container">
-                <!-- Background Section -->
-                <div class="setting-subsection" style="margin-bottom: 15px;">
-                  <div class="settings-row" style="margin-bottom: 10px;">
-                    <label style="font-weight: 600;">背景样式</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <span style="font-size: 12px; color: #666;">渐变</span>
-                      <label class="toggle-switch">
-                        <input type="checkbox" id="bubble-gradient-toggle">
-                        <span class="slider"></span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <!-- Solid Color Mode -->
-                  <div id="bubble-solid-options" class="settings-row">
-                    <label>纯色背景</label>
-                    <input type="color" id="bubble-solid-color">
-                  </div>
-
-                  <!-- Gradient Mode -->
-                  <div id="bubble-gradient-options" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                    <div class="settings-row">
-                      <label>类型</label>
-                      <select id="bubble-gradient-type" class="moe-input" style="width: 100px; padding: 4px;">
-                        <option value="linear">线性 (Linear)</option>
-                        <option value="radial">径向 (Radial)</option>
-                      </select>
-                    </div>
-                    <div class="settings-row" id="bubble-angle-row">
-                      <label>角度 <span id="bubble-angle-val">180°</span></label>
-                      <input type="range" id="bubble-angle" min="0" max="360" step="5" style="width: 120px;">
-                    </div>
-                    
-                    <!-- Color Stops -->
-                    <div style="margin-top: 10px;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <label>颜色节点</label>
-                        <button type="button" onclick="addGradientStop()" style="font-size: 12px; padding: 2px 8px; background: #eee; border: none; border-radius: 4px;">+ 添加</button>
-                      </div>
-                      <div id="bubble-gradient-stops" style="display: flex; flex-direction: column; gap: 5px;">
-                        <!-- Generated by JS -->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Opacity -->
-                <div class="settings-row">
-                  <label>不透明度 <span id="bubble-opacity-val">100%</span></label>
-                  <input type="range" id="bubble-opacity" min="10" max="100" step="5" style="width: 140px;">
-                </div>
-
-                <!-- Border Section -->
-                <div class="setting-subsection" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
-                  <label style="font-weight: 600; display: block; margin-bottom: 10px;">边框设置</label>
-                  <div class="settings-row">
-                    <label>颜色</label>
-                    <input type="color" id="bubble-border-color">
-                  </div>
-                  <div class="settings-row">
-                    <label>宽度 <span id="bubble-border-width-val">0px</span></label>
-                    <input type="range" id="bubble-border-width" min="0" max="5" step="0.5" style="width: 120px;">
-                  </div>
-                  <div class="settings-row">
-                    <label>样式</label>
-                    <select id="bubble-border-style" class="moe-input" style="width: 100px; padding: 4px;">
-                      <option value="solid">实线 (Solid)</option>
-                      <option value="dashed">虚线 (Dashed)</option>
-                      <option value="dotted">点线 (Dotted)</option>
-                    </select>
-                  </div>
-                  <div class="settings-row">
-                    <label>圆角 <span id="bubble-border-radius-val">8px</span></label>
-                    <input type="range" id="bubble-border-radius" min="0" max="20" step="1" style="width: 120px;">
-                  </div>
-                </div>
-
-                <!-- Shadow -->
-                <div class="settings-row" style="margin-top: 10px;">
-                  <label>启用阴影</label>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="bubble-shadow-toggle">
-                    <span class="slider"></span>
-                  </label>
-                </div>
-
-                <!-- Actions -->
-                <div style="margin-top: 20px; text-align: center;">
-                  <button type="button" onclick="resetBubbleSettings()" 
-                          style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
-                    重置当前样式
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Voice Bubble Panel (Placeholder) -->
-            <div id="panel-voice-bubble" style="display: none; padding: 10px;">
-              <!-- Target Switcher (User vs AI Voice) -->
-              <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
-                <button id="btn-voice-target-user" onclick="switchBubbleTarget('user')" class="active" 
-                        style="flex: 1; background: #fff; border: none; padding: 8px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.2s;">
-                  我 (User)
-                </button>
-                <button id="btn-voice-target-ai" onclick="switchBubbleTarget('ai')" 
-                        style="flex: 1; background: transparent; border: none; padding: 8px; border-radius: 6px; font-size: 14px; cursor: pointer; color: #999; transition: all 0.2s;">
-                  对方 (AI)
-                </button>
-              </div>
-
-              <div id="voice-settings-container">
-                <!-- Background Color -->
-                <div class="settings-row">
-                  <label>背景颜色</label>
-                  <input type="color" id="voice-bubble-bg-color">
-                </div>
-
-                <!-- Waveform Color -->
-                <div class="settings-row">
-                  <label>波形颜色</label>
-                  <input type="color" id="voice-waveform-color">
-                </div>
-
-                <!-- Duration Text Color -->
-                <div class="settings-row">
-                  <label>时长文字颜色</label>
-                  <input type="color" id="voice-duration-color">
-                </div>
-
-                <!-- Actions -->
-                <div style="margin-top: 20px; text-align: center;">
-                  <button type="button" onclick="resetVoiceSettings()" 
-                          style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
-                    重置当前样式
-                  </button>
-                </div>
-              </div>
-            </div>
+          <!-- 【新增】管理成员按钮 -->
+          <button
+            id="manage-members-btn"
+            class="form-button form-button-secondary"
+            style="margin-top: 15px"
+          >
+            管理群成员
+          </button>
+        </div>
+        <div class="form-group">
+          <label for="max-memory">上下文记忆条数</label
+          ><input type="number" id="max-memory" value="10" />
+        </div>
+        <div class="form-group">
+          <label
+            >聊天气泡主题
+            <button id="reset-theme-btn" type="button">重置</button></label
+          >
+          <div class="theme-selector">
+            <label
+              ><input
+                type="radio"
+                name="theme-select"
+                value="default"
+                id="theme-default"
+              />
+              默认</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_blue" />
+              粉蓝</label
+            ><label
+              ><input type="radio" name="theme-select" value="blue_white" />
+              蓝白</label
+            ><label
+              ><input
+                type="radio"
+                name="theme-select"
+                value="purple_yellow"
+              />
+              紫黄</label
+            ><label
+              ><input type="radio" name="theme-select" value="black_white" />
+              黑白</label
+            ><label
+              ><input type="radio" name="theme-select" value="yellow_white" />
+              黄白</label
+            ><label
+              ><input type="radio" name="theme-select" value="red_black" />
+              红黑</label
+            ><label
+              ><input type="radio" name="theme-select" value="blue_yellow" />
+              蓝黄</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_yellow" />
+              粉黄</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_purple" />
+              粉紫</label
+            ><label
+              ><input type="radio" name="theme-select" value="gray_white" />
+              灰白</label
+            ><label
+              ><input type="radio" name="theme-select" value="blue_green" />
+              蓝绿</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_white" />
+              粉白</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_black" />
+              粉黑</label
+            ><label
+              ><input type="radio" name="theme-select" value="pink_green" />
+              粉绿</label
+            ><label
+              ><input type="radio" name="theme-select" value="green_black" />
+              绿黑</label
+            >
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="custom-css-input">
-              自定义气泡样式 (CSS)
-              <button
-                id="reset-custom-css-btn"
-                type="button"
+        <!-- Offline Mode Section -->
+        <div class="form-group settings-group" id="offline-mode-settings">
+          <div
+            style="
+              font-weight: bold;
+              color: var(--accent-color);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-left: 10px;
+            "
+          >
+            线下模式 (Offline Mode)
+            <label class="toggle-switch">
+              <input type="checkbox" id="offline-mode-toggle" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div
+            id="offline-mode-config"
+            style="
+              display: none;
+              margin-top: 10px;
+              padding: 10px;
+              border-radius: 8px;
+            "
+          >
+            <div class="form-group">
+              <label>预设场景</label>
+              <select
+                id="offline-preset-select"
+                class="moe-input"
                 style="
-                  background: none;
-                  border: 1px solid #ccc;
-                  color: #555;
-                  font-size: 12px;
-                  padding: 2px 8px;
-                  border-radius: 5px;
-                  cursor: pointer;
-                  margin-left: 10px;
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 6px;
+                  border: 1px solid var(--border-color);
                 "
               >
-                重置
+                <option value="custom">自定义 (Custom)</option>
+                <!-- JS will populate -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>场景描述 (System Prompt)</label>
+              <textarea
+                id="offline-prompt-input"
+                class="moe-input"
+                rows="4"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 6px;
+                  border: 1px solid var(--border-color);
+                "
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>描写风格 (Style)</label>
+              <textarea
+                id="offline-style-input"
+                class="moe-input"
+                rows="2"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  border-radius: 6px;
+                  border: 1px solid var(--border-color);
+                "
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="font-size-slider"
+            >聊天字体大小 <span id="font-size-value">13px</span></label
+          >
+          <input
+            type="range"
+            id="font-size-slider"
+            min="12"
+            max="20"
+            step="1"
+            value="13"
+            style="width: 100%; margin-top: 8px"
+          />
+        </div>
+
+        <div class="settings-group" style="margin-bottom: 20px;">
+          <!-- Tab Header -->
+          <div class="bubble-tabs" style="display: flex; border-bottom: 1px solid #eee; margin-bottom: 15px;">
+            <div id="tab-text-bubble" class="bubble-tab active" onclick="switchBubbleTab('text')" 
+                 style="flex: 1; text-align: center; padding: 10px; cursor: pointer; border-bottom: 2px solid var(--primary-color); font-weight: bold;">
+              文字气泡
+            </div>
+            <div id="tab-voice-bubble" class="bubble-tab" onclick="switchBubbleTab('voice')" 
+                 style="flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #999;">
+              语音气泡
+            </div>
+          </div>
+
+          <!-- Text Bubble Panel -->
+          <div id="panel-text-bubble">
+            <!-- Target Switcher (Me vs AI) -->
+            <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
+              <button id="btn-target-user" onclick="switchBubbleTarget('user')" class="active" 
+                      style="flex: 1; border: none; background: #fff; padding: 6px; border-radius: 6px; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
+                我 (User)
               </button>
-            </label>
-            <textarea
-              id="custom-css-input"
-              rows="5"
+              <button id="btn-target-ai" onclick="switchBubbleTarget('ai')" 
+                      style="flex: 1; border: none; background: transparent; padding: 6px; border-radius: 6px; font-size: 13px; color: #666; cursor: pointer;">
+                对方 (AI)
+              </button>
+            </div>
+
+            <!-- Main Settings Container -->
+            <div id="bubble-settings-container">
+              <!-- Background Section -->
+              <div class="setting-subsection" style="margin-bottom: 15px;">
+                <div class="settings-row" style="margin-bottom: 10px;">
+                  <label style="font-weight: 600;">背景样式</label>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 12px; color: #666;">渐变</span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="bubble-gradient-toggle">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Solid Color Mode -->
+                <div id="bubble-solid-options" class="settings-row">
+                  <label>纯色背景</label>
+                  <input type="color" id="bubble-solid-color">
+                </div>
+
+                <!-- Gradient Mode -->
+                <div id="bubble-gradient-options" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                  <div class="settings-row">
+                    <label>类型</label>
+                    <select id="bubble-gradient-type" class="moe-input" style="width: 100px; padding: 4px;">
+                      <option value="linear">线性 (Linear)</option>
+                      <option value="radial">径向 (Radial)</option>
+                    </select>
+                  </div>
+                  <div class="settings-row" id="bubble-angle-row">
+                    <label>角度 <span id="bubble-angle-val">180°</span></label>
+                    <input type="range" id="bubble-angle" min="0" max="360" step="5" style="width: 120px;">
+                  </div>
+                  
+                  <!-- Color Stops -->
+                  <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                      <label>颜色节点</label>
+                      <button type="button" onclick="addGradientStop()" style="font-size: 12px; padding: 2px 8px; background: #eee; border: none; border-radius: 4px;">+ 添加</button>
+                    </div>
+                    <div id="bubble-gradient-stops" style="display: flex; flex-direction: column; gap: 5px;">
+                      <!-- Generated by JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Opacity -->
+              <div class="settings-row">
+                <label>不透明度 <span id="bubble-opacity-val">100%</span></label>
+                <input type="range" id="bubble-opacity" min="10" max="100" step="5" style="width: 140px;">
+              </div>
+
+              <!-- Border Section -->
+              <div class="setting-subsection" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                <label style="font-weight: 600; display: block; margin-bottom: 10px;">边框设置</label>
+                <div class="settings-row">
+                  <label>颜色</label>
+                  <input type="color" id="bubble-border-color">
+                </div>
+                <div class="settings-row">
+                  <label>宽度 <span id="bubble-border-width-val">0px</span></label>
+                  <input type="range" id="bubble-border-width" min="0" max="5" step="0.5" style="width: 120px;">
+                </div>
+                <div class="settings-row">
+                  <label>样式</label>
+                  <select id="bubble-border-style" class="moe-input" style="width: 100px; padding: 4px;">
+                    <option value="solid">实线 (Solid)</option>
+                    <option value="dashed">虚线 (Dashed)</option>
+                    <option value="dotted">点线 (Dotted)</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <label>圆角 <span id="bubble-border-radius-val">8px</span></label>
+                  <input type="range" id="bubble-border-radius" min="0" max="20" step="1" style="width: 120px;">
+                </div>
+              </div>
+
+              <!-- Shadow -->
+              <div class="settings-row" style="margin-top: 10px;">
+                <label>启用阴影</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="bubble-shadow-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <!-- Actions -->
+              <div style="margin-top: 20px; text-align: center;">
+                <button type="button" onclick="resetBubbleSettings()" 
+                        style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
+                  重置当前样式
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice Bubble Panel (Placeholder) -->
+          <div id="panel-voice-bubble" style="display: none; padding: 10px;">
+            <!-- Target Switcher (User vs AI Voice) -->
+            <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
+              <button id="btn-voice-target-user" onclick="switchBubbleTarget('user')" class="active" 
+                      style="flex: 1; background: #fff; border: none; padding: 8px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+                我 (User)
+              </button>
+              <button id="btn-voice-target-ai" onclick="switchBubbleTarget('ai')" 
+                      style="flex: 1; background: transparent; border: none; padding: 8px; border-radius: 6px; font-size: 14px; cursor: pointer; color: #999; transition: all 0.2s;">
+                对方 (AI)
+              </button>
+            </div>
+
+            <div id="voice-settings-container">
+              <!-- Background Color -->
+              <div class="settings-row">
+                <label>背景颜色</label>
+                <input type="color" id="voice-bubble-bg-color">
+              </div>
+
+              <!-- Waveform Color -->
+              <div class="settings-row">
+                <label>波形颜色</label>
+                <input type="color" id="voice-waveform-color">
+              </div>
+
+              <!-- Duration Text Color -->
+              <div class="settings-row">
+                <label>时长文字颜色</label>
+                <input type="color" id="voice-duration-color">
+              </div>
+
+              <!-- Actions -->
+              <div style="margin-top: 20px; text-align: center;">
+                <button type="button" onclick="resetVoiceSettings()" 
+                        style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
+                  重置当前样式
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-css-input">
+            自定义气泡样式 (CSS)
+            <button
+              id="reset-custom-css-btn"
+              type="button"
               style="
-                width: 100%;
-                margin-top: 8px;
-                font-family: monospace;
+                background: none;
+                border: 1px solid #ccc;
+                color: #555;
                 font-size: 12px;
-                resize: vertical;
+                padding: 2px 8px;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-left: 10px;
               "
-              placeholder="/* 示例：为“我”的气泡添加渐变背景和阴影 */
+            >
+              重置
+            </button>
+          </label>
+          <textarea
+            id="custom-css-input"
+            rows="5"
+            style="
+              width: 100%;
+              margin-top: 8px;
+              font-family: monospace;
+              font-size: 12px;
+              resize: vertical;
+            "
+            placeholder="/* 示例：为“我”的气泡添加渐变背景和阴影 */
 .message-bubble.user .content {
   background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   border-radius: 15px 4px 15px 15px;
 }"
-            ></textarea>
-          </div>
+          ></textarea>
+        </div>
 
-          <div class="form-group">
-            <label>实时预览</label>
-            <div id="settings-preview-area">
-              <!-- JS会在这里生成预览内容 -->
-            </div>
+        <div class="form-group">
+          <label>实时预览</label>
+          <div id="settings-preview-area">
+            <!-- JS会在这里生成预览内容 -->
           </div>
+        </div>
 
-          <div class="form-group">
-            <label>聊天背景</label>
-            <div class="bg-upload-container">
-              <button
-                type="button"
-                class="form-button-secondary"
-                style="width: auto; padding: 8px 12px; margin-top: 0"
-                onclick="document.getElementById('bg-input').click()"
-              >
-                上传背景图
-              </button>
-              <button type="button" id="remove-bg-btn">移除背景</button>
-            </div>
-            <img id="bg-preview" class="bg-preview-img" />
-            <input
-              type="file"
-              id="bg-input"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-          <div class="form-group">
-            <label
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
+        <div class="form-group">
+          <label>聊天背景</label>
+          <div class="bg-upload-container">
+            <button
+              type="button"
+              class="form-button-secondary"
+              style="width: auto; padding: 8px 12px; margin-top: 0"
+              onclick="document.getElementById('bg-input').click()"
             >
-              <span>长对话自动总结</span>
-              <label class="toggle-switch">
-                <input type="checkbox" id="summary-toggle" />
-                <span class="slider"></span>
-              </label>
+              上传背景图
+            </button>
+            <button type="button" id="remove-bg-btn">移除背景</button>
+          </div>
+          <img id="bg-preview" class="bg-preview-img" />
+          <input
+            type="file"
+            id="bg-input"
+            accept="image/*"
+            style="display: none"
+          />
+        </div>
+        <div class="form-group">
+          <label
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span>长对话自动总结</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="summary-toggle" />
+              <span class="slider"></span>
             </label>
+          </label>
+          <div
+            id="summary-options"
+            style="
+              display: none;
+              margin-top: 10px;
+              padding-left: 10px;
+              border-left: 2px solid #eee;
+            "
+          >
+            <div style="margin-bottom: 10px">
+              <label
+                style="display: block; margin-bottom: 5px; font-size: 13px"
+                >触发模式</label
+              >
+              <label style="margin-right: 15px; font-size: 13px">
+                <input type="radio" name="summary-mode" value="manual" />
+                手动提醒
+              </label>
+              <label style="font-size: 13px">
+                <input type="radio" name="summary-mode" value="auto" />
+                自动执行
+              </label>
+            </div>
+            <div style="margin-bottom: 10px">
+              <label
+                style="display: block; margin-bottom: 5px; font-size: 13px"
+                >每隔多少条消息触发</label
+              >
+              <input
+                type="number"
+                id="summary-count-input"
+                value="50"
+                style="width: 80px"
+              />
+            </div>
+            <div style="margin-bottom: 10px">
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button
+                  id="manual-summary-btn"
+                  class="form-button-secondary"
+                  style="
+                    flex: 1;
+                    font-size: 13px;
+                    padding: 6px 12px;
+                    width: auto;
+                    margin-top: 0;
+                  "
+                >
+                  立即手动总结
+                </button>
+                <button
+                  id="view-summary-history-btn"
+                  class="form-button-secondary"
+                  style="
+                    flex: 1;
+                    font-size: 13px;
+                    padding: 6px 12px;
+                    width: auto;
+                    margin-top: 0;
+                  "
+                >
+                  查看历史总结
+                </button>
+              </div>
+            </div>
+
             <div
-              id="summary-options"
               style="
-                display: none;
-                margin-top: 10px;
-                padding-left: 10px;
-                border-left: 2px solid #eee;
+                margin-top: 15px;
+                padding-top: 10px;
+                border-top: 1px dashed #eee;
               "
             >
-              <div style="margin-bottom: 10px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 10px;
+                "
+              >
                 <label
-                  style="display: block; margin-bottom: 5px; font-size: 13px"
-                  >触发模式</label
+                  for="summary-custom-api-toggle"
+                  style="font-size: 13px; margin-bottom: 0"
+                  >使用独立API配置</label
                 >
-                <label style="margin-right: 15px; font-size: 13px">
-                  <input type="radio" name="summary-mode" value="manual" />
-                  手动提醒
+                <label class="toggle-switch">
+                  <input type="checkbox" id="summary-custom-api-toggle" />
+                  <span class="toggle-slider"></span>
                 </label>
-                <label style="font-size: 13px">
-                  <input type="radio" name="summary-mode" value="auto" />
-                  自动执行
-                </label>
-              </div>
-              <div style="margin-bottom: 10px">
-                <label
-                  style="display: block; margin-bottom: 5px; font-size: 13px"
-                  >每隔多少条消息触发</label
-                >
-                <input
-                  type="number"
-                  id="summary-count-input"
-                  value="50"
-                  style="width: 80px"
-                />
-              </div>
-              <div style="margin-bottom: 10px">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <button
-                    id="manual-summary-btn"
-                    class="form-button-secondary"
-                    style="
-                      flex: 1;
-                      font-size: 13px;
-                      padding: 6px 12px;
-                      width: auto;
-                      margin-top: 0;
-                    "
-                  >
-                    立即手动总结
-                  </button>
-                  <button
-                    id="view-summary-history-btn"
-                    class="form-button-secondary"
-                    style="
-                      flex: 1;
-                      font-size: 13px;
-                      padding: 6px 12px;
-                      width: auto;
-                      margin-top: 0;
-                    "
-                  >
-                    查看历史总结
-                  </button>
-                </div>
               </div>
 
               <div
-                style="
-                  margin-top: 15px;
-                  padding-top: 10px;
-                  border-top: 1px dashed #eee;
-                "
+                id="summary-custom-api-options"
+                style="display: none; flex-direction: column; gap: 10px"
               >
+                <div>
+                  <input
+                    type="text"
+                    id="summary-custom-api-url"
+                    class="moe-input"
+                    placeholder="API地址 (例如: https://api.openai.com)"
+                    style="font-size: 13px; padding: 8px"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    id="summary-custom-api-key"
+                    class="moe-input"
+                    placeholder="API Key (sk-...)"
+                    style="font-size: 13px; padding: 8px"
+                  />
+                </div>
+                <div style="display: flex; gap: 5px; align-items: center">
+                  <input
+                    type="text"
+                    id="summary-custom-model-select"
+                    class="moe-input"
+                    placeholder="输入或选择模型"
+                    list="summary-model-list"
+                    style="font-size: 13px; padding: 8px; flex-grow: 1"
+                  />
+                  <datalist id="summary-model-list"></datalist>
+                  <button
+                      id="summary-fetch-models-btn"
+                    class="form-button-secondary"
+                    style="
+                      width: auto;
+                      padding: 0 10px;
+                      font-size: 12px;
+                      margin-top: 0;
+                      white-space: nowrap;
+                    "
+                  >
+                    获取
+                  </button>
+                </div>
                 <div
                   style="
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 10px;
                   "
                 >
                   <label
-                    for="summary-custom-api-toggle"
+                    for="summary-stream-toggle"
                     style="font-size: 13px; margin-bottom: 0"
-                    >使用独立API配置</label
+                    >流式请求</label
                   >
                   <label class="toggle-switch">
-                    <input type="checkbox" id="summary-custom-api-toggle" />
+                    <input type="checkbox" id="summary-stream-toggle" />
                     <span class="toggle-slider"></span>
                   </label>
-                </div>
-
-                <div
-                  id="summary-custom-api-options"
-                  style="display: none; flex-direction: column; gap: 10px"
-                >
-                  <div>
-                    <input
-                      type="text"
-                      id="summary-custom-api-url"
-                      class="moe-input"
-                      placeholder="API地址 (例如: https://api.openai.com)"
-                      style="font-size: 13px; padding: 8px"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="password"
-                      id="summary-custom-api-key"
-                      class="moe-input"
-                      placeholder="API Key (sk-...)"
-                      style="font-size: 13px; padding: 8px"
-                    />
-                  </div>
-                  <div style="display: flex; gap: 5px; align-items: center">
-                    <input
-                      type="text"
-                      id="summary-custom-model-select"
-                      class="moe-input"
-                      placeholder="输入或选择模型"
-                      list="summary-model-list"
-                      style="font-size: 13px; padding: 8px; flex-grow: 1"
-                    />
-                    <datalist id="summary-model-list"></datalist>
-                    <button
-                        id="summary-fetch-models-btn"
-                      class="form-button-secondary"
-                      style="
-                        width: auto;
-                        padding: 0 10px;
-                        font-size: 12px;
-                        margin-top: 0;
-                        white-space: nowrap;
-                      "
-                    >
-                      获取
-                    </button>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                    "
-                  >
-                    <label
-                      for="summary-stream-toggle"
-                      style="font-size: 13px; margin-bottom: 0"
-                      >流式请求</label
-                    >
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="summary-stream-toggle" />
-                      <span class="toggle-slider"></span>
-                    </label>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <hr
-            style="margin: 25px 0; border: none; border-top: 1px solid #eee"
-          />
-          <button
-            class="form-button form-button-secondary"
-            id="block-chat-btn"
-            style="
-              background-color: #ff3b30;
-              color: white;
-              border-color: #ff3b30;
-            "
-          >
-            拉黑对方
-          </button>
-          <button class="form-button form-button-secondary" id="clear-chat-btn">
-            清空聊天记录
-          </button>
         </div>
-        <div class="modal-footer">
-          <button class="cancel" id="cancel-chat-settings-btn">取消</button
-          ><button class="save" id="save-chat-settings-btn">保存</button>
+        <hr
+          style="margin: 25px 0; border: none; border-top: 1px solid #eee"
+        />
+        <button
+          class="form-button form-button-secondary"
+          id="block-chat-btn"
+          style="
+            background-color: #ff3b30;
+            color: white;
+            border-color: #ff3b30;
+          "
+        >
+          拉黑对方
+        </button>
+        <button class="form-button form-button-secondary" id="clear-chat-btn">
+          清空聊天记录
+        </button>
+
+        <!-- Save button moved to bottom of content area -->
+        <div style="margin-top: 30px;">
+          <button class="form-button" id="save-chat-settings-btn">保存设置</button>
+          <button class="form-button form-button-secondary" id="cancel-chat-settings-btn" style="margin-top: 10px;">取消</button>
         </div>
       </div>
     </div>
+      </div>
+    </div>
+
 
     <div id="persona-library-modal" class="modal">
       <div class="modal-content">
