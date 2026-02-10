@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ephone-v2';
+const CACHE_NAME = 'ephone-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,7 +12,7 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing Service Worker v2...');
+  console.log('[SW] Installing ephone-v3 Service Worker...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Caching app shell');
@@ -24,7 +24,7 @@ self.addEventListener('install', (event) => {
 
 // Activate Event
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating Service Worker v2...');
+  console.log('[SW] Activating ephone-v3 Service Worker...');
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
@@ -69,6 +69,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(event.request).then((response) => {
         return response || fetch(event.request).then((fetchResponse) => {
           // 缓存新获取的资源
+          console.log('[SW] Saving new fetch response into ephone-v3 cache');
           return caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, fetchResponse.clone());
             return fetchResponse;

@@ -91,7 +91,6 @@
           accept_transfer: "回应了转账-接受",
           decline_transfer: "回应了转账-拒绝/退款",
           quote_reply: "引用了回复",
-          text: "",
         };
         let res = extractArray(item.content);
 
@@ -132,7 +131,7 @@
             } else if (itemType === "transfer") {
               return [
                 {
-                  text: `${time}[${text}] 金额是:${obj.amount} 备注是:${obj.amount}`,
+                  text: `${time}[${text}] 金额是:${obj.amount} 备注是:${obj.note}`,
                 },
               ];
             } else if (itemType === "waimai_request") {
@@ -151,65 +150,65 @@
               ];
             } else if (itemType === "video_call_request") {
               return [{ text: `${time}[${text}]` }];
+            } else if (itemType === "video_call_response") {
+              return [
+                {
+                  text: `${time}[${text[obj.decision]}] ${
+                    obj.decision === "accept" ? "同意" : "拒绝"
+                  }`,
+                },
+              ];
+            } else if (itemType === "qzone_post") {
+              return [
+                {
+                  text: `${time}[${text[obj.postType]}] ${
+                    obj.postType === "shuoshuo"
+                      ? `${obj.content}`
+                      : `图片描述是:${obj.hiddenContent} ${
+                          obj.publicText ? `文案是: ${obj.publicText}` : ""
+                        }`
+                  }`,
+                },
+              ];
+            } else if (itemType === "qzone_comment") {
+              return [
+                {
+                  text: `${time}[${text}] 评论的id是: ${obj.postId} 评论的内容是: ${obj.commentText}`,
+                },
+              ];
+            } else if (itemType === "qzone_like") {
+              return [{ text: `${time}[${text}] 点赞的id是: ${obj.postId}` }];
+            } else if (itemType === "pat_user") {
+              return [
+                { text: `${time}[${text}] ${obj.suffix ? obj.suffix : ""}` },
+              ];
+            } else if (itemType === "block_user") {
+              return [{ text: `${time}[${text}]` }];
+            } else if (itemType === "friend_request_response") {
+              return [
+                {
+                  text: `${time}[${text}] 结果是:${
+                    obj.decision === "accept" ? "同意" : "拒绝"
+                  }`,
+                },
+              ];
+            } else if (itemType === "change_avatar") {
+              return [{ text: `${time}[${text}] 头像名是:${obj.name}` }];
+            } else if (itemType === "share_link") {
+              return [
+                {
+                  text: `${time}[${text}] 文章标题是:${obj.title}  文章摘要是:${obj.description} 来源网站名是:${obj.source_name} 文章正文是:${obj.content}`,
+                },
+              ];
+            } else if (itemType === "accept_transfer") {
+              return [{ text: `${time}[${text}]` }];
+            } else if (itemType === "quote_reply") {
+              return [
+                { text: `${time}[${text}] 引用的内容是:${obj.reply_content}` },
+              ];
+            } else if (itemType === "text") {
+              return [{ text: `${time}${obj.content}` }];
             }
-          } else if (itemType === "video_call_request") {
-            return [
-              {
-                text: `${time}[${text[obj.decision]}] ${
-                  obj.decision === "accept" ? "同意" : "拒绝"
-                }`,
-              },
-            ];
-          } else if (itemType === "qzone_post") {
-            return [
-              {
-                text: `${time}[${text[obj.postType]}] ${
-                  obj.postType === "shuoshuo"
-                    ? `${obj.content}`
-                    : `图片描述是:${obj.hiddenContent} ${
-                        obj.publicText ? `文案是: ${obj.publicText}` : ""
-                      }`
-                }`,
-              },
-            ];
-          } else if (itemType === "qzone_comment") {
-            return [
-              {
-                text: `${time}[${text}] 评论的id是: ${obj.postId} 评论的内容是: ${obj.commentText}`,
-              },
-            ];
-          } else if (itemType === "qzone_like") {
-            return [{ text: `${time}[${text}] 点赞的id是: ${obj.postId}` }];
-          } else if (itemType === "pat_user") {
-            return [
-              { text: `${time}[${text}] ${obj.suffix ? obj.suffix : ""}` },
-            ];
-          } else if (itemType === "block_user") {
-            return [{ text: `${time}[${text}]` }];
-          } else if (itemType === "friend_request_response") {
-            return [
-              {
-                text: `${time}[${text}] 结果是:${
-                  obj.decision === "accept" ? "同意" : "拒绝"
-                }`,
-              },
-            ];
-          } else if (itemType === "change_avatar") {
-            return [{ text: `${time}[${text}] 头像名是:${obj.name}` }];
-          } else if (itemType === "share_link") {
-            return [
-              {
-                text: `${time}[${text}] 文章标题是:${obj.title}  文章摘要是:${obj.description} 来源网站名是:${obj.source_name} 文章正文是:${obj.content}`,
-              },
-            ];
-          } else if (itemType === "accept_transfer") {
-            return [{ text: `${time}[${text}]` }];
-          } else if (itemType === "quote_reply") {
-            return [
-              { text: `${time}[${text}] 引用的内容是:${obj.reply_content}` },
-            ];
-          } else if (itemType === "text") {
-            return [{ text: `${time}${obj.content}` }];
           }
         }
 
@@ -1299,7 +1298,7 @@
 
         function addGradientStop() {
           const config = getActiveBubbleConfig();
-          if (config.gradient.stops.length >= 5) return alert('最多支持5个颜色节点');
+          if (config.gradient.stops.length >= 5) return showCustomAlert("提示", '最多支持5个颜色节点');
           
           // Insert in middle or at end
           const lastStop = config.gradient.stops[config.gradient.stops.length - 1];
@@ -2259,7 +2258,7 @@
           await db.globalSettings.put(state.globalSettings);
           document.getElementById("font-url-input").value = "";
           document.getElementById("font-preview").style.fontFamily = "";
-          alert("已恢复默认字体。");
+          showCustomAlert("提示", "已恢复默认字体。");
         }
 
         async function loadAllDataFromDB() {
@@ -4642,9 +4641,9 @@
               );
 
             const data = await response.json();
-            rawContent = isGemini
-              ? data.candidates[0].content.parts[0].text
-              : data.choices[0].message.content;
+                rawContent = isGemini
+                  ? data?.candidates?.[0]?.content?.parts?.[0]?.text
+                  : data.choices[0].message.content;
           } catch (e) {
             console.error(e);
             rawContent = "(Offline Mode Error: " + e.message + ")";
@@ -4707,7 +4706,7 @@
               enableTopK,
             } = getActiveApiConfig() || {};
             if (!proxyUrl || !apiKey || !model) {
-              alert("请先在API设置中配置反代地址、密钥并选择模型。");
+              showCustomAlert("提示", "请先在API设置中配置反代地址、密钥并选择模型。");
               // ★★★★★【核心修改3：无论成功失败，都要隐藏输入提示】★★★★★
               if (chat.isGroup) {
                 if (typingIndicator) typingIndicator.style.display = "none";
@@ -4725,17 +4724,18 @@
               await processOfflineResponse(chat);
 
               // Reset UI Indicators
-              const typingIndicator =
+              const localTypingIndicator =
                 document.getElementById("typing-indicator");
-              const chatHeaderTitle =
+              const localChatHeaderTitle =
                 document.getElementById("chat-header-title");
 
               if (chat.isGroup) {
-                if (typingIndicator) typingIndicator.style.display = "none";
+                if (localTypingIndicator)
+                  localTypingIndicator.style.display = "none";
               } else {
-                if (chatHeaderTitle) {
-                  chatHeaderTitle.textContent = chat.name;
-                  chatHeaderTitle.classList.remove("typing-status");
+                if (localChatHeaderTitle) {
+                  localChatHeaderTitle.textContent = chat.name;
+                  localChatHeaderTitle.classList.remove("typing-status");
                 }
               }
               return;
@@ -6426,7 +6426,7 @@ ${membersList}
                   participants: [],
                 };
                 showScreen("chat-interface-screen");
-                alert("无人接听群聊邀请。");
+                showCustomAlert("提示", "无人接听群聊邀请。");
               }
             }
 
@@ -6509,7 +6509,7 @@ ${membersList}
           const amount = parseFloat(amountInput.value);
           const note = noteInput.value.trim();
           if (isNaN(amount) || amount < 0 || amount > 9999) {
-            alert("请输入有效的金额 (0 到 9999 之间)！");
+            showCustomAlert("提示", "请输入有效的金额 (0 到 9999 之间)！");
             return;
           }
           const chat = state.chats[state.activeChatId];
@@ -7051,7 +7051,7 @@ ${membersList}
             .getElementById("preset-persona-input")
             .value.trim();
           if (avatar === defaultAvatar && !persona) {
-            alert("头像和人设不能都为空哦！");
+            showCustomAlert("提示", "头像和人设不能都为空哦！");
             return;
           }
           if (editingPersonaPresetId) {
@@ -7229,7 +7229,7 @@ ${membersList}
                 // 3. 重新渲染相册列表
                 await renderAlbumList();
 
-                alert("相册已成功删除。");
+                showCustomAlert("提示", "相册已成功删除。");
               }
             });
 
@@ -8118,7 +8118,7 @@ ${membersList}
           const input = document.getElementById("new-group-name-input");
           const name = input.value.trim();
           if (!name) {
-            alert("分组名不能为空！");
+            showCustomAlert("提示", "分组名不能为空！");
             return;
           }
 
@@ -8128,7 +8128,7 @@ ${membersList}
             .equals(name)
             .first();
           if (existingGroup) {
-            alert(`分组 "${name}" 已经存在了，换个名字吧！`);
+            showCustomAlert("提示", `分组 "${name}" 已经存在了，换个名字吧！`);
             return;
           }
           // 【修正结束】
@@ -8355,7 +8355,7 @@ ${membersList}
               ) {
                 block.remove();
               } else {
-                alert("至少需要保留一条消息。");
+                showCustomAlert("提示", "至少需要保留一条消息。");
               }
             });
 
@@ -8854,7 +8854,7 @@ ${membersList}
          */
         async function handleCreateGroup() {
           if (selectedContacts.size < 2) {
-            alert("创建群聊至少需要选择2个联系人。");
+            showCustomAlert("提示", "创建群聊至少需要选择2个联系人。");
             return;
           }
 
@@ -8954,7 +8954,7 @@ ${membersList}
 
           // 安全检查，群聊至少保留2人
           if (chat.members.length <= 2) {
-            alert("群聊人数不能少于2人。");
+            showCustomAlert("提示", "群聊人数不能少于2人。");
             return;
           }
 
@@ -9024,7 +9024,7 @@ ${membersList}
          */
         async function handleAddMembersToGroup() {
           if (selectedContacts.size === 0) {
-            alert("请至少选择一个要添加的联系人。");
+            showCustomAlert("提示", "请至少选择一个要添加的联系人。");
             return;
           }
 
@@ -9062,7 +9062,7 @@ ${membersList}
           // 检查本名是否已在群内存在
           const chat = state.chats[state.activeChatId];
           if (chat.members.some((m) => m.originalName === name.trim())) {
-            alert(`错误：群内已存在名为“${name.trim()}”的成员！`);
+            showCustomAlert("提示", `错误：群内已存在名为“${name.trim()}”的成员！`);
             return;
           }
 
@@ -9091,7 +9091,7 @@ ${membersList}
           renderMemberManagementList();
           renderGroupMemberSettings(chat.members);
 
-          alert(`新成员“${name}”已成功加入群聊！`);
+          showCustomAlert("提示", `新成员“${name}”已成功加入群聊！`);
         }
 
         function startWaimaiCountdown(element, endTime) {
@@ -10503,15 +10503,15 @@ ${membersList}
             .value.trim();
 
           if (isNaN(amount) || amount <= 0) {
-            alert("请输入有效的总金额！");
+            showCustomAlert("提示", "请输入有效的总金额！");
             return;
           }
           if (isNaN(count) || count <= 0) {
-            alert("请输入有效的红包个数！");
+            showCustomAlert("提示", "请输入有效的红包个数！");
             return;
           }
           if (amount / count < 0.01) {
-            alert("单个红包金额不能少于0.01元！");
+            showCustomAlert("提示", "单个红包金额不能少于0.01元！");
             return;
           }
 
@@ -10555,11 +10555,11 @@ ${membersList}
             .value.trim();
 
           if (isNaN(amount) || amount <= 0) {
-            alert("请输入有效的金额！");
+            showCustomAlert("提示", "请输入有效的金额！");
             return;
           }
           if (!receiverName) {
-            alert("请选择一个接收人！");
+            showCustomAlert("提示", "请选择一个接收人！");
             return;
           }
 
@@ -10860,7 +10860,7 @@ ${membersList}
               if (container.children.length > 2) {
                 wrapper.remove();
               } else {
-                alert("投票至少需要2个选项。");
+                showCustomAlert("提示", "投票至少需要2个选项。");
               }
             });
 
@@ -10877,7 +10877,7 @@ ${membersList}
             .getElementById("poll-question-input")
             .value.trim();
           if (!question) {
-            alert("请输入投票问题！");
+            showCustomAlert("提示", "请输入投票问题！");
             return;
           }
 
@@ -10888,7 +10888,7 @@ ${membersList}
             .filter((text) => text); // 过滤掉空的选项
 
           if (options.length < 2) {
-            alert("请至少输入2个有效的投票选项！");
+            showCustomAlert("提示", "请至少输入2个有效的投票选项！");
             return;
           }
 
@@ -11129,7 +11129,7 @@ ${membersList}
             "url",
           );
           if (!url || !url.trim().startsWith("http")) {
-            alert("请输入有效的图片URL！");
+            showCustomAlert("提示", "请输入有效的图片URL！");
             return;
           }
 
@@ -11274,7 +11274,7 @@ ${membersList}
             .getElementById("link-title-input")
             .value.trim();
           if (!title) {
-            alert("标题是必填项哦！");
+            showCustomAlert("提示", "标题是必填项哦！");
             return;
           }
 
@@ -11717,7 +11717,7 @@ ${membersList}
               await renderCallHistoryScreen();
 
               // 4. (可选) 给出成功提示
-              alert("通话记录已删除。");
+              showCustomAlert("提示", "通话记录已删除。");
             }
           });
           modal.classList.add("visible");
@@ -12026,7 +12026,7 @@ ${membersList}
           const input = document.getElementById("new-category-name-input");
           const name = input.value.trim();
           if (!name) {
-            alert("分类名不能为空！");
+            showCustomAlert("提示", "分类名不能为空！");
             return;
           }
           const existing = await db.worldBookCategories
@@ -12034,7 +12034,7 @@ ${membersList}
             .equals(name)
             .first();
           if (existing) {
-            alert(`分类 "${name}" 已经存在了！`);
+            showCustomAlert("提示", `分类 "${name}" 已经存在了！`);
             return;
           }
           await db.worldBookCategories.add({ name });
@@ -12600,7 +12600,7 @@ ${membersList}
               applyGlobalWallpaper(); // 确保边框颜色被应用（因为 applyGlobalWallpaper 包含了边框逻辑）
               applyAppIcons(); // 重新应用所有图标
 
-              alert("外观设置已保存并应用！");
+              showCustomAlert("提示", "外观设置已保存并应用！");
               showScreen("home-screen");
             });
 
@@ -12661,7 +12661,7 @@ ${membersList}
               const key = document
                 .getElementById("config-key-input")
                 .value.trim();
-              if (!url || !key) return alert("请先填写反代地址和密钥");
+              if (!url || !key) return showCustomAlert("提示", "请先填写反代地址和密钥");
               try {
                 let isGemini = url === GEMINI_API_URL;
                 const response = await fetch(
@@ -12690,10 +12690,10 @@ ${membersList}
                   option.value = model.id;
                   modelList.appendChild(option);
                 });
-                alert("模型列表已更新！");
+                showCustomAlert("提示", "模型列表已更新！");
               } catch (e) {
                 console.error(e);
-                alert("获取模型失败: " + e.message);
+                showCustomAlert("提示", "获取模型失败: " + e.message);
               }
             });
 
@@ -12708,7 +12708,7 @@ ${membersList}
                 .getElementById("summary-custom-api-key")
                 .value.trim();
               if (!url || !key) {
-                alert("请先填写API地址和密钥");
+                showCustomAlert("提示", "请先填写API地址和密钥");
                 return;
               }
               try {
@@ -12736,10 +12736,10 @@ ${membersList}
                   option.value = model.id;
                   modelList.appendChild(option);
                 });
-                alert("模型列表已更新！");
+                showCustomAlert("提示", "模型列表已更新！");
               } catch (e) {
                 console.error(e);
-                alert("获取模型失败: " + e.message);
+                showCustomAlert("提示", "获取模型失败: " + e.message);
               }
             });
 
@@ -12813,7 +12813,7 @@ ${membersList}
                   .getElementById("world-book-name-input")
                   .value.trim();
                 if (!newName) {
-                  alert("书名不能为空！");
+                  showCustomAlert("提示", "书名不能为空！");
                   return;
                 }
                 book.name = newName;
@@ -13325,7 +13325,7 @@ ${membersList}
                 .getElementById("member-name-input")
                 .value.trim();
               if (!newNickname) {
-                alert("群昵称不能为空！");
+                showCustomAlert("提示", "群昵称不能为空！");
                 return;
               }
               member.groupNickname = newNickname; // 只修改群昵称
@@ -13361,7 +13361,7 @@ ${membersList}
               const newName = document
                 .getElementById("chat-name-input")
                 .value.trim();
-              if (!newName) return alert("备注名/群名不能为空！");
+              if (!newName) return showCustomAlert("提示", "备注名/群名不能为空！");
               chat.name = newName;
               const selectedThemeRadio = document.querySelector(
                 'input[name="theme-select"]:checked',
@@ -13642,7 +13642,7 @@ ${membersList}
                 "请输入表情包的图片URL",
               );
               if (!url || !url.trim().startsWith("http"))
-                return url && alert("请输入有效的URL (以http开头)");
+                return url && showCustomAlert("提示", "请输入有效的URL (以http开头)");
               const name = await showCustomPrompt(
                 "命名表情",
                 "请为这个表情命名 (例如：开心、疑惑)",
@@ -13656,7 +13656,7 @@ ${membersList}
                 await db.userStickers.add(newSticker);
                 state.userStickers.push(newSticker);
                 renderStickerPanel();
-              } else if (name !== null) alert("表情名不能为空！");
+              } else if (name !== null) showCustomAlert("提示", "表情名不能为空！");
             });
           document
             .getElementById("upload-sticker-btn")
@@ -13685,7 +13685,7 @@ ${membersList}
                   await db.userStickers.add(newSticker);
                   state.userStickers.push(newSticker);
                   renderStickerPanel();
-                } else if (name !== null) alert("表情名不能为空！");
+                } else if (name !== null) showCustomAlert("提示", "表情名不能为空！");
               };
               event.target.value = null;
             });
@@ -13791,11 +13791,11 @@ ${membersList}
               const amount = parseFloat(amountInput.value);
 
               if (!productInfo) {
-                alert("请输入商品信息！");
+                showCustomAlert("提示", "请输入商品信息！");
                 return;
               }
               if (isNaN(amount) || amount <= 0) {
-                alert("请输入有效的代付金额！");
+                showCustomAlert("提示", "请输入有效的代付金额！");
                 return;
               }
 
@@ -13923,13 +13923,13 @@ ${membersList}
             .addEventListener("click", async () => {
               const newFontUrl = fontUrlInput.value.trim();
               if (!newFontUrl) {
-                alert("请输入有效的字体URL。");
+                showCustomAlert("提示", "请输入有效的字体URL。");
                 return;
               }
               applyCustomFont(newFontUrl, false);
               state.globalSettings.fontUrl = newFontUrl;
               await db.globalSettings.put(state.globalSettings);
-              alert("字体已保存并应用！");
+              showCustomAlert("提示", "字体已保存并应用！");
             });
           document
             .getElementById("reset-font-btn")
@@ -14155,7 +14155,7 @@ ${membersList}
               await renderAlbumList();
 
               event.target.value = null;
-              alert("照片上传成功！");
+              showCustomAlert("提示", "照片上传成功！");
             });
 
           // --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
@@ -14200,7 +14200,7 @@ ${membersList}
                   await db.qzoneAlbums.update(state.activeAlbumId, updateData);
                   await renderAlbumPhotosScreen();
                   await renderAlbumList();
-                  alert("照片已删除。");
+                  showCustomAlert("提示", "照片已删除。");
                 }
               } else if (photoThumb) {
                 // 这就是恢复的图片点击放大功能！
@@ -14251,9 +14251,9 @@ ${membersList}
                 };
                 await db.qzoneAlbums.add(newAlbum);
                 await renderAlbumList();
-                alert(`相册 "${albumName}" 创建成功！`);
+                showCustomAlert("提示", `相册 "${albumName}" 创建成功！`);
               } else if (albumName !== null) {
-                alert("相册名称不能为空！");
+                showCustomAlert("提示", "相册名称不能为空！");
               }
             });
 
@@ -14365,7 +14365,7 @@ ${membersList}
                   .getElementById("post-public-text")
                   .value.trim();
                 if (!content) {
-                  alert("说说内容不能为空哦！");
+                  showCustomAlert("提示", "说说内容不能为空哦！");
                   return;
                 }
                 newPost = {
@@ -14395,11 +14395,11 @@ ${membersList}
                       imageUrl.startsWith("data:")
                     )
                   ) {
-                    alert("请先添加一张图片再发布动态哦！");
+                    showCustomAlert("提示", "请先添加一张图片再发布动态哦！");
                     return;
                   }
                   if (!imageDescription) {
-                    alert("请为你的图片添加一个简单的描述（必填，给AI看的）！");
+                    showCustomAlert("提示", "请为你的图片添加一个简单的描述（必填，给AI看的）！");
                     return;
                   }
                   newPost = {
@@ -14415,7 +14415,7 @@ ${membersList}
                     .getElementById("post-hidden-text")
                     .value.trim();
                   if (!hiddenText) {
-                    alert("请输入文字图描述！");
+                    showCustomAlert("提示", "请输入文字图描述！");
                     return;
                   }
                   newPost = {
@@ -14475,7 +14475,7 @@ ${membersList}
 
               await renderQzonePosts();
               modal.classList.remove("visible");
-              alert("动态发布成功！");
+              showCustomAlert("提示", "动态发布成功！");
             });
 
           const postsList = document.getElementById("qzone-posts-list");
@@ -14650,7 +14650,7 @@ ${membersList}
                 await db.qzonePosts.update(postId, { comments: post.comments });
                 // 重新渲染列表以反映更改
                 await renderQzonePosts();
-                alert("评论已删除。");
+                showCustomAlert("提示", "评论已删除。");
               }
               return; // 处理完后直接返回
             }
@@ -14711,7 +14711,7 @@ ${membersList}
                     }
                   }
                   await renderQzonePosts();
-                  alert("动态已删除。");
+                  showCustomAlert("提示", "动态已删除。");
                 }, 300);
               }
               return;
@@ -14777,7 +14777,7 @@ ${membersList}
               const commentInput =
                 postContainer.querySelector(".comment-input");
               const commentText = commentInput.value.trim();
-              if (!commentText) return alert("评论内容不能为空哦！");
+              if (!commentText) return showCustomAlert("提示", "评论内容不能为空哦！");
               const post = await db.qzonePosts.get(postId);
               if (!post) return;
               if (!post.comments) post.comments = [];
@@ -15414,13 +15414,13 @@ ${membersList}
               ).value;
 
               if (!title || !dateValue) {
-                alert("请填写完整的约定标题和日期！");
+                showCustomAlert("提示", "请填写完整的约定标题和日期！");
                 return;
               }
 
               const targetDate = new Date(dateValue);
               if (isNaN(targetDate) || targetDate <= new Date()) {
-                alert("请输入一个有效的、未来的日期！");
+                showCustomAlert("提示", "请输入一个有效的、未来的日期！");
                 return;
               }
 
@@ -15487,7 +15487,7 @@ ${membersList}
               if (!chat) return;
 
               if (e.target.id === "force-apply-check-btn") {
-                alert(
+                showCustomAlert("提示",
                   "正在手动触发好友申请流程，请稍后...\n如果API调用成功，将弹出提示。如果失败，也会有错误提示。如果长时间无反应，说明AI可能决定暂时不申请。",
                 );
                 await triggerAiFriendApplication(chat.id);
@@ -15732,7 +15732,7 @@ ${membersList}
                   // 实时更新设置页面的预览图
                   item.querySelector(".icon-preview").src = newUrl.trim();
                 } else if (newUrl !== null) {
-                  alert("请输入一个有效的URL！");
+                  showCustomAlert("提示", "请输入一个有效的URL！");
                 }
               }
             });
@@ -15937,7 +15937,7 @@ ${membersList}
               ).map((cb) => cb.dataset.chatId);
 
               if (selectedTargetIds.length === 0) {
-                alert("请至少选择一个要分享的聊天。");
+                showCustomAlert("提示", "请至少选择一个要分享的聊天。");
                 return;
               }
 
@@ -16117,7 +16117,7 @@ ${membersList}
                 if (lrcContent !== null) {
                   musicState.playlist[index].lrcContent = lrcContent;
                   await saveGlobalPlaylist();
-                  alert("歌词导入成功！");
+                  showCustomAlert("提示", "歌词导入成功！");
                   if (musicState.currentIndex === index) {
                     musicState.parsedLyrics = parseLRC(lrcContent);
                     renderLyrics();
@@ -16223,7 +16223,7 @@ ${membersList}
           if (savePresetBtn) {
             savePresetBtn.addEventListener("click", async () => {
               const name = savePresetNameInput.value.trim();
-              if (!name) return alert("请输入配置名称");
+              if (!name) return showCustomAlert("提示", "请输入配置名称");
 
               const newPreset = {
                 name,
@@ -16244,7 +16244,7 @@ ${membersList}
                 (p) => p.name === name,
               );
               if (existingIndex > -1) {
-                if (!confirm(`配置 "${name}" 已存在，是否覆盖？`)) return;
+                if (!(await showCustomConfirm("提示", `配置 "${name}" 已存在，是否覆盖？`))) return;
                 state.globalSettings.apiPresets[existingIndex] = newPreset;
               } else {
                 state.globalSettings.apiPresets.push(newPreset);
@@ -16253,7 +16253,7 @@ ${membersList}
               await db.globalSettings.put(state.globalSettings);
               renderApiPresetsList();
               savePresetNameInput.value = "";
-              alert("配置已保存");
+              showCustomAlert("提示", "配置已保存");
             });
           }
 
@@ -16269,12 +16269,12 @@ ${membersList}
             presets.forEach((preset, index) => {
               const item = document.createElement("div");
               item.style.cssText =
-                "display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;";
+                "display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--list-border);";
 
               const info = document.createElement("div");
               info.innerHTML = `<strong>${
                 preset.name
-              }</strong><br><span style="font-size:12px; color:#666;">${
+              }</strong><br><span style="font-size:12px; color:var(--muted-text);">${
                 preset.model
               } | ${preset.proxyUrl ? "Proxy" : "Direct"}</span>`;
 
@@ -16293,7 +16293,7 @@ ${membersList}
               deleteBtn.textContent = "删除";
               deleteBtn.className = "form-button";
               deleteBtn.style.cssText =
-                "padding:5px 10px; font-size:12px; width:auto; background-color:#ff3b30;";
+                "padding:5px 10px; font-size:12px; width:auto; background-color:var(--delete-btn-bg);";
               deleteBtn.onclick = () => deleteApiPreset(index);
 
               actions.appendChild(loadBtn);
@@ -16329,11 +16329,11 @@ ${membersList}
             }
 
             apiPresetsModal.classList.remove("visible");
-            alert(`已加载配置 "${preset.name}"，请点击“保存设置”以应用。`);
+            showCustomAlert("提示", `已加载配置 "${preset.name}"，请点击“保存设置”以应用。`);
           }
 
           async function deleteApiPreset(index) {
-            if (!confirm("确定删除此配置吗？")) return;
+            if (!(await showCustomConfirm("提示", "确定删除此配置吗？"))) return;
             state.globalSettings.apiPresets.splice(index, 1);
             await db.globalSettings.put(state.globalSettings);
             renderApiPresetsList();
