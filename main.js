@@ -4555,113 +4555,7 @@
           }
         }
 
-        async function processOfflineResponse(chat) {
-          const offlineSettings = chat.settings.offlineMode;
-          // Ensure access to global presets if available, or fallback
-          const presets =
-            typeof offlinePresets !== "undefined" ? offlinePresets : {};
 
-          // 1. Construct System Prompt
-          const presetName =
-            offlineSettings.preset === "custom"
-              ? "Custom Scenario"
-              : presets[offlineSettings.preset]?.name || offlineSettings.preset;
-          const offlineSystemPrompt = `
-# 当前模式：线下场景模拟
-# 场景：${presetName}
-# 描述：${offlineSettings.prompt}
-# 风格：${offlineSettings.style}
-
-你正在扮演在这个特定场景中的角色。
-如果之前的关系状态或上下文与该场景冲突，请忽略它们。
-专注于感官细节和提示中描述的互动。
-请使用指定的风格进行回复。
-`;
-
-          // 2. Prepare Messages
-          const maxMemory = parseInt(chat.settings.maxMemory) || 20;
-          const recentHistory = chat.history
-            .filter((m) => !m.isHidden)
-            .slice(-maxMemory);
-          const messages = [
-            { role: "system", content: offlineSystemPrompt },
-            ...recentHistory.map((m) => ({
-              role: m.role === "user" ? "user" : "assistant",
-              content: String(m.content),
-            })),
-          ];
-
-          // 3. Call API
-          const {
-            proxyUrl,
-            apiKey,
-            model,
-            temperature,
-            topP,
-            topK,
-            enableTemp,
-            enableTopP,
-            enableTopK,
-          } = getActiveApiConfig() || {};
-
-          let isGemini = proxyUrl === GEMINI_API_URL;
-          let geminiConfig = toGeminiRequestData(
-            model,
-            apiKey,
-            "",
-            messages,
-            isGemini,
-            enableTemp ? temperature : undefined,
-            enableTopP ? topP : undefined,
-            enableTopK ? topK : undefined,
-          );
-
-          let rawContent = "";
-          try {
-            const response = isGemini
-              ? await fetch(geminiConfig.url, geminiConfig.data)
-              : await fetch(`${proxyUrl}/v1/chat/completions`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${apiKey}`,
-                  },
-                  body: JSON.stringify({
-                    model: model,
-                    messages: messages,
-                    temperature: enableTemp ? temperature : undefined,
-                    top_p: enableTopP ? topP : undefined,
-                    top_k: enableTopK ? topK : undefined,
-                  }),
-                });
-
-            if (!response.ok)
-              throw new Error(
-                `Offline API Failed: ${(await response.json()).error?.message || response.statusText}`,
-              );
-
-            const data = await response.json();
-                rawContent = isGemini
-                  ? data?.candidates?.[0]?.content?.parts?.[0]?.text
-                  : data.choices[0].message.content;
-          } catch (e) {
-            console.error(e);
-            rawContent = "(Offline Mode Error: " + e.message + ")";
-          }
-
-          // 4. Save & Render
-          const msg = {
-            role: "assistant",
-            senderName: chat.name,
-            content: rawContent,
-            timestamp: Date.now(),
-            isOfflineMode: true,
-          };
-
-          chat.history.push(msg);
-          await db.chats.put(chat);
-          appendMessage(msg, chat);
-        }
 
         async function triggerAiResponse() {
           if (!state.activeChatId) return;
@@ -4719,27 +4613,7 @@
               return;
             }
 
-            // --- Offline Mode Interception ---
-            if (!chat.isGroup && chat.settings?.offlineMode?.enabled) {
-              await processOfflineResponse(chat);
 
-              // Reset UI Indicators
-              const localTypingIndicator =
-                document.getElementById("typing-indicator");
-              const localChatHeaderTitle =
-                document.getElementById("chat-header-title");
-
-              if (chat.isGroup) {
-                if (localTypingIndicator)
-                  localTypingIndicator.style.display = "none";
-              } else {
-                if (localChatHeaderTitle) {
-                  localChatHeaderTitle.textContent = chat.name;
-                  localChatHeaderTitle.classList.remove("typing-status");
-                }
-              }
-              return;
-            }
 
             // --- 【核心重构 V2：带有上下文和理由的好友申请处理逻辑】---
             if (
@@ -4955,6 +4829,17 @@
       -   **你的任务**: 你可以根据对话内容和氛围，使用 "change_music" 指令切换到播放列表中的任何一首歌，以增强互动体验。
       `;
             }
+            
+            // 构建离线场景上下文
+            let offlineContext = '';
+            const offlineSettings = chat.settings?.offlineMode;
+            if (!chat.isGroup && offlineSettings?.enabled) {
+              const presetName = offlinePresets[offlineSettings.preset]?.name || '自定义';
+              const sceneDesc = offlineSettings.prompt || '';
+              const styleDesc = offlineSettings.style || '';
+              offlineContext = `\n# 当前线下场景\n- 场景：${presetName}\n- 描述：${sceneDesc}\n- 风格：${styleDesc}\n请在回复中自然融入上述线下场景的互动，保持角色一致性。`;
+            }
+            
             let systemPrompt, messagesPayload;
             const maxMemory = parseInt(chat.settings.maxMemory) || 10;
             const isOfflineModeActive = chat.settings?.offlineMode?.enabled;
@@ -5114,7 +4999,7 @@ ${membersList}
       # 你的任务与规则：
       1. **【【【输出格式】】】**: 你的回复【必须】是一个JSON数组格式的字符串。数组中的【每一个元素都必须是一个带有type字段的JSON对象】。
       2. **对话节奏**: 模拟真人的聊天习惯，你可以一次性生成多条短消息。每次要回复至少3-8条消息！！！
-      并且不能一直要求和用户见面，这是线上聊天，决不允许出现或者发展为线下剧情！！
+      并且不能一直要求和用户见面，这是线上聊天，${offlineSettings?.enabled ? '当前处于线下场景模式，请自然地融入线下互动，用感官细节描绘场景。' : '决不允许出现或者发展为线下剧情！！'}
       4.  **情景感知**: 你需要感知当前的时间(${currentTime})、我们正在一起听的歌、以及你的人设和世界观。
           - **当我们在"一起听歌"时**，你会知道当前播放的歌曲和整个播放列表。你可以根据对话内容或氛围，【主动切换】到播放列表中的另一首歌。
       5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说"我先去洗个澡"，然后更新你的状态。
@@ -5199,6 +5084,7 @@ ${membersList}
 
       ${worldBookContent}
       ${sharedContext}
+      ${offlineContext}
       现在，请根据以上规则和下面的对话历史，继续进行对话。`;
             }
 
@@ -6310,6 +6196,10 @@ ${membersList}
               // 【核心修复】将渲染逻辑移出循环
                 if (aiMessage) {
                   // 1. 将新消息存入历史记录
+                  // 【离线模式标记】如果离线模式开启,标记消息
+                  if (offlineSettings?.enabled) {
+                    aiMessage.isOfflineMode = true;
+                  }
                   chat.history.push(aiMessage);
                   // 后台通知
                     if (
@@ -6495,6 +6385,9 @@ ${membersList}
             meaning: sticker.name,
             timestamp: Date.now(),
           };
+          if (chat.settings?.offlineMode?.enabled) {
+            msg.isOfflineMode = true;
+          }
           chat.history.push(msg);
           await db.chats.put(chat);
           appendMessage(msg, chat);
@@ -6526,6 +6419,9 @@ ${membersList}
             receiverName,
             timestamp: Date.now(),
           };
+          if (chat.settings?.offlineMode?.enabled) {
+            msg.isOfflineMode = true;
+          }
           chat.history.push(msg);
           await db.chats.put(chat);
           appendMessage(msg, chat);
@@ -12366,6 +12262,11 @@ ${membersList}
                 timestamp: Date.now(),
               };
 
+              // 【离线模式标记】如果离线模式开启,标记消息
+              if (chat.settings?.offlineMode?.enabled) {
+                msg.isOfflineMode = true;
+              }
+
               // 检查当前是否处于引用回复模式
               if (currentReplyContext) {
                 msg.quote = currentReplyContext; // 将引用信息附加到消息对象上
@@ -13711,6 +13612,9 @@ ${membersList}
                   ],
                   timestamp: Date.now(),
                 };
+                if (chat.settings?.offlineMode?.enabled) {
+                  msg.isOfflineMode = true;
+                }
                 chat.history.push(msg);
                 await db.chats.put(chat);
                 appendMessage(msg, chat);
@@ -13735,6 +13639,9 @@ ${membersList}
                   content: text.trim(),
                   timestamp: Date.now(),
                 };
+                if (chat.settings?.offlineMode?.enabled) {
+                  msg.isOfflineMode = true;
+                }
                 chat.history.push(msg);
                 await db.chats.put(chat);
                 appendMessage(msg, chat);
@@ -13757,6 +13664,9 @@ ${membersList}
                   content: description.trim(),
                   timestamp: Date.now(),
                 };
+                if (chat.settings?.offlineMode?.enabled) {
+                  msg.isOfflineMode = true;
+                }
                 chat.history.push(msg);
                 await db.chats.put(chat);
                 appendMessage(msg, chat);
@@ -13818,6 +13728,9 @@ ${membersList}
                 countdownEndTime: now + 15 * 60 * 1000,
                 timestamp: now,
               };
+              if (chat.settings?.offlineMode?.enabled) {
+                msg.isOfflineMode = true;
+              }
 
               chat.history.push(msg);
               await db.chats.put(chat);
