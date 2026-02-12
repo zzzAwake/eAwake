@@ -320,9 +320,8 @@
               </div>
               <button
                 type="button"
-                class="form-button form-button-secondary"
+                class="form-button form-button-secondary mt-15"
                 id="add-new-config-btn"
-                style="margin-top: 15px"
               >
                 + 添加新配置
               </button>
@@ -350,7 +349,7 @@
                 style="width: auto; height: 20px"
               />
             </div>
-            <div class="form-group form-group-flex" style="margin-top: 10px">
+            <div class="form-group form-group-flex mt-10">
               <label for="background-interval-input" class="label-inline">
                 后台活动检测间隔 (秒)
                 <p
@@ -372,7 +371,7 @@
                 class="input-compact"
               />
             </div>
-            <div class="form-group form-group-flex" style="margin-top: 10px">
+            <div class="form-group form-group-flex mt-10">
               <label for="block-cooldown-input" class="label-inline">
                 AI被拉黑后冷静期 (小时)
                 <p
@@ -396,7 +395,7 @@
               />
             </div>
 
-            <div class="form-group" style="margin-top: 20px">
+            <div class="form-group mt-20">
               <label>后台角色活动 - 角色开关</label>
               <div id="role-activity-settings" class="settings-group"></div>
               <p class="form-hint">
@@ -549,8 +548,7 @@
               />
               <button
                 id="favorites-search-clear-btn"
-                class="search-clear-btn"
-                class="u-hidden"
+                class="search-clear-btn u-hidden"
               >
                 ×
               </button>
@@ -1203,16 +1201,16 @@
                     cursor: pointer;
                   "
                 />
-                <span id="frame-color-value" style="font-family: monospace"
+                <span id="frame-color-value" class="font-mono"
                   >#ffffff</span
                 >
               </div>
             </div>
 
             <!-- 【核心修改2】新增图标设置区域 -->
-            <hr style="width: 80%; opacity: 0.3; margin: 30px 0" />
-            <div style="width: 100%; text-align: left; margin-bottom: 15px">
-              <label style="font-weight: 500; color: var(--text-secondary)"
+            <hr class="hr-section" />
+            <div class="w-100 text-left mb-15">
+              <label class="label-section"
                 >App 图标设置</label
               >
             </div>
@@ -1222,9 +1220,8 @@
 
             <!-- 【核心修改3】按钮文字也改一下 -->
             <button
-              class="form-button"
+              class="form-button mt-30"
               id="save-wallpaper-btn"
-              style="margin-top: 30px"
             >
               保存所有外观设置
             </button>
@@ -1263,10 +1260,10 @@
             <div class="form-group">
               <label>实时预览</label>
               <div id="font-preview">
-                <p style="font-size: 20px; margin: 0 0 10px 0">
+                <p class="fs-20 m-0 mb-10">
                   你好世界 Hello World
                 </p>
-                <p style="margin: 0">这是字体预览效果，12345。</p>
+                <p class="m-0">这是字体预览效果，12345。</p>
               </div>
             </div>
 
@@ -1369,8 +1366,7 @@
               <!-- 这个按钮默认隐藏，只在用户“旁观”时显示 -->
               <button
                 id="join-call-btn"
-                class="control-btn join-btn"
-                class="u-hidden"
+                class="control-btn join-btn u-hidden"
               ></button>
             </div>
           </div>
@@ -1423,7 +1419,7 @@
           ><input type="text" id="chat-name-input" />
         </div>
 
-        <div class="form-group" id="ai-remark-group" class="u-hidden">
+        <div class="form-group u-hidden" id="ai-remark-group">
           <label for="ai-remark-input">AI备注 (仅自己可见)</label>
           <input
             type="text"
@@ -1433,9 +1429,8 @@
         </div>
 
         <div
-          class="form-group"
+          class="form-group u-hidden"
           id="assign-group-section"
-          class="u-hidden"
         >
           <!-- 默认隐藏，只对单聊显示 -->
           <label for="assign-group-select">好友分组</label>
@@ -1445,8 +1440,8 @@
             </select>
             <button
               id="manage-groups-btn"
-              class="form-button-secondary"
-              style="margin-top: 0; padding: 12px"
+              class="form-button-secondary p-12"
+              style="margin-top: 0"
             >
               管理分组
             </button>
@@ -1496,7 +1491,7 @@
         </div>
 
         <div class="form-group" id="video-call-settings-group">
-          <hr style="opacity: 0.2; margin: 15px 0" />
+          <hr class="hr-subtle" />
 
           <label
             style="
@@ -1536,8 +1531,7 @@
           <!-- 【新增】管理成员按钮 -->
           <button
             id="manage-members-btn"
-            class="form-button form-button-secondary"
-            style="margin-top: 15px"
+            class="form-button form-button-secondary mt-15"
           >
             管理群成员
           </button>
@@ -1698,13 +1692,14 @@
             max="20"
             step="1"
             value="13"
-            style="width: 100%; margin-top: 8px"
+            class="w-100"
+            style="margin-top: 8px"
           />
         </div>
 
-        <div class="settings-group" style="margin-bottom: 20px;">
+        <div class="settings-group mb-20">
           <!-- Tab Header -->
-          <div class="bubble-tabs" style="display: flex; border-bottom: 1px solid #eee; margin-bottom: 15px;">
+          <div class="bubble-tabs">
             <div id="tab-text-bubble" class="bubble-tab active" onclick="switchBubbleTab('text')" 
                  style="flex: 1; text-align: center; padding: 10px; cursor: pointer; border-bottom: 2px solid var(--primary-color); font-weight: bold;">
               文字气泡
@@ -1718,7 +1713,7 @@
           <!-- Text Bubble Panel -->
           <div id="panel-text-bubble">
             <!-- Target Switcher (Me vs AI) -->
-            <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
+            <div class="segment-control">
               <button id="btn-target-user" onclick="switchBubbleTarget('user')" class="active" 
                       style="flex: 1; border: none; background: #fff; padding: 6px; border-radius: 6px; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
                 我 (User)
@@ -1732,11 +1727,11 @@
             <!-- Main Settings Container -->
             <div id="bubble-settings-container">
               <!-- Background Section -->
-              <div class="setting-subsection" style="margin-bottom: 15px;">
-                <div class="settings-row" style="margin-bottom: 10px;">
-                  <label style="font-weight: 600;">背景样式</label>
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 12px; color: #666;">渐变</span>
+              <div class="setting-subsection">
+                <div class="settings-row mb-10">
+                  <label class="fw-600">背景样式</label>
+                  <div class="flex align-center gap-10">
+                    <span class="label-gradient-small">渐变</span>
                     <label class="toggle-switch">
                       <input type="checkbox" id="bubble-gradient-toggle">
                       <span class="slider"></span>
@@ -1754,23 +1749,23 @@
                 <div id="bubble-gradient-options" style="display: none; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
                   <div class="settings-row">
                     <label>类型</label>
-                    <select id="bubble-gradient-type" class="moe-input" style="width: 100px; padding: 4px;">
+                    <select id="bubble-gradient-type" class="moe-input input-select-compact">
                       <option value="linear">线性 (Linear)</option>
                       <option value="radial">径向 (Radial)</option>
                     </select>
                   </div>
                   <div class="settings-row" id="bubble-angle-row">
                     <label>角度 <span id="bubble-angle-val">180°</span></label>
-                    <input type="range" id="bubble-angle" min="0" max="360" step="5" style="width: 120px;">
+                    <input type="range" id="bubble-angle" min="0" max="360" step="5" class="input-range-120">
                   </div>
                   
                   <!-- Color Stops -->
-                  <div style="margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <div class="mt-10">
+                    <div class="flex justify-between mb-5">
                       <label>颜色节点</label>
-                      <button type="button" onclick="addGradientStop()" style="font-size: 12px; padding: 2px 8px; background: #eee; border: none; border-radius: 4px;">+ 添加</button>
+                      <button type="button" onclick="addGradientStop()" class="btn-gradient-add">+ 添加</button>
                     </div>
-                    <div id="bubble-gradient-stops" style="display: flex; flex-direction: column; gap: 5px;">
+                    <div id="bubble-gradient-stops" class="gradient-stops-container">
                       <!-- Generated by JS -->
                     </div>
                   </div>
@@ -1780,23 +1775,23 @@
               <!-- Opacity -->
               <div class="settings-row">
                 <label>不透明度 <span id="bubble-opacity-val">100%</span></label>
-                <input type="range" id="bubble-opacity" min="10" max="100" step="5" style="width: 140px;">
+                <input type="range" id="bubble-opacity" min="10" max="100" step="5" class="input-range-140">
               </div>
 
               <!-- Border Section -->
-              <div class="setting-subsection" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
-                <label style="font-weight: 600; display: block; margin-bottom: 10px;">边框设置</label>
+              <div class="setting-subsection-bordered">
+                <label class="label-subsection">边框设置</label>
                 <div class="settings-row">
                   <label>颜色</label>
                   <input type="color" id="bubble-border-color">
                 </div>
                 <div class="settings-row">
                   <label>宽度 <span id="bubble-border-width-val">0px</span></label>
-                  <input type="range" id="bubble-border-width" min="0" max="5" step="0.5" style="width: 120px;">
+                  <input type="range" id="bubble-border-width" min="0" max="5" step="0.5" class="input-range-120">
                 </div>
                 <div class="settings-row">
                   <label>样式</label>
-                  <select id="bubble-border-style" class="moe-input" style="width: 100px; padding: 4px;">
+                  <select id="bubble-border-style" class="moe-input input-select-compact">
                     <option value="solid">实线 (Solid)</option>
                     <option value="dashed">虚线 (Dashed)</option>
                     <option value="dotted">点线 (Dotted)</option>
@@ -1804,12 +1799,12 @@
                 </div>
                 <div class="settings-row">
                   <label>圆角 <span id="bubble-border-radius-val">8px</span></label>
-                  <input type="range" id="bubble-border-radius" min="0" max="20" step="1" style="width: 120px;">
+                  <input type="range" id="bubble-border-radius" min="0" max="20" step="1" class="input-range-120">
                 </div>
               </div>
 
               <!-- Shadow -->
-              <div class="settings-row" style="margin-top: 10px;">
+              <div class="settings-row mt-10">
                 <label>启用阴影</label>
                 <label class="toggle-switch">
                   <input type="checkbox" id="bubble-shadow-toggle">
@@ -1818,9 +1813,8 @@
               </div>
 
               <!-- Actions -->
-              <div style="margin-top: 20px; text-align: center;">
-                <button type="button" onclick="resetBubbleSettings()" 
-                        style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
+              <div class="actions-center">
+                <button type="button" onclick="resetBubbleSettings()" class="btn-reset-bubble">
                   重置当前样式
                 </button>
               </div>
@@ -1828,9 +1822,9 @@
           </div>
 
           <!-- Voice Bubble Panel (Placeholder) -->
-          <div id="panel-voice-bubble" style="display: none; padding: 10px;">
+          <div id="panel-voice-bubble" class="panel-hidden">
             <!-- Target Switcher (User vs AI Voice) -->
-            <div class="segment-control" style="display: flex; background: #f0f0f0; border-radius: 8px; padding: 4px; margin-bottom: 15px;">
+            <div class="segment-control">
               <button id="btn-voice-target-user" onclick="switchBubbleTarget('user')" class="active" 
                       style="flex: 1; background: #fff; border: none; padding: 8px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.2s;">
                 我 (User)
@@ -1861,9 +1855,8 @@
               </div>
 
               <!-- Actions -->
-              <div style="margin-top: 20px; text-align: center;">
-                <button type="button" onclick="resetVoiceSettings()" 
-                        style="background: #fff; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 20px; font-size: 13px;">
+              <div class="actions-center">
+                <button type="button" onclick="resetBubbleSettings()" class="btn-reset-bubble">
                   重置当前样式
                 </button>
               </div>
@@ -1961,34 +1954,32 @@
               border-left: 2px solid #eee;
             "
           >
-            <div style="margin-bottom: 10px">
-              <label
-                style="display: block; margin-bottom: 5px; font-size: 13px"
+            <div class="mb-10">
+              <label class="fs-13 mb-5" style="display: block"
                 >触发模式</label
               >
-              <label style="margin-right: 15px; font-size: 13px">
+              <label class="fs-13" style="margin-right: 15px">
                 <input type="radio" name="summary-mode" value="manual" />
                 手动提醒
               </label>
-              <label style="font-size: 13px">
+              <label class="fs-13">
                 <input type="radio" name="summary-mode" value="auto" />
                 自动执行
               </label>
             </div>
-            <div style="margin-bottom: 10px">
-              <label
-                style="display: block; margin-bottom: 5px; font-size: 13px"
+            <div class="mb-10">
+              <label class="fs-13 mb-5" style="display: block"
                 >每隔多少条消息触发</label
               >
               <input
                 type="number"
                 id="summary-count-input"
                 value="50"
-                style="width: 80px"
+                class="input-compact"
               />
             </div>
-            <div style="margin-bottom: 10px">
-              <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="mb-10">
+              <div class="flex-gap-10-center">
                 <button
                   id="manual-summary-btn"
                   class="form-button-secondary"
@@ -2035,7 +2026,7 @@
               >
                 <label
                   for="summary-custom-api-toggle"
-                  style="font-size: 13px; margin-bottom: 0"
+                  class="label-inline fs-13"
                   >使用独立API配置</label
                 >
                 <label class="toggle-switch">
@@ -2052,28 +2043,25 @@
                   <input
                     type="text"
                     id="summary-custom-api-url"
-                    class="moe-input"
+                    class="moe-input input-fs13-p8"
                     placeholder="API地址 (例如: https://api.openai.com)"
-                    style="font-size: 13px; padding: 8px"
                   />
                 </div>
                 <div>
                   <input
                     type="password"
                     id="summary-custom-api-key"
-                    class="moe-input"
+                    class="moe-input input-fs13-p8"
                     placeholder="API Key (sk-...)"
-                    style="font-size: 13px; padding: 8px"
                   />
                 </div>
                 <div style="display: flex; gap: 5px; align-items: center">
                   <input
                     type="text"
                     id="summary-custom-model-select"
-                    class="moe-input"
+                    class="moe-input input-fs13-p8 flex-grow"
                     placeholder="输入或选择模型"
                     list="summary-model-list"
-                    style="font-size: 13px; padding: 8px; flex-grow: 1"
                   />
                   <datalist id="summary-model-list"></datalist>
                   <button
@@ -2099,7 +2087,7 @@
                 >
                   <label
                     for="summary-stream-toggle"
-                    style="font-size: 13px; margin-bottom: 0"
+                    class="label-inline fs-13"
                     >流式请求</label
                   >
                   <label class="toggle-switch">
@@ -2290,7 +2278,7 @@
               >
                 <label
                   for="config-temperature-input"
-                  class="label-inline" style="font-size: 12px"
+                  class="label-inline fs-12"
                   >Temperature</label
                 >
                 <input
@@ -2321,7 +2309,7 @@
               >
                 <label
                   for="config-topp-input"
-                  class="label-inline" style="font-size: 12px"
+                  class="label-inline fs-12"
                   >Top P</label
                 >
                 <input
@@ -2352,7 +2340,7 @@
               >
                 <label
                   for="config-topk-input"
-                  class="label-inline" style="font-size: 12px"
+                  class="label-inline fs-12"
                   >Top K</label
                 >
                 <input
@@ -2513,7 +2501,8 @@
             <label>可见范围</label>
             <div
               id="post-visibility-options"
-              style="display: flex; gap: 15px; margin-bottom: 10px"
+              class="flex mb-10"
+              style="gap: 15px"
             >
               <label
                 ><input type="radio" name="visibility" value="public" checked />
@@ -2570,8 +2559,7 @@
             </div>
             <div
               id="post-image-desc-group"
-              class="form-group"
-              class="u-hidden"
+              class="form-group u-hidden"
             >
               <label>图片描述 (必填，给AI看)</label>
               <input
@@ -2854,8 +2842,7 @@
 
     <div id="red-packet-details-modal" class="modal">
       <div
-        class="modal-content"
-        style="width: 280px; height: auto; background-color: #f7f7f7"
+        class="modal-content modal-auto-height w-280px"
       >
         <div
           class="modal-header"
@@ -2867,7 +2854,7 @@
           "
         >
           <div style="text-align: center; width: 100%">
-            <div id="rp-details-sender" style="font-size: 16px"></div>
+            <div id="rp-details-sender" class="fs-16"></div>
             <div style="font-size: 13px; opacity: 0.8">的红包</div>
           </div>
         </div>

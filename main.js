@@ -1,5 +1,60 @@
+      // === CONSTANTS ===
+      /**
+       * API Configuration
+       */
       const GEMINI_API_URL =
         "https://generativelanguage.googleapis.com/v1beta/models";
+
+      /**
+       * Message Rendering
+       */
+      const MESSAGE_RENDER_WINDOW = 50; // Number of messages to render at once
+      const MESSAGE_PREVIEW_LENGTH = 50; // Characters to show in message previews
+      
+      /**
+       * Timer Intervals (milliseconds)
+       */
+      const CLOCK_UPDATE_INTERVAL = 30000; // 30 seconds - status bar clock update
+      const COUNTDOWN_UPDATE_INTERVAL = 1000; // 1 second - countdown timer update
+      const CALL_TIMER_UPDATE_INTERVAL = 1000; // 1 second - video call timer update
+      
+      /**
+       * Notification & UI Timeouts (milliseconds)
+       */
+      const NOTIFICATION_DURATION = 4000; // 4 seconds - notification bar display time
+      const BATTERY_ALERT_DURATION = 2000; // 2 seconds - battery warning display
+      const TRANSITION_DELAY = 100; // 100ms - CSS transition trigger delay
+      const ANIMATION_DELAY = 300; // 300ms - general animation completion wait
+      
+      /**
+       * Long Press Detection (milliseconds)
+       */
+      const LONG_PRESS_DURATION = 500; // 500ms - long press threshold
+      
+      /**
+       * Screen Dimensions (pixels)
+       */
+      const DEFAULT_SCREEN_WIDTH = 365;
+      const DEFAULT_SCREEN_HEIGHT = 680;
+      
+      /**
+       * Time Limits (milliseconds)
+       */
+      const RECALL_TIME_LIMIT = 2 * 60 * 1000; // 2 minutes - message recall time limit
+      const WAIMAI_COUNTDOWN_DURATION = 15 * 60 * 1000; // 15 minutes - waimai request countdown
+      
+      /**
+       * Summary Configuration
+       */
+      const AUTO_SUMMARY_MESSAGE_COUNT = 50; // Auto-summarize every N messages
+      
+      /**
+       * Audio Configuration
+       */
+      const NOTIFICATION_SOUND_VOLUME = 0.7; // 70% volume for notification sounds
+
+      // === END CONSTANTS ===
+
       // gemini如果是多个密钥, 那么随机获取一个
       function getRandomValue(str) {
         // 检查字符串是否包含逗号
@@ -285,6 +340,194 @@
         };
       }
       document.addEventListener("DOMContentLoaded", () => {
+        // === DOM Cache: pre-resolve frequently-accessed elements ===
+        const domCache = {
+          aiAvatarLibraryModal: document.getElementById("ai-avatar-library-modal"),
+          aiAvatarPreview: document.getElementById("ai-avatar-preview"),
+          aiPersona: document.getElementById("ai-persona"),
+          aiRemarkInput: document.getElementById("ai-remark-input"),
+          albumPhotoInput: document.getElementById("album-photo-input"),
+          apiConfigEditorModal: document.getElementById("api-config-editor-modal"),
+          apiConfigsList: document.getElementById("api-configs-list"),
+          backToListBtn: document.getElementById("back-to-list-btn"),
+          backgroundActivitySwitch: document.getElementById("background-activity-switch"),
+          backgroundIntervalInput: document.getElementById("background-interval-input"),
+          bgPreview: document.getElementById("bg-preview"),
+          blockCooldownInput: document.getElementById("block-cooldown-input"),
+          btnTargetAi: document.getElementById("btn-target-ai"),
+          btnTargetUser: document.getElementById("btn-target-user"),
+          bubbleAngle: document.getElementById("bubble-angle"),
+          bubbleBorderColor: document.getElementById("bubble-border-color"),
+          bubbleBorderRadius: document.getElementById("bubble-border-radius"),
+          bubbleBorderStyle: document.getElementById("bubble-border-style"),
+          bubbleBorderWidth: document.getElementById("bubble-border-width"),
+          bubbleGradientToggle: document.getElementById("bubble-gradient-toggle"),
+          bubbleGradientType: document.getElementById("bubble-gradient-type"),
+          bubbleOpacity: document.getElementById("bubble-opacity"),
+          bubbleShadowToggle: document.getElementById("bubble-shadow-toggle"),
+          bubbleSolidColor: document.getElementById("bubble-solid-color"),
+          callHistoryList: document.getElementById("call-history-list"),
+          callTranscriptModal: document.getElementById("call-transcript-modal"),
+          callerAvatar: document.getElementById("caller-avatar"),
+          callerName: document.getElementById("caller-name"),
+          chatHeaderStatus: document.getElementById("chat-header-status"),
+          chatHeaderTitle: document.getElementById("chat-header-title"),
+          chatInput: document.getElementById("chat-input"),
+          chatInterfaceScreen: document.getElementById("chat-interface-screen"),
+          chatListBottomNav: document.getElementById("chat-list-bottom-nav"),
+          chatLockOverlay: document.getElementById("chat-lock-overlay"),
+          chatMessages: document.getElementById("chat-messages"),
+          chatNameInput: document.getElementById("chat-name-input"),
+          chatSearchInput: document.getElementById("chat-search-input"),
+          chatSearchPanel: document.getElementById("chat-search-panel"),
+          chatSettingsBtn: document.getElementById("chat-settings-btn"),
+          configEditorId: document.getElementById("config-editor-id"),
+          configEnableTemp: document.getElementById("config-enable-temp"),
+          configEnableTopk: document.getElementById("config-enable-topk"),
+          configEnableTopp: document.getElementById("config-enable-topp"),
+          configKeyInput: document.getElementById("config-key-input"),
+          configModelSelect: document.getElementById("config-model-select"),
+          configNameInput: document.getElementById("config-name-input"),
+          configStreamSwitch: document.getElementById("config-stream-switch"),
+          configTemperatureInput: document.getElementById("config-temperature-input"),
+          configTopkInput: document.getElementById("config-topk-input"),
+          configToppInput: document.getElementById("config-topp-input"),
+          configUrlInput: document.getElementById("config-url-input"),
+          contactPickerList: document.getElementById("contact-picker-list"),
+          createCountdownModal: document.getElementById("create-countdown-modal"),
+          createPollModal: document.getElementById("create-poll-modal"),
+          createPostModal: document.getElementById("create-post-modal"),
+          customCssInput: document.getElementById("custom-css-input"),
+          customModalCancel: document.getElementById("custom-modal-cancel"),
+          customModalOverlay: document.getElementById("custom-modal-overlay"),
+          existingCategoriesList: document.getElementById("existing-categories-list"),
+          existingGroupsList: document.getElementById("existing-groups-list"),
+          favoritesEditBtn: document.getElementById("favorites-edit-btn"),
+          favoritesList: document.getElementById("favorites-list"),
+          favoritesSearchInput: document.getElementById("favorites-search-input"),
+          favoritesView: document.getElementById("favorites-view"),
+          fontPreview: document.getElementById("font-preview"),
+          fontSizeSlider: document.getElementById("font-size-slider"),
+          fontSizeValue: document.getElementById("font-size-value"),
+          fontUrlInput: document.getElementById("font-url-input"),
+          frameColorInput: document.getElementById("frame-color-input"),
+          frameColorValue: document.getElementById("frame-color-value"),
+          groupAvatarPreview: document.getElementById("group-avatar-preview"),
+          groupManagementModal: document.getElementById("group-management-modal"),
+          groupVideoCallBtn: document.getElementById("group-video-call-btn"),
+          iconSettingsGrid: document.getElementById("icon-settings-grid"),
+          imageModeContent: document.getElementById("image-mode-content"),
+          imageUploadInput: document.getElementById("image-upload-input"),
+          importDataInput: document.getElementById("import-data-input"),
+          incomingCallModal: document.getElementById("incoming-call-modal"),
+          joinCallBtn: document.getElementById("join-call-btn"),
+          linkContentInput: document.getElementById("link-content-input"),
+          linkDescriptionInput: document.getElementById("link-description-input"),
+          linkSourceInput: document.getElementById("link-source-input"),
+          linkTitleInput: document.getElementById("link-title-input"),
+          localSongUploadInput: document.getElementById("local-song-upload-input"),
+          lrcUploadInput: document.getElementById("lrc-upload-input"),
+          maxMemory: document.getElementById("max-memory"),
+          memberAvatarPreview: document.getElementById("member-avatar-preview"),
+          memberManagementList: document.getElementById("member-management-list"),
+          memberNameInput: document.getElementById("member-name-input"),
+          memberSettingsModal: document.getElementById("member-settings-modal"),
+          messageActionsModal: document.getElementById("message-actions-modal"),
+          messageEditorModal: document.getElementById("message-editor-modal"),
+          musicLyricsList: document.getElementById("music-lyrics-list"),
+          musicModeBtn: document.getElementById("music-mode-btn"),
+          musicPlayPauseBtn: document.getElementById("music-play-pause-btn"),
+          musicPlayerOverlay: document.getElementById("music-player-overlay"),
+          musicPlaylistPanel: document.getElementById("music-playlist-panel"),
+          myAvatarPreview: document.getElementById("my-avatar-preview"),
+          myGroupNicknameInput: document.getElementById("my-group-nickname-input"),
+          myPersona: document.getElementById("my-persona"),
+          notificationContent: document.getElementById("notification-content"),
+          offlineModeConfig: document.getElementById("offline-mode-config"),
+          offlineModeToggle: document.getElementById("offline-mode-toggle"),
+          offlinePresetSelect: document.getElementById("offline-preset-select"),
+          offlinePromptInput: document.getElementById("offline-prompt-input"),
+          offlineStyleInput: document.getElementById("offline-style-input"),
+          outgoingCallAvatar: document.getElementById("outgoing-call-avatar"),
+          outgoingCallName: document.getElementById("outgoing-call-name"),
+          personaEditorTitle: document.getElementById("persona-editor-title"),
+          phoneFrame: document.getElementById("phone-frame"),
+          phoneScreen: document.getElementById("phone-screen"),
+          photoViewerImage: document.getElementById("photo-viewer-image"),
+          photoViewerModal: document.getElementById("photo-viewer-modal"),
+          photoViewerNextBtn: document.getElementById("photo-viewer-next-btn"),
+          photoViewerPrevBtn: document.getElementById("photo-viewer-prev-btn"),
+          photosGridPage: document.getElementById("photos-grid-page"),
+          playlistBody: document.getElementById("playlist-body"),
+          pollQuestionInput: document.getElementById("poll-question-input"),
+          postActionsModal: document.getElementById("post-actions-modal"),
+          postHiddenText: document.getElementById("post-hidden-text"),
+          postImageDescGroup: document.getElementById("post-image-desc-group"),
+          postImageDescription: document.getElementById("post-image-description"),
+          postImagePreview: document.getElementById("post-image-preview"),
+          postImagePreviewContainer: document.getElementById("post-image-preview-container"),
+          postLocalImageInput: document.getElementById("post-local-image-input"),
+          postPublicText: document.getElementById("post-public-text"),
+          presetAvatarPreview: document.getElementById("preset-avatar-preview"),
+          presetPersonaInput: document.getElementById("preset-persona-input"),
+          qzoneAvatarInput: document.getElementById("qzone-avatar-input"),
+          qzoneBackBtn: document.getElementById("qzone-back-btn"),
+          qzoneBannerInput: document.getElementById("qzone-banner-input"),
+          qzoneNickname: document.getElementById("qzone-nickname"),
+          qzonePostsList: document.getElementById("qzone-posts-list"),
+          qzoneScreen: document.getElementById("qzone-screen"),
+          redPacketDetailsModal: document.getElementById("red-packet-details-modal"),
+          redPacketModal: document.getElementById("red-packet-modal"),
+          removeBgBtn: document.getElementById("remove-bg-btn"),
+          replyPreviewBar: document.getElementById("reply-preview-bar"),
+          resetThemeBtn: document.getElementById("reset-theme-btn"),
+          rpContentDirect: document.getElementById("rp-content-direct"),
+          rpContentGroup: document.getElementById("rp-content-group"),
+          rpDirectAmount: document.getElementById("rp-direct-amount"),
+          rpDirectGreeting: document.getElementById("rp-direct-greeting"),
+          rpDirectReceiver: document.getElementById("rp-direct-receiver"),
+          rpDirectTotal: document.getElementById("rp-direct-total"),
+          rpGroupAmount: document.getElementById("rp-group-amount"),
+          rpGroupCount: document.getElementById("rp-group-count"),
+          rpGroupGreeting: document.getElementById("rp-group-greeting"),
+          rpGroupTotal: document.getElementById("rp-group-total"),
+          rpTabDirect: document.getElementById("rp-tab-direct"),
+          rpTabGroup: document.getElementById("rp-tab-group"),
+          searchNextBtn: document.getElementById("search-next-btn"),
+          searchPrevBtn: document.getElementById("search-prev-btn"),
+          sendBtn: document.getElementById("send-btn"),
+          sendPollBtn: document.getElementById("send-poll-btn"),
+          shareLinkModal: document.getElementById("share-link-modal"),
+          shareTargetModal: document.getElementById("share-target-modal"),
+          stickerPanel: document.getElementById("sticker-panel"),
+          stickerUploadInput: document.getElementById("sticker-upload-input"),
+          summaryCountInput: document.getElementById("summary-count-input"),
+          summaryCustomApiKey: document.getElementById("summary-custom-api-key"),
+          summaryCustomApiOptions: document.getElementById("summary-custom-api-options"),
+          summaryCustomApiToggle: document.getElementById("summary-custom-api-toggle"),
+          summaryCustomApiUrl: document.getElementById("summary-custom-api-url"),
+          summaryCustomModelSelect: document.getElementById("summary-custom-model-select"),
+          summaryHistoryModal: document.getElementById("summary-history-modal"),
+          summaryOptions: document.getElementById("summary-options"),
+          summaryToggle: document.getElementById("summary-toggle"),
+          switchToImageMode: document.getElementById("switch-to-image-mode"),
+          themeDefault: document.getElementById("theme-default"),
+          themeToggleSwitch: document.getElementById("theme-toggle-switch"),
+          transferActionsModal: document.getElementById("transfer-actions-modal"),
+          transferModal: document.getElementById("transfer-modal"),
+          typingIndicator: document.getElementById("typing-indicator"),
+          userSpeakBtn: document.getElementById("user-speak-btn"),
+          videoCallBtn: document.getElementById("video-call-btn"),
+          videoCallFloatingBubble: document.getElementById("video-call-floating-bubble"),
+          videoCallMain: document.getElementById("video-call-main"),
+          voiceBubbleBgColor: document.getElementById("voice-bubble-bg-color"),
+          voiceDurationColor: document.getElementById("voice-duration-color"),
+          voiceWaveformColor: document.getElementById("voice-waveform-color"),
+          worldBookCategoryManagerModal: document.getElementById("world-book-category-manager-modal"),
+          worldBookEditorTitle: document.getElementById("world-book-editor-title"),
+          worldBookNameInput: document.getElementById("world-book-name-input"),
+        };
+
         // === Lightweight performance helpers ===
         /* visibility safeguard for streaming (patched) */
         document.addEventListener(
@@ -369,7 +612,6 @@
               await this.audio.play();
               this.isActive = true;
               this.setupMediaSession();
-              console.log("[BackgroundKeepAlive] Started");
             } catch (error) {
               console.error("[BackgroundKeepAlive] Failed:", error);
             }
@@ -478,8 +720,8 @@
           const bar = document.getElementById('notification-bar');
           document.getElementById('notification-avatar').src =
             chat.settings.aiAvatar || chat.settings.groupAvatar || defaultAvatar;
-          document.getElementById('notification-content').querySelector('.name').textContent = chat.name;
-          document.getElementById('notification-content').querySelector('.message').textContent = messageContent;
+          domCache.notificationContent.querySelector('.name').textContent = chat.name;
+          domCache.notificationContent.querySelector('.message').textContent = messageContent;
           const newBar = bar.cloneNode(true);
           bar.parentNode.replaceChild(newBar, bar);
           newBar.addEventListener('click', () => {
@@ -489,7 +731,7 @@
           newBar.classList.add('visible');
           notificationTimeout = setTimeout(() => {
             newBar.classList.remove('visible');
-          }, 4000);
+          }, NOTIFICATION_DURATION);
         }
 
         function playNotificationSound() {
@@ -498,7 +740,7 @@
           if (!soundUrl || !soundUrl.trim()) return;
           try {
             const audio = new Audio(soundUrl);
-            audio.volume = 0.7;
+            audio.volume = NOTIFICATION_SOUND_VOLUME;
             audio.play().catch(error => {
               if (error.name === 'NotAllowedError') {
                 console.warn('播放消息提示音失败：用户需要先与页面进行一次交互才能自动播放音频。');
@@ -567,8 +809,8 @@
         // 更新搜索UI
         function updateSearchUI() {
           const countEl = document.getElementById("search-result-count");
-          const prevBtn = document.getElementById("search-prev-btn");
-          const nextBtn = document.getElementById("search-next-btn");
+          const prevBtn = domCache.searchPrevBtn;
+          const nextBtn = domCache.searchNextBtn;
 
           const total = chatSearchState.results.length;
           const current = chatSearchState.currentIndex + 1;
@@ -596,7 +838,7 @@
 
           chatSearchState.currentIndex = index;
           const msgIndex = chatSearchState.results[index];
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           if (!messagesContainer) return;
 
           messagesContainer.querySelectorAll(".search-highlight").forEach((el) => {
@@ -657,7 +899,7 @@
           clearSearchHighlights();
           if (!chatSearchState.query) return;
 
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           if (!messagesContainer) return;
 
           const regex = new RegExp(`(${escapeRegex(chatSearchState.query)})`, "gi");
@@ -682,7 +924,7 @@
 
         // 清除搜索高亮
         function clearSearchHighlights() {
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           if (!messagesContainer) return;
 
           messagesContainer
@@ -705,8 +947,8 @@
         // 打开搜索面板
         function openChatSearch() {
           chatSearchState.isOpen = true;
-          document.getElementById("chat-search-panel")?.classList.add("visible");
-          const input = document.getElementById("chat-search-input");
+          domCache.chatSearchPanel?.classList.add("visible");
+          const input = domCache.chatSearchInput;
           if (input) input.focus();
         }
 
@@ -716,8 +958,8 @@
           chatSearchState.query = "";
           chatSearchState.results = [];
           chatSearchState.currentIndex = -1;
-          document.getElementById("chat-search-panel")?.classList.remove("visible");
-          const input = document.getElementById("chat-search-input");
+          domCache.chatSearchPanel?.classList.remove("visible");
+          const input = domCache.chatSearchInput;
           if (input) input.value = "";
           clearSearchHighlights();
           updateSearchUI();
@@ -726,9 +968,9 @@
         // 搜索事件绑定
         const chatSearchBtn = document.getElementById("chat-search-btn");
         const closeSearchBtn = document.getElementById("close-search-btn");
-        const searchInput = document.getElementById("chat-search-input");
-        const prevSearchBtn = document.getElementById("search-prev-btn");
-        const nextSearchBtn = document.getElementById("search-next-btn");
+        const searchInput = domCache.chatSearchInput;
+        const prevSearchBtn = domCache.searchPrevBtn;
+        const nextSearchBtn = domCache.searchNextBtn;
 
         chatSearchBtn?.addEventListener("click", openChatSearch);
         closeSearchBtn?.addEventListener("click", closeChatSearch);
@@ -1014,8 +1256,6 @@
               }
               state.chats[chatId].settings.bubbleSettings = chat.settings.bubbleSettings;
             }
-            
-            console.log(`Bubble settings saved for chat ${chatId}`);
           } catch (error) {
             console.error("Failed to save bubble settings:", error);
             await showCustomAlert("错误", "气泡设置保存失败");
@@ -1049,9 +1289,8 @@
           debouncedSaveTimeout = setTimeout(async () => {
             try {
               await saveBubbleSettings(chatId, settings);
-              console.log('Bubble settings auto-saved');
               // Auto-apply to current chat if it's open
-              if (state.activeChatId === chatId && document.getElementById('chat-interface-screen').classList.contains('active')) {
+              if (state.activeChatId === chatId && domCache.chatInterfaceScreen.classList.contains('active')) {
                 applyBubbleStyles(chatId);
               }
             } catch (error) {
@@ -1120,15 +1359,15 @@
           currentBubbleTarget = target;
           
           // Update Buttons
-          document.getElementById('btn-target-user').classList.toggle('active', target === 'user');
-          document.getElementById('btn-target-user').style.background = target === 'user' ? '#fff' : 'transparent';
-          document.getElementById('btn-target-user').style.boxShadow = target === 'user' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none';
-          document.getElementById('btn-target-user').style.color = target === 'user' ? '#000' : '#666';
+          domCache.btnTargetUser.classList.toggle('active', target === 'user');
+          domCache.btnTargetUser.style.background = target === 'user' ? '#fff' : 'transparent';
+          domCache.btnTargetUser.style.boxShadow = target === 'user' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none';
+          domCache.btnTargetUser.style.color = target === 'user' ? '#000' : '#666';
           
-          document.getElementById('btn-target-ai').classList.toggle('active', target === 'ai');
-          document.getElementById('btn-target-ai').style.background = target === 'ai' ? '#fff' : 'transparent';
-          document.getElementById('btn-target-ai').style.boxShadow = target === 'ai' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none';
-          document.getElementById('btn-target-ai').style.color = target === 'ai' ? '#000' : '#666';
+          domCache.btnTargetAi.classList.toggle('active', target === 'ai');
+          domCache.btnTargetAi.style.background = target === 'ai' ? '#fff' : 'transparent';
+          domCache.btnTargetAi.style.boxShadow = target === 'ai' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none';
+          domCache.btnTargetAi.style.color = target === 'ai' ? '#000' : '#666';
 
           renderBubbleUI();
         }
@@ -1150,9 +1389,9 @@
         function renderVoiceUI() {
           const config = getActiveVoiceConfig();
           
-          document.getElementById('voice-bubble-bg-color').value = config.backgroundColor;
-          document.getElementById('voice-waveform-color').value = config.waveformColor;
-          document.getElementById('voice-duration-color').value = config.durationColor;
+          domCache.voiceBubbleBgColor.value = config.backgroundColor;
+          domCache.voiceWaveformColor.value = config.waveformColor;
+          domCache.voiceDurationColor.value = config.durationColor;
         }
 
         function resetVoiceSettings() {
@@ -1172,7 +1411,7 @@
           renderVoiceUI();
           
           // Gradient Toggle
-          const gradientToggle = document.getElementById('bubble-gradient-toggle');
+          const gradientToggle = domCache.bubbleGradientToggle;
           gradientToggle.checked = config.gradient.enabled;
           
           // Toggle Visibility
@@ -1180,11 +1419,11 @@
           document.getElementById('bubble-gradient-options').style.display = config.gradient.enabled ? 'block' : 'none';
           
           // Solid Color
-          document.getElementById('bubble-solid-color').value = config.solidColor.substring(0, 7); // Handle rgba if needed, but input color takes hex
+          domCache.bubbleSolidColor.value = config.solidColor.substring(0, 7); // Handle rgba if needed, but input color takes hex
           
           // Gradient Props
-          document.getElementById('bubble-gradient-type').value = config.gradient.type;
-          document.getElementById('bubble-angle').value = config.gradient.angle;
+          domCache.bubbleGradientType.value = config.gradient.type;
+          domCache.bubbleAngle.value = config.gradient.angle;
           document.getElementById('bubble-angle-val').textContent = config.gradient.angle + '°';
           document.getElementById('bubble-angle-row').style.display = config.gradient.type === 'linear' ? 'flex' : 'none';
           
@@ -1192,19 +1431,19 @@
           renderGradientStops(config.gradient.stops);
           
           // Opacity
-          document.getElementById('bubble-opacity').value = config.opacity * 100;
+          domCache.bubbleOpacity.value = config.opacity * 100;
           document.getElementById('bubble-opacity-val').textContent = Math.round(config.opacity * 100) + '%';
           
           // Border
-          document.getElementById('bubble-border-color').value = config.border.color === 'transparent' ? '#ffffff' : config.border.color;
-          document.getElementById('bubble-border-width').value = config.border.width;
+          domCache.bubbleBorderColor.value = config.border.color === 'transparent' ? '#ffffff' : config.border.color;
+          domCache.bubbleBorderWidth.value = config.border.width;
           document.getElementById('bubble-border-width-val').textContent = config.border.width + 'px';
-          document.getElementById('bubble-border-style').value = config.border.style;
-          document.getElementById('bubble-border-radius').value = config.border.radius;
+          domCache.bubbleBorderStyle.value = config.border.style;
+          domCache.bubbleBorderRadius.value = config.border.radius;
           document.getElementById('bubble-border-radius-val').textContent = config.border.radius + 'px';
           
           // Shadow
-          document.getElementById('bubble-shadow-toggle').checked = config.shadow.enabled;
+          domCache.bubbleShadowToggle.checked = config.shadow.enabled;
         }
 
         function renderGradientStops(stops) {
@@ -1231,33 +1470,33 @@
         function bindBubbleEvents() {
           // Unbind existing to prevent dupes (naive approach, better to use named handlers if strict, but inline onchange used for stops)
           // Solid Color
-          document.getElementById('bubble-solid-color').oninput = (e) => updateBubbleSetting('solidColor', e.target.value);
+          domCache.bubbleSolidColor.oninput = (e) => updateBubbleSetting('solidColor', e.target.value);
           
           // Gradient Toggle
-          document.getElementById('bubble-gradient-toggle').onchange = (e) => updateBubbleSetting('gradient.enabled', e.target.checked);
+          domCache.bubbleGradientToggle.onchange = (e) => updateBubbleSetting('gradient.enabled', e.target.checked);
           
           // Gradient Type
-          document.getElementById('bubble-gradient-type').onchange = (e) => updateBubbleSetting('gradient.type', e.target.value);
+          domCache.bubbleGradientType.onchange = (e) => updateBubbleSetting('gradient.type', e.target.value);
           
           // Gradient Angle
-          document.getElementById('bubble-angle').oninput = (e) => updateBubbleSetting('gradient.angle', parseInt(e.target.value));
+          domCache.bubbleAngle.oninput = (e) => updateBubbleSetting('gradient.angle', parseInt(e.target.value));
           
           // Opacity
-          document.getElementById('bubble-opacity').oninput = (e) => updateBubbleSetting('opacity', parseInt(e.target.value) / 100);
+          domCache.bubbleOpacity.oninput = (e) => updateBubbleSetting('opacity', parseInt(e.target.value) / 100);
           
           // Border
-          document.getElementById('bubble-border-color').oninput = (e) => updateBubbleSetting('border.color', e.target.value);
-          document.getElementById('bubble-border-width').oninput = (e) => updateBubbleSetting('border.width', parseFloat(e.target.value));
-          document.getElementById('bubble-border-style').onchange = (e) => updateBubbleSetting('border.style', e.target.value);
-          document.getElementById('bubble-border-radius').oninput = (e) => updateBubbleSetting('border.radius', parseInt(e.target.value));
+          domCache.bubbleBorderColor.oninput = (e) => updateBubbleSetting('border.color', e.target.value);
+          domCache.bubbleBorderWidth.oninput = (e) => updateBubbleSetting('border.width', parseFloat(e.target.value));
+          domCache.bubbleBorderStyle.onchange = (e) => updateBubbleSetting('border.style', e.target.value);
+          domCache.bubbleBorderRadius.oninput = (e) => updateBubbleSetting('border.radius', parseInt(e.target.value));
           
           // Shadow
-          document.getElementById('bubble-shadow-toggle').onchange = (e) => updateBubbleSetting('shadow.enabled', e.target.checked);
+          domCache.bubbleShadowToggle.onchange = (e) => updateBubbleSetting('shadow.enabled', e.target.checked);
 
           // --- Voice Settings Events ---
-          document.getElementById('voice-bubble-bg-color').oninput = (e) => updateVoiceSetting('backgroundColor', e.target.value);
-          document.getElementById('voice-waveform-color').oninput = (e) => updateVoiceSetting('waveformColor', e.target.value);
-          document.getElementById('voice-duration-color').oninput = (e) => updateVoiceSetting('durationColor', e.target.value);
+          domCache.voiceBubbleBgColor.oninput = (e) => updateVoiceSetting('backgroundColor', e.target.value);
+          domCache.voiceWaveformColor.oninput = (e) => updateVoiceSetting('waveformColor', e.target.value);
+          domCache.voiceDurationColor.oninput = (e) => updateVoiceSetting('durationColor', e.target.value);
         }
 
         function updateVoiceSetting(key, value) {
@@ -1339,7 +1578,6 @@
         // --- End Bubble Settings UI Logic ---
 
         const STICKER_REGEX = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i;
-        const MESSAGE_RENDER_WINDOW = 50;
         let currentRenderedCount = 0;
         let lastKnownBatteryLevel = 1;
         let alertFlags = {
@@ -1352,11 +1590,11 @@
         dynamicFontStyle.id = "dynamic-font-style";
         document.head.appendChild(dynamicFontStyle);
 
-        const modalOverlay = document.getElementById("custom-modal-overlay");
+        const modalOverlay = domCache.customModalOverlay;
         const modalTitle = document.getElementById("custom-modal-title");
         const modalBody = document.getElementById("custom-modal-body");
         const modalConfirmBtn = document.getElementById("custom-modal-confirm");
-        const modalCancelBtn = document.getElementById("custom-modal-cancel");
+        const modalCancelBtn = domCache.customModalCancel;
         let modalResolve;
 
         function showCustomModal() {
@@ -1510,7 +1748,6 @@
             // 数据迁移脚本：从旧的单个 apiConfig 迁移到新的 apiConfigs 列表
             const oldConfig = await tx.table("apiConfig").get("main");
             if (oldConfig) {
-              console.log("检测到旧版API配置，正在执行自动迁移...");
               const newConfigsTable = tx.table("apiConfigs");
               const existingConfigs = await newConfigsTable.toArray();
               if (existingConfigs.length === 0) {
@@ -1530,7 +1767,6 @@
                 await tx.table("globalSettings").put(globalSettings);
 
                 await tx.table("apiConfig").clear();
-                console.log("API配置迁移成功！");
               }
             }
           });
@@ -1556,13 +1792,12 @@
           const screenToShow = document.getElementById(screenId);
           if (screenToShow) screenToShow.classList.add("active");
           if (screenId === "chat-interface-screen") {
-            document
-              .getElementById("chat-interface-screen")
+            domCache.chatInterfaceScreen
               .classList.remove("settings-open");
             window.updateListenTogetherIconProxy(state.activeChatId);
           }
           if (screenId === "font-settings-screen") {
-            document.getElementById("font-url-input").value =
+            domCache.fontUrlInput.value =
               state.globalSettings.fontUrl || "";
             applyCustomFont(state.globalSettings.fontUrl || "", true);
           }
@@ -1573,15 +1808,15 @@
           const chatListScreen = document.getElementById("chat-list-screen");
           const views = {
             "messages-view": document.getElementById("messages-view"),
-            "qzone-screen": document.getElementById("qzone-screen"),
-            "favorites-view": document.getElementById("favorites-view"),
+            "qzone-screen": domCache.qzoneScreen,
+            "favorites-view": domCache.favoritesView,
             "memories-view": document.getElementById("memories-view"), // <-- 新增这一行
           };
           const mainHeader = document.getElementById("main-chat-list-header");
-          const mainBottomNav = document.getElementById("chat-list-bottom-nav"); // 获取主导航栏
+          const mainBottomNav = domCache.chatListBottomNav; // 获取主导航栏
 
           if (isFavoritesSelectionMode) {
-            document.getElementById("favorites-edit-btn").click();
+            domCache.favoritesEditBtn.click();
           }
 
           // 隐藏所有视图
@@ -1632,7 +1867,7 @@
         function renderQzoneScreen() {
           if (state && state.qzoneSettings) {
             const settings = state.qzoneSettings;
-            document.getElementById("qzone-nickname").textContent =
+            domCache.qzoneNickname.textContent =
               settings.nickname;
             document.getElementById("qzone-avatar-img").src = settings.avatar;
             document.getElementById("qzone-banner-img").src = settings.banner;
@@ -1669,7 +1904,7 @@
         }
 
         async function renderQzonePosts() {
-          const postsListEl = document.getElementById("qzone-posts-list");
+          const postsListEl = domCache.qzonePostsList;
           if (!postsListEl) return;
 
           const [posts, favorites] = await Promise.all([
@@ -1828,14 +2063,8 @@
                       const item = document.createElement("div");
                       item.className = "at-mention-item";
                       item.textContent = name;
-                      item.addEventListener("mousedown", (e) => {
-                        e.preventDefault();
-                        const newText =
-                          value.substring(0, atMatch.index) + `@${name} `;
-                        commentInput.value = newText;
-                        popup.style.display = "none";
-                        commentInput.focus();
-                      });
+                      // 修改：不再为每个item绑定事件，改为委托
+                      item.dataset.mentionName = name;
                       popup.appendChild(item);
                     }
                   });
@@ -1848,16 +2077,111 @@
                 popup.style.display = "none";
               }
             });
+            
+            // 为 popup 添加委托事件监听
+            popup.addEventListener("mousedown", (e) => {
+                const item = e.target.closest('.at-mention-item');
+                if (item) {
+                    e.preventDefault();
+                    const name = item.dataset.mentionName;
+                    const value = commentInput.value;
+                    const atMatch = value.match(/@([\p{L}\w]*)$/u);
+                    if (atMatch && name) {
+                         const newText =
+                          value.substring(0, atMatch.index) + `@${name} `;
+                        commentInput.value = newText;
+                        popup.style.display = "none";
+                        commentInput.focus();
+                    }
+                }
+            });
+
             commentInput.addEventListener("blur", () => {
               setTimeout(() => {
                 popup.style.display = "none";
               }, 200);
             });
           });
+
+          // 先移除旧的监听器，防止重复
+          postsListEl.removeEventListener('click', handleQzonePostClick);
+          postsListEl.addEventListener('click', handleQzonePostClick);
+
+          function handleQzonePostClick(e) {
+            {
+              const likeBtn = e.target.closest('.action-icon.like');
+              if (likeBtn) {
+                  const postContainer = likeBtn.closest('.qzone-post-container');
+                  if (postContainer) {
+                      const postId = parseInt(postContainer.dataset.postId);
+                      toggleLike(postId);
+                  }
+                  return;
+              }
+            }
+
+            {
+              const favBtn = e.target.closest('.action-icon.favorite');
+              if (favBtn) {
+                  const postContainer = favBtn.closest('.qzone-post-container');
+                  if (postContainer) {
+                      const postId = parseInt(postContainer.dataset.postId);
+                      toggleFavorite(postId);
+                  }
+                  return;
+              }
+            }
+
+            {
+              const sendBtn = e.target.closest('.comment-send-btn');
+              if (sendBtn) {
+                  const postContainer = sendBtn.closest('.qzone-post-container');
+                  if (postContainer) {
+                      const postId = parseInt(postContainer.dataset.postId);
+                      const input = postContainer.querySelector(".comment-input");
+                      const text = input.value.trim();
+                      if (text) {
+                          addComment(postId, text);
+                          input.value = "";
+                      }
+                  }
+                  return;
+              }
+            }
+
+            {
+              const deleteCommentBtn = e.target.closest('.comment-delete-btn');
+              if (deleteCommentBtn) {
+                  const postContainer = deleteCommentBtn.closest('.qzone-post-container');
+                  if (postContainer) {
+                      const postId = parseInt(postContainer.dataset.postId);
+                      const commentIndex = parseInt(deleteCommentBtn.dataset.commentIndex);
+                      deleteComment(postId, commentIndex);
+                  }
+                  return;
+              }
+            }
+            
+             if (e.target.tagName === 'IMG' && e.target.classList.contains('chat-image') && !e.target.dataset.hiddenText) {
+                openImageModal(e.target.src);
+                return;
+             }
+
+             if (e.target.tagName === 'IMG' && e.target.classList.contains('chat-image') && e.target.dataset.hiddenText) {
+                 const hiddenText = e.target.dataset.hiddenText;
+                 if (hiddenText) {
+                    document.getElementById("hidden-text-content").textContent = hiddenText;
+                    document
+                      .getElementById("hidden-text-modal")
+                      .classList.add("visible");
+                 }
+                 return;
+             }
+          }
         }
 
         function displayFilteredFavorites(items) {
-          const listEl = document.getElementById("favorites-list");
+          const listEl = domCache.favoritesList;
           listEl.innerHTML = "";
 
           if (items.length === 0) {
@@ -2025,7 +2349,7 @@
             .toArray();
 
           // 2. 清空搜索框并隐藏清除按钮
-          const searchInput = document.getElementById("favorites-search-input");
+          const searchInput = domCache.favoritesSearchInput;
           const clearBtn = document.getElementById(
             "favorites-search-clear-btn",
           );
@@ -2037,17 +2361,16 @@
         }
 
         function resetCreatePostModal() {
-          document.getElementById("post-public-text").value = "";
-          document.getElementById("post-image-preview").src = "";
-          document.getElementById("post-image-description").value = "";
-          document
-            .getElementById("post-image-preview-container")
+          domCache.postPublicText.value = "";
+          domCache.postImagePreview.src = "";
+          domCache.postImageDescription.value = "";
+          domCache.postImagePreviewContainer
             .classList.remove("visible");
-          document.getElementById("post-image-desc-group").style.display =
+          domCache.postImageDescGroup.style.display =
             "none";
-          document.getElementById("post-local-image-input").value = "";
-          document.getElementById("post-hidden-text").value = "";
-          document.getElementById("switch-to-image-mode").click();
+          domCache.postLocalImageInput.value = "";
+          domCache.postHiddenText.value = "";
+          domCache.switchToImageMode.click();
         }
 
         async function exportBackup() {
@@ -2191,7 +2514,6 @@
                   hideStreamResponse:
                     data.apiConfig.hideStreamResponse || false,
                 });
-                console.log("已将旧版API配置迁移到新结构。");
               }
 
               if (data.globalSettings) {
@@ -2223,7 +2545,7 @@
         function applyCustomFont(fontUrl, isPreviewOnly = false) {
           if (!fontUrl) {
             dynamicFontStyle.innerHTML = "";
-            document.getElementById("font-preview").style.fontFamily = "";
+            domCache.fontPreview.style.fontFamily = "";
             return;
           }
           const fontName = "custom-user-font";
@@ -2241,7 +2563,7 @@
             previewStyle.innerHTML = newStyle;
             if (!document.getElementById("preview-font-style"))
               document.head.appendChild(previewStyle);
-            document.getElementById("font-preview").style.fontFamily =
+            domCache.fontPreview.style.fontFamily =
               `'${fontName}', 'bulangni', sans-serif`;
           } else {
             dynamicFontStyle.innerHTML = `
@@ -2256,8 +2578,8 @@
           dynamicFontStyle.innerHTML = "";
           state.globalSettings.fontUrl = "";
           await db.globalSettings.put(state.globalSettings);
-          document.getElementById("font-url-input").value = "";
-          document.getElementById("font-preview").style.fontFamily = "";
+          domCache.fontUrlInput.value = "";
+          domCache.fontPreview.style.fontFamily = "";
           showCustomAlert("提示", "已恢复默认字体。");
         }
 
@@ -2297,9 +2619,6 @@
               chat.members.length > 0 &&
               chat.members[0].name
             ) {
-              console.log(
-                `检测到旧版群聊数据 for "${chat.name}"，正在执行迁移...`,
-              );
               chat.members.forEach((member) => {
                 // 如果这个成员对象没有 originalName，说明是旧数据
                 if (typeof member.originalName === "undefined") {
@@ -2309,18 +2628,12 @@
                   needsUpdate = true; // 标记需要存回数据库
                 }
               });
-              console.log(`迁移完成 for "${chat.name}"`);
             }
 
             // 检查1：如果是一个单聊，并且没有 status 属性
-            if (!chat.isGroup && !chat.status) {
-              // 就为它补上一个默认的 status 对象
-              chat.status = {
-                text: "在线",
-                lastUpdate: Date.now(),
-                isBusy: false,
-              };
-              console.log(`为旧角色 "${chat.name}" 补全了status属性。`);
+            if (!chat.isGroup && typeof chat.status === "undefined") {
+              chat.status = "active";
+              needsUpdate = true;
             }
 
             // 检查2：兼容最新的“关系”功能
@@ -2331,7 +2644,6 @@
                 blockedTimestamp: null,
                 applicationReason: "",
               };
-              console.log(`为旧角色 "${chat.name}" 补全了 relationship 属性。`);
             }
 
             if (
@@ -2340,16 +2652,13 @@
             ) {
               if (!chat.settings) chat.settings = {}; // 以防万一连settings都没有
               chat.settings.aiAvatarLibrary = [];
-              console.log(
-                `为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`,
-              );
             }
 
             if (!chat.settings.summary) {
               chat.settings.summary = {
                 enabled: false,
-                mode: "manual", // 'manual' or 'auto'
-                count: 50, // summarize every 50 messages
+                mode: "manual",
+                count: AUTO_SUMMARY_MESSAGE_COUNT,
                 prompt: "请总结上述对话的主要内容，保留重要信息和情感脉络。",
                 lastSummaryIndex: -1,
                 useCustomApi: false,
@@ -2461,9 +2770,8 @@
           if (trimmedContent.startsWith("[") && trimmedContent.endsWith("]")) {
             try {
               const parsed = JSON.parse(trimmedContent);
-              if (Array.isArray(parsed)) {
-                console.log("解析成功：标准JSON数组格式。");
-                return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed;
               }
             } catch (e) {
               // 如果解析失败，说明它虽然看起来像个数组，但内部格式有问题。
@@ -2491,7 +2799,6 @@
 
             // 如果我们成功提取出了至少一个有效的JSON对象，就返回这个结果
             if (results.length > 0) {
-              console.log("解析成功：通过强力提取模式。");
               return results;
             }
           }
@@ -2519,11 +2826,11 @@
 
         function renderApiSettings() {
           // 渲染其他全局设置（保持不变）
-          document.getElementById("background-activity-switch").checked =
+          domCache.backgroundActivitySwitch.checked =
             state.globalSettings.enableBackgroundActivity || false;
-          document.getElementById("background-interval-input").value =
+          domCache.backgroundIntervalInput.value =
             state.globalSettings.backgroundActivityInterval || 60;
-          document.getElementById("block-cooldown-input").value =
+          domCache.blockCooldownInput.value =
             state.globalSettings.blockCooldownHours || 1;
 
           const roleSettingsEl = document.getElementById(
@@ -2580,7 +2887,7 @@
           }
 
           // 渲染API配置列表
-          const listEl = document.getElementById("api-configs-list");
+          const listEl = domCache.apiConfigsList;
           listEl.innerHTML = "";
           if (state.apiConfigs.length === 0) {
             listEl.innerHTML =
@@ -2633,14 +2940,14 @@
           }
 
           // 填充基本信息
-          document.getElementById("config-editor-id").value = configId || "";
-          document.getElementById("config-name-input").value = config.name;
-          document.getElementById("config-url-input").value = config.url;
-          document.getElementById("config-key-input").value = config.apiKey;
+          domCache.configEditorId.value = configId || "";
+          domCache.configNameInput.value = config.name;
+          domCache.configUrlInput.value = config.url;
+          domCache.configKeyInput.value = config.apiKey;
 
           // --- 【核心修复】 ---
           // 每次打开时，都重置模型下拉列表，只显示当前配置已保存的模型
-          const modelSelect = document.getElementById("config-model-select");
+          const modelSelect = domCache.configModelSelect;
           // 1. 清空所有旧的 <option> 元素
           modelSelect.innerHTML = "";
           // 2. 创建一个只包含当前已保存模型的新 <option>
@@ -2664,25 +2971,25 @@
           }
 
           // 填充值
-          document.getElementById("config-temperature-input").value =
+          domCache.configTemperatureInput.value =
             config.temperature !== undefined ? config.temperature : 0.8;
-          document.getElementById("config-topp-input").value =
+          domCache.configToppInput.value =
             config.topP !== undefined ? config.topP : 1.0;
-          document.getElementById("config-topk-input").value =
+          domCache.configTopkInput.value =
             config.topK !== undefined ? config.topK : 40;
 
           // 填充开关状态
-          document.getElementById("config-stream-switch").checked =
+          domCache.configStreamSwitch.checked =
             config.enableStream;
           document.getElementById("config-hide-stream-switch").checked =
             config.hideStreamResponse;
 
-          const tempCheck = document.getElementById("config-enable-temp");
-          const toppCheck = document.getElementById("config-enable-topp");
-          const topkCheck = document.getElementById("config-enable-topk");
-          const tempInput = document.getElementById("config-temperature-input");
-          const toppInput = document.getElementById("config-topp-input");
-          const topkInput = document.getElementById("config-topk-input");
+          const tempCheck = domCache.configEnableTemp;
+          const toppCheck = domCache.configEnableTopp;
+          const topkCheck = domCache.configEnableTopk;
+          const tempInput = domCache.configTemperatureInput;
+          const toppInput = domCache.configToppInput;
+          const topkInput = domCache.configTopkInput;
 
           // 设置初始状态 (默认 false)
           tempCheck.checked = !!config.enableTemp;
@@ -2705,23 +3012,22 @@
           topkCheck.onchange = (e) => updateInputState(e.target, topkInput);
 
           // 显示模态框
-          document
-            .getElementById("api-config-editor-modal")
+          domCache.apiConfigEditorModal
             .classList.add("visible");
         }
 
         async function saveApiConfig() {
-          const id = document.getElementById("config-editor-id").value;
+          const id = domCache.configEditorId.value;
 
           // 获取并验证新参数
           let temp = parseFloat(
-            document.getElementById("config-temperature-input").value,
+            domCache.configTemperatureInput.value,
           );
           let topP = parseFloat(
-            document.getElementById("config-topp-input").value,
+            domCache.configToppInput.value,
           );
           let topK = parseInt(
-            document.getElementById("config-topk-input").value,
+            domCache.configTopkInput.value,
           );
 
           if (isNaN(temp)) temp = 0.8;
@@ -2730,21 +3036,21 @@
 
           const configData = {
             name:
-              document.getElementById("config-name-input").value.trim() ||
+              domCache.configNameInput.value.trim() ||
               "未命名配置",
-            url: document.getElementById("config-url-input").value.trim(),
-            apiKey: document.getElementById("config-key-input").value.trim(),
-            model: document.getElementById("config-model-select").value,
+            url: domCache.configUrlInput.value.trim(),
+            apiKey: domCache.configKeyInput.value.trim(),
+            model: domCache.configModelSelect.value,
             temperature: temp,
             topP: topP,
             topK: topK,
             // 保存独立开关状态
-            enableTemp: document.getElementById("config-enable-temp").checked,
-            enableTopP: document.getElementById("config-enable-topp").checked,
-            enableTopK: document.getElementById("config-enable-topk").checked,
+            enableTemp: domCache.configEnableTemp.checked,
+            enableTopP: domCache.configEnableTopp.checked,
+            enableTopK: domCache.configEnableTopk.checked,
             // 保留旧字段以备不时之需（或者直接弃用，这里选择更新它为 OR 逻辑，或直接忽略）
             // 为了整洁，我们不再保存 enableAdvancedParams，因为它已经被拆分了。
-            enableStream: document.getElementById("config-stream-switch")
+            enableStream: domCache.configStreamSwitch
               .checked,
             hideStreamResponse: document.getElementById(
               "config-hide-stream-switch",
@@ -2772,16 +3078,13 @@
           }
 
           renderApiSettings();
-          document
-            .getElementById("api-config-editor-modal")
+          domCache.apiConfigEditorModal
             .classList.remove("visible");
         }
 
         async function setActiveApiConfig(configId) {
           state.globalSettings.activeApiConfigId = configId;
           await db.globalSettings.put(state.globalSettings);
-          // 可以在这里给一个轻量提示，或者什么都不做
-          console.log(`Active API config set to ID: ${configId}`);
         }
         window.renderApiSettingsProxy = renderApiSettings;
 
@@ -2862,13 +3165,47 @@
             chatListEl.appendChild(item);
           });
 
-          // 为所有分组标题添加折叠事件
-          document.querySelectorAll(".chat-group-header").forEach((header) => {
-            header.addEventListener("click", () => {
-              header.classList.toggle("collapsed");
-              header.nextElementSibling.classList.toggle("collapsed");
-            });
-          });
+          chatListEl.removeEventListener('click', handleChatListClick);
+          chatListEl.addEventListener('click', handleChatListClick);
+
+          function handleChatListClick(e) {
+            {
+              const header = e.target.closest('.chat-group-header');
+              if (header) {
+                  header.classList.toggle("collapsed");
+                  if (header.nextElementSibling) {
+                      header.nextElementSibling.classList.toggle("collapsed");
+                  }
+                  return;
+              }
+            }
+
+            {
+              const avatarEl = e.target.closest('.avatar');
+              if (avatarEl) {
+                  const item = avatarEl.closest('.chat-list-item');
+                  if (item && item.dataset.chatId) {
+                      e.stopPropagation(); // 阻止冒泡，避免触发打开聊天
+                      const chatId = parseInt(item.dataset.chatId);
+                      const chat = state.chats[chatId];
+                      if (chat) {
+                          handleUserPat(chat.id, chat.name);
+                      }
+                      return;
+                  }
+              }
+            }
+            
+            {
+              const item = e.target.closest('.chat-list-item');
+              if (item) {
+                  const chatId = parseInt(item.dataset.chatId);
+                  if (chatId) {
+                      openChat(chatId);
+                  }
+              }
+            }
+          }
         }
 
         function createChatListItem(chat) {
@@ -2974,15 +3311,17 @@
           const avatarEl = item.querySelector(".avatar");
           if (avatarEl) {
             avatarEl.style.cursor = "pointer";
-            avatarEl.addEventListener("click", (e) => {
-              e.stopPropagation();
-              handleUserPat(chat.id, chat.name);
-            });
+            // 【优化】移除单独的点击事件，改为在上层委托处理
+            // avatarEl.addEventListener("click", (e) => {
+            //   e.stopPropagation();
+            //   handleUserPat(chat.id, chat.name);
+            // });
           }
 
           const infoEl = item.querySelector(".info");
           if (infoEl) {
-            infoEl.addEventListener("click", () => openChat(chat.id));
+             // 【优化】移除单独的点击事件，改为在上层委托处理
+            // infoEl.addEventListener("click", () => openChat(chat.id));
           }
 
           addLongPressListener(item, async (e) => {
@@ -3009,9 +3348,9 @@
           if (!chat) return;
           exitSelectionMode();
 
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           const chatInputArea = document.getElementById("chat-input-area");
-          const lockOverlay = document.getElementById("chat-lock-overlay");
+          const lockOverlay = domCache.chatLockOverlay;
           const lockContent = document.getElementById("chat-lock-content");
 
           messagesContainer.dataset.theme = chat.settings.theme || "default";
@@ -3043,11 +3382,11 @@
             "custom-bubble-style",
           );
 
-          document.getElementById("chat-header-title").textContent = chat
+          domCache.chatHeaderTitle.textContent = chat
             .settings.aiRemark
             ? `${chat.name} | ${chat.settings.aiRemark}`
             : chat.name;
-          const statusContainer = document.getElementById("chat-header-status");
+          const statusContainer = domCache.chatHeaderStatus;
           const statusTextEl = statusContainer.querySelector(".status-text");
 
           if (chat.isGroup) {
@@ -3154,13 +3493,12 @@
           }
           messagesContainer.innerHTML = "";
           // ...后续代码保持不变
-          const chatScreen = document.getElementById("chat-interface-screen");
+          const chatScreen = domCache.chatInterfaceScreen;
           chatScreen.style.backgroundImage = chat.settings.background
             ? `url(${chat.settings.background})`
             : "none";
 
-          const isDarkMode = document
-            .getElementById("phone-screen")
+          const isDarkMode = domCache.phoneScreen
             .classList.contains("dark-mode");
           chatScreen.style.backgroundColor = chat.settings.background
             ? "transparent"
@@ -3198,7 +3536,7 @@
         }
 
         function loadMoreMessages() {
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           const chat = state.chats[state.activeChatId];
           if (!chat) return;
           const loadMoreBtn = document.getElementById("load-more-btn");
@@ -3236,8 +3574,8 @@
           // 【核心修改】在这里调用图标渲染函数
           renderIconSettings();
 
-          const frameColorInput = document.getElementById("frame-color-input");
-          const frameColorValue = document.getElementById("frame-color-value");
+          const frameColorInput = domCache.frameColorInput;
+          const frameColorValue = domCache.frameColorValue;
           const currentFrameColor =
             state.globalSettings.phoneFrameColor || "#ffffff";
           frameColorInput.value = currentFrameColor;
@@ -3252,7 +3590,7 @@
             homeScreen.style.backgroundImage = `url(${wallpaper})`;
           else if (wallpaper) homeScreen.style.backgroundImage = wallpaper;
 
-          const phoneFrame = document.getElementById("phone-frame");
+          const phoneFrame = domCache.phoneFrame;
           const customColor = state.globalSettings.phoneFrameColor;
 
           if (customColor) {
@@ -3313,15 +3651,9 @@
             listEl.appendChild(groupContainer);
           }
 
-          // 5. 为所有分组标题添加折叠事件
-          document
-            .querySelectorAll(".world-book-group-header")
-            .forEach((header) => {
-              header.addEventListener("click", () => {
-                header.classList.toggle("collapsed");
-                header.nextElementSibling.classList.toggle("collapsed");
-              });
-            });
+            // 5. 为所有分组标题添加折叠事件 (委托)
+            const header = document.querySelector(".world-book-group-header");
+            // 我们这里不需要做任何事，因为下面我们会统一添加委托
         }
 
         /**
@@ -3362,7 +3694,9 @@
             }</div><div class="item-content">${(
               book.content || "暂无内容..."
             ).substring(0, 50)}</div>`;
-            item.addEventListener("click", () => openWorldBookEditor(book.id));
+            
+            // 移除旧的事件绑定，改为委托
+            
             addLongPressListener(item, async () => {
               const confirmed = await showCustomConfirm(
                 "删除世界书",
@@ -3382,6 +3716,36 @@
 
           return groupContainer;
         }
+
+        // 添加世界书列表的事件委托
+        const worldBookListEl = document.getElementById("world-book-list");
+        if (worldBookListEl) {
+             // 防止重复绑定
+             worldBookListEl.removeEventListener('click', handleWorldBookListClick);
+             worldBookListEl.addEventListener('click', handleWorldBookListClick);
+        }
+
+        function handleWorldBookListClick(e) {
+             {
+               const header = e.target.closest('.world-book-group-header');
+               if (header) {
+                   header.classList.toggle("collapsed");
+                   if (header.nextElementSibling) {
+                       header.nextElementSibling.classList.toggle("collapsed");
+                   }
+                   return;
+               }
+             }
+
+             {
+               const item = e.target.closest('.list-item');
+               // 确保点击的不是长按菜单
+               if (item && item.dataset.bookId && !e.target.closest('.custom-confirm-overlay')) {
+                   const bookId = parseInt(item.dataset.bookId);
+                   openWorldBookEditor(bookId);
+               }
+             }
+        }
         window.renderWorldBookScreenProxy = renderWorldBookScreen;
 
         async function openWorldBookEditor(bookId) {
@@ -3392,9 +3756,9 @@
           ]);
           if (!book) return;
 
-          document.getElementById("world-book-editor-title").textContent =
+          domCache.worldBookEditorTitle.textContent =
             book.name;
-          document.getElementById("world-book-name-input").value = book.name;
+          domCache.worldBookNameInput.value = book.name;
           document.getElementById("world-book-content-input").value =
             book.content;
 
@@ -4022,7 +4386,7 @@
         }
 
         function prependMessage(msg, chat) {
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           const msgIndex = chat.history.indexOf(msg);
           const messageEl = createMessageElement(msg, chat, msgIndex);
 
@@ -4037,7 +4401,7 @@
         }
 
         function appendMessage(msg, chat, isInitialLoad = false) {
-          const messagesContainer = document.getElementById("chat-messages");
+          const messagesContainer = domCache.chatMessages;
           const msgIndex = chat.history.indexOf(msg);
           const messageEl = createMessageElement(msg, chat, msgIndex);
 
@@ -4048,7 +4412,7 @@
             messageEl.classList.add("animate-in");
           }
 
-          const typingIndicator = document.getElementById("typing-indicator");
+          const typingIndicator = domCache.typingIndicator;
           messagesContainer.insertBefore(messageEl, typingIndicator);
 
           if (!isInitialLoad) {
@@ -4221,14 +4585,11 @@
             !chat.isGroup &&
             chat.relationship?.status === "pending_ai_approval"
           ) {
-            console.log(
-              `检测到好友申请待处理状态，为角色 "${chat.name}" 自动触发AI响应...`,
-            );
             triggerAiResponse();
           }
 
           // 【核心修正】根据是否为群聊，显示或隐藏投票按钮
-          document.getElementById("send-poll-btn").style.display = chat.isGroup
+          domCache.sendPollBtn.style.display = chat.isGroup
             ? "flex"
             : "none";
         }
@@ -4275,7 +4636,7 @@
               .join("");
           }
 
-          document.getElementById("summary-history-modal").classList.add("visible");
+          domCache.summaryHistoryModal.classList.add("visible");
         }
 
         document
@@ -4284,19 +4645,17 @@
         document
           .getElementById("close-summary-history-modal")
           .addEventListener("click", () => {
-            document
-              .getElementById("summary-history-modal")
+            domCache.summaryHistoryModal
               .classList.remove("visible");
           });
         document
           .getElementById("close-summary-history-btn")
           .addEventListener("click", () => {
-            document
-              .getElementById("summary-history-modal")
+            domCache.summaryHistoryModal
               .classList.remove("visible");
           });
 
-        const chatSearchInput = document.getElementById("chat-search-input");
+        const chatSearchInput = domCache.chatSearchInput;
         if (chatSearchInput) {
           chatSearchInput.addEventListener("input", (event) => {
             const value = event.target?.value || "";
@@ -4495,11 +4854,9 @@
           chat.settings.summary.lastSummaryIndex = newLastSummaryIndex;
 
           await db.chats.put(chat);
-          console.log(`新的总结已作为记忆保存 for chat: ${chatId}`);
         }
 
         async function notifyForManualSummary(chatId) {
-          console.log(`手动总结提醒触发 for chat: ${chatId}`);
           await showCustomAlert(
             "总结提醒",
             "对话已达到设定长度，你可以随时在“聊天设置”中点击“立即手动总结”来生成对话记忆。",
@@ -4535,7 +4892,6 @@
         }
 
         async function performAutomaticSummary(chatId) {
-          console.log(`自动总结触发 for chat: ${chatId}`);
           const chat = state.chats[chatId];
           const summarySettings = chat.settings.summary;
           const messagesToSummarize = chat.history.slice(
@@ -4562,10 +4918,10 @@
           const chatId = state.activeChatId;
           const chat = state.chats[state.activeChatId];
 
-          const chatHeaderTitle = document.getElementById("chat-header-title");
+          const chatHeaderTitle = domCache.chatHeaderTitle;
 
           // ★★★★★【核心修改1：获取群聊的输入提示元素】★★★★★
-          const typingIndicator = document.getElementById("typing-indicator");
+          const typingIndicator = domCache.typingIndicator;
 
           // ★★★★★【核心修改2：根据聊天类型，决定显示哪种“正在输入”】★★★★★
           if (chat.isGroup) {
@@ -4620,9 +4976,6 @@
               !chat.isGroup &&
               chat.relationship?.status === "pending_ai_approval"
             ) {
-              console.log(
-                `为角色 "${chat.name}" 触发带理由的好友申请决策流程...`,
-              );
 
               // 1. 【注入上下文】抓取被拉黑前的最后5条聊天记录作为参考
               const contextSummary = chat.history
@@ -4890,7 +5243,6 @@
 
             // 4. 如果找到了分享卡片，就构建上下文
             if (shareCardMessage) {
-              console.log("检测到分享卡片作为上下文，正在为AI准备...");
               const payload = shareCardMessage.payload;
 
               // 格式化分享的聊天记录 (这部分逻辑不变)
@@ -5262,7 +5614,6 @@ ${membersList}
 
             // --- 【核心修改】检查是否开启流式请求 (仅限非原生Gemini渠道) ---
             if ((getActiveApiConfig() || {}).enableStreaming && !isGemini) {
-              console.log("正在使用流式请求 (OpenAI兼容模式)...");
               const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
                 method: "POST",
                 headers: {
@@ -5376,15 +5727,13 @@ ${membersList}
                 : data.choices[0].message.content;
             }
 
-            console.log(`AI '${chat.name}' 的原始回复:`, aiResponseContent);
 
             chat.history = chat.history.filter((msg) => !msg.isTemporary);
 
             const messagesArray = parseAiResponse(aiResponseContent);
 
             const isViewingThisChat =
-              document
-                .getElementById("chat-interface-screen")
+              domCache.chatInterfaceScreen
                 .classList.contains("active") && state.activeChatId === chatId;
 
             let callHasBeenHandled = false;
@@ -5505,8 +5854,7 @@ ${membersList}
                   updateUnreadIndicator(unreadPostsCount + 1);
                   if (
                     isViewingThisChat &&
-                    document
-                      .getElementById("qzone-screen")
+                    domCache.qzoneScreen
                       .classList.contains("active")
                   ) {
                     await renderQzonePosts();
@@ -5530,8 +5878,7 @@ ${membersList}
                     updateUnreadIndicator(unreadPostsCount + 1);
                     if (
                       isViewingThisChat &&
-                      document
-                        .getElementById("qzone-screen")
+                      domCache.qzoneScreen
                         .classList.contains("active")
                     ) {
                       await renderQzonePosts();
@@ -5553,8 +5900,7 @@ ${membersList}
                       updateUnreadIndicator(unreadPostsCount + 1);
                       if (
                         isViewingThisChat &&
-                        document
-                          .getElementById("qzone-screen")
+                        domCache.qzoneScreen
                           .classList.contains("active")
                       ) {
                         await renderQzonePosts();
@@ -5606,7 +5952,7 @@ ${membersList}
                   };
                   chat.history.push(patMessage);
                   if (isViewingThisChat) {
-                    const phoneScreen = document.getElementById("phone-screen");
+                    const phoneScreen = domCache.phoneScreen;
                     phoneScreen.classList.remove("pat-animation");
                     void phoneScreen.offsetWidth;
                     phoneScreen.classList.add("pat-animation");
@@ -5682,10 +6028,6 @@ ${membersList}
                   };
                   await db.memories.add(newMemory);
 
-                  console.log(
-                    `AI "${chat.name}" 记录了一条新回忆:`,
-                    msgData.description,
-                  );
 
                   continue;
 
@@ -5701,10 +6043,6 @@ ${membersList}
                       targetDate: targetDate.getTime(),
                     };
                     await db.memories.add(newCountdown);
-                    console.log(
-                      `AI "${chat.name}" 创建了一个新约定:`,
-                      msgData.title,
-                    );
                   }
                   continue;
 
@@ -6184,7 +6522,7 @@ ${membersList}
                     productInfo: String(msgData.productInfo || "").trim(),
                     amount: msgData.amount,
                     status: "pending",
-                    countdownEndTime: Date.now() + 15 * 60 * 1000,
+                    countdownEndTime: Date.now() + WAIMAI_COUNTDOWN_DURATION,
                   };
                   break;
 
@@ -6349,8 +6687,7 @@ ${membersList}
             videoCallState.isAwaitingResponse = false;
 
             if (
-              document
-                .getElementById("chat-interface-screen")
+              domCache.chatInterfaceScreen
                 .classList.contains("active") &&
               state.activeChatId === chatId
             ) {
@@ -6392,7 +6729,7 @@ ${membersList}
           await db.chats.put(chat);
           appendMessage(msg, chat);
           renderChatList();
-          document.getElementById("sticker-panel").classList.remove("visible");
+          domCache.stickerPanel.classList.remove("visible");
         }
 
         async function sendUserTransfer() {
@@ -6426,7 +6763,7 @@ ${membersList}
           await db.chats.put(chat);
           appendMessage(msg, chat);
           renderChatList();
-          document.getElementById("transfer-modal").classList.remove("visible");
+          domCache.transferModal.classList.remove("visible");
           amountInput.value = "";
           noteInput.value = "";
         }
@@ -6434,8 +6771,7 @@ ${membersList}
         function enterSelectionMode(initialMsgTimestamp) {
           if (isSelectionMode) return;
           isSelectionMode = true;
-          document
-            .getElementById("chat-interface-screen")
+          domCache.chatInterfaceScreen
             .classList.add("selection-mode");
           toggleMessageSelection(initialMsgTimestamp);
         }
@@ -6444,8 +6780,7 @@ ${membersList}
           cleanupWaimaiTimers(); // <--- 在这里添加这行代码
           if (!isSelectionMode) return;
           isSelectionMode = false;
-          document
-            .getElementById("chat-interface-screen")
+          domCache.chatInterfaceScreen
             .classList.remove("selection-mode");
           selectedMessages.forEach((ts) => {
             const bubble = document.querySelector(
@@ -6485,7 +6820,7 @@ ${membersList}
           const startPress = (e) => {
             if (isSelectionMode) return;
             e.preventDefault();
-            pressTimer = window.setTimeout(() => callback(e), 500);
+            pressTimer = window.setTimeout(() => callback(e), LONG_PRESS_DURATION);
           };
           const cancelPress = () => clearTimeout(pressTimer);
           element.addEventListener("mousedown", startPress);
@@ -6504,8 +6839,7 @@ ${membersList}
             return;
           }
           if (musicState.activeChatId === targetChatId) {
-            document
-              .getElementById("music-player-overlay")
+            domCache.musicPlayerOverlay
               .classList.add("visible");
           } else {
             const oldChatName =
@@ -6544,8 +6878,7 @@ ${membersList}
           }, 1000);
           updatePlayerUI();
           updatePlaylistUI();
-          document
-            .getElementById("music-player-overlay")
+          domCache.musicPlayerOverlay
             .classList.add("visible");
         }
 
@@ -6598,7 +6931,7 @@ ${membersList}
           updateElapsedTimeDisplay();
           const titleEl = document.getElementById("music-player-song-title");
           const artistEl = document.getElementById("music-player-artist");
-          const playPauseBtn = document.getElementById("music-play-pause-btn");
+          const playPauseBtn = domCache.musicPlayPauseBtn;
           if (musicState.currentIndex > -1 && musicState.playlist.length > 0) {
             const track = musicState.playlist[musicState.currentIndex];
             titleEl.textContent = track.name;
@@ -6617,7 +6950,7 @@ ${membersList}
         }
 
         function updatePlaylistUI() {
-          const playlistBody = document.getElementById("playlist-body");
+          const playlistBody = domCache.playlistBody;
           playlistBody.innerHTML = "";
           if (musicState.playlist.length === 0) {
             playlistBody.innerHTML =
@@ -6715,7 +7048,7 @@ ${membersList}
           const modes = ["order", "random", "single"];
           const currentModeIndex = modes.indexOf(musicState.playMode);
           musicState.playMode = modes[(currentModeIndex + 1) % modes.length];
-          document.getElementById("music-mode-btn").textContent = {
+          domCache.musicModeBtn.textContent = {
             order: "顺序",
             random: "随机",
             single: "单曲",
@@ -6766,7 +7099,7 @@ ${membersList}
             );
             if (wantLrc) {
               lrcContent = await new Promise((resolve) => {
-                const lrcInput = document.getElementById("lrc-upload-input");
+                const lrcInput = domCache.lrcUploadInput;
                 const lrcChangeHandler = (e) => {
                   const lrcFile = e.target.files[0];
                   if (lrcFile) {
@@ -6891,18 +7224,18 @@ ${membersList}
         function applyPersonaPreset(presetId) {
           const preset = state.personaPresets.find((p) => p.id === presetId);
           if (preset) {
-            document.getElementById("my-avatar-preview").src = preset.avatar;
-            document.getElementById("my-persona").value = preset.persona;
+            domCache.myAvatarPreview.src = preset.avatar;
+            domCache.myPersona.value = preset.persona;
           }
           closePersonaLibrary();
         }
 
         function openPersonaEditorForCreate() {
           editingPersonaPresetId = null;
-          document.getElementById("persona-editor-title").textContent =
+          domCache.personaEditorTitle.textContent =
             "添加人设预设";
-          document.getElementById("preset-avatar-preview").src = defaultAvatar;
-          document.getElementById("preset-persona-input").value = "";
+          domCache.presetAvatarPreview.src = defaultAvatar;
+          domCache.presetPersonaInput.value = "";
           personaEditorModal.classList.add("visible");
         }
 
@@ -6911,10 +7244,10 @@ ${membersList}
             (p) => p.id === editingPersonaPresetId,
           );
           if (!preset) return;
-          document.getElementById("persona-editor-title").textContent =
+          domCache.personaEditorTitle.textContent =
             "编辑人设预设";
-          document.getElementById("preset-avatar-preview").src = preset.avatar;
-          document.getElementById("preset-persona-input").value =
+          domCache.presetAvatarPreview.src = preset.avatar;
+          domCache.presetPersonaInput.value =
             preset.persona;
           presetActionsModal.classList.remove("visible");
           personaEditorModal.classList.add("visible");
@@ -6942,9 +7275,8 @@ ${membersList}
         }
 
         async function savePersonaPreset() {
-          const avatar = document.getElementById("preset-avatar-preview").src;
-          const persona = document
-            .getElementById("preset-persona-input")
+          const avatar = domCache.presetAvatarPreview.src;
+          const persona = domCache.presetPersonaInput
             .value.trim();
           if (avatar === defaultAvatar && !persona) {
             showCustomAlert("提示", "头像和人设不能都为空哦！");
@@ -6986,7 +7318,7 @@ ${membersList}
             batteryAlertModal.removeEventListener("click", closeAlert);
           };
           batteryAlertModal.addEventListener("click", closeAlert);
-          batteryAlertTimeout = setTimeout(closeAlert, 2000);
+          batteryAlertTimeout = setTimeout(closeAlert, BATTERY_ALERT_DURATION);
         }
 
         function updateBatteryDisplay(battery) {
@@ -7141,7 +7473,7 @@ ${membersList}
 
         async function renderAlbumPhotosScreen() {
           if (!state.activeAlbumId) return;
-          const photosGrid = document.getElementById("photos-grid-page");
+          const photosGrid = domCache.photosGridPage;
           const headerTitle = document.getElementById("album-photos-title");
           const album = await db.qzoneAlbums.get(state.activeAlbumId);
           if (!album) {
@@ -7194,8 +7526,7 @@ ${membersList}
           if (photoViewerState.currentIndex === -1) return; // 如果找不到，则不打开
 
           // 3. 显示模态框并渲染第一张图
-          document
-            .getElementById("photo-viewer-modal")
+          domCache.photoViewerModal
             .classList.add("visible");
           renderPhotoViewer();
           photoViewerState.isOpen = true;
@@ -7207,9 +7538,9 @@ ${membersList}
         function renderPhotoViewer() {
           if (photoViewerState.currentIndex === -1) return;
 
-          const imageEl = document.getElementById("photo-viewer-image");
-          const prevBtn = document.getElementById("photo-viewer-prev-btn");
-          const nextBtn = document.getElementById("photo-viewer-next-btn");
+          const imageEl = domCache.photoViewerImage;
+          const prevBtn = domCache.photoViewerPrevBtn;
+          const nextBtn = domCache.photoViewerNextBtn;
 
           // 淡出效果
           imageEl.style.opacity = 0;
@@ -7257,14 +7588,13 @@ ${membersList}
          * 关闭图片查看器
          */
         function closePhotoViewer() {
-          document
-            .getElementById("photo-viewer-modal")
+          domCache.photoViewerModal
             .classList.remove("visible");
           photoViewerState.isOpen = false;
           photoViewerState.photos = [];
           photoViewerState.currentIndex = -1;
           // 清空图片，避免下次打开时闪现旧图
-          document.getElementById("photo-viewer-image").src = "";
+          domCache.photoViewerImage.src = "";
         }
 
         // --- ↑↑↑ 复制到这里结束 ↑↑↑ ---
@@ -7301,7 +7631,7 @@ ${membersList}
           }
 
           // --- 更新聊天界面返回列表的按钮 ---
-          const backBtn = document.getElementById("back-to-list-btn");
+          const backBtn = domCache.backToListBtn;
           let backBtnIndicator = backBtn.querySelector(".unread-indicator");
 
           if (count > 0) {
@@ -7343,7 +7673,6 @@ ${membersList}
          * 这是模拟器的“心跳”，每次定时器触发时运行
          */
         function runBackgroundSimulationTick() {
-          console.log("模拟器心跳 Tick...");
           if (!state.globalSettings.enableBackgroundActivity) {
             stopBackgroundSimulation();
             return;
@@ -7372,17 +7701,9 @@ ${membersList}
               const cooldownMilliseconds =
                 (state.globalSettings.blockCooldownHours || 1) * 60 * 60 * 1000;
 
-              console.log(
-                `检查角色 "${chat.name}"：已拉黑 ${Math.round(
-                  blockedDuration / 1000 / 60,
-                )}分钟，冷静期需 ${cooldownMilliseconds / 1000 / 60}分钟。`,
-              ); // 添加日志
 
               // 【核心修改】移除了随机概率，只要冷静期一过，就触发！
               if (blockedDuration > cooldownMilliseconds) {
-                console.log(
-                  `角色 "${chat.name}" 的冷静期已过，触发“反思”并申请好友事件...`,
-                );
 
                 // 【重要】为了防止在AI响应前重复触发，我们在触发后立刻更新状态
                 chat.relationship.status = "pending_system_reflection"; // 设置一个临时的、防止重复触发的状态
@@ -7400,7 +7721,6 @@ ${membersList}
               }
               // 这里的随机触发逻辑保持不变，因为我们不希望所有好友同时行动
               if (Math.random() < 0.2) {
-                console.log(`角色 "${chat.name}" 被唤醒，准备独立行动...`);
                 triggerInactiveAiAction(chat.id);
               }
             }
@@ -7579,10 +7899,6 @@ ${membersList}
               content: `[系统指令：请根据你在 system prompt 中读到的规则和以下最新信息，开始你的独立行动。]\n${dynamicContext}`,
             });
 
-            console.log(
-              "正在为后台活动发送API请求，Payload:",
-              JSON.stringify(messagesPayload, null, 2),
-            ); // 添加日志，方便调试
 
             // 发送请求
             let isGemini = proxyUrl === GEMINI_API_URL;
@@ -7674,9 +7990,6 @@ ${membersList}
                 await db.chats.put(chat);
                 showNotification(chatId, aiMessage.content);
                 renderChatList();
-                console.log(
-                  `后台活动: 角色 "${chat.name}" 主动发送了消息: ${aiMessage.content}`,
-                );
               }
               if (action.type === "qzone_post") {
                 const newPost = {
@@ -7691,7 +8004,6 @@ ${membersList}
                 };
                 await db.qzonePosts.add(newPost);
                 updateUnreadIndicator(unreadPostsCount + 1);
-                console.log(`后台活动: 角色 "${chat.name}" 发布了动态`);
               } else if (action.type === "qzone_comment") {
                 const post = await db.qzonePosts.get(parseInt(action.postId));
                 if (post) {
@@ -7705,9 +8017,6 @@ ${membersList}
                     comments: post.comments,
                   });
                   updateUnreadIndicator(unreadPostsCount + 1);
-                  console.log(
-                    `后台活动: 角色 "${chat.name}" 评论了动态 #${post.id}`,
-                  );
                 }
               } else if (action.type === "qzone_like") {
                 const post = await db.qzonePosts.get(parseInt(action.postId));
@@ -7717,9 +8026,6 @@ ${membersList}
                     post.likes.push(chat.name);
                     await db.qzonePosts.update(post.id, { likes: post.likes });
                     updateUnreadIndicator(unreadPostsCount + 1);
-                    console.log(
-                      `后台活动: 角色 "${chat.name}" 点赞了动态 #${post.id}`,
-                    );
                   }
                 }
               } else if (action.type === "video_call_request") {
@@ -7730,9 +8036,6 @@ ${membersList}
                   videoCallState.isAwaitingResponse = true;
                   state.activeChatId = chatId;
                   showIncomingCallModal();
-                  console.log(
-                    `后台活动: 角色 "${chat.name}" 发起了视频通话请求`,
-                  );
                 }
               }
             }
@@ -7784,8 +8087,8 @@ ${membersList}
           const selectedTheme =
             document.querySelector('input[name="theme-select"]:checked')
               ?.value || "default";
-          const fontSize = document.getElementById("font-size-slider").value;
-          const customCss = document.getElementById("custom-css-input").value;
+          const fontSize = domCache.fontSizeSlider.value;
+          const customCss = domCache.customCssInput.value;
           const background = chat.settings.background; // 直接获取背景设置
 
           // 2. 更新预览区的基本样式
@@ -7986,13 +8289,12 @@ ${membersList}
 
         async function openGroupManager() {
           await renderGroupList();
-          document
-            .getElementById("group-management-modal")
+          domCache.groupManagementModal
             .classList.add("visible");
         }
 
         async function renderGroupList() {
-          const listEl = document.getElementById("existing-groups-list");
+          const listEl = domCache.existingGroupsList;
           const groups = await db.qzoneGroups.toArray();
           listEl.innerHTML = "";
           if (groups.length === 0) {
@@ -8065,8 +8367,7 @@ ${membersList}
           if (isSelectionMode) return;
 
           activeMessageTimestamp = timestamp;
-          document
-            .getElementById("message-actions-modal")
+          domCache.messageActionsModal
             .classList.add("visible");
         }
 
@@ -8074,8 +8375,7 @@ ${membersList}
          * 隐藏消息操作菜单
          */
         function hideMessageActions() {
-          document
-            .getElementById("message-actions-modal")
+          domCache.messageActionsModal
             .classList.remove("visible");
           activeMessageTimestamp = null;
         }
@@ -8293,7 +8593,7 @@ ${membersList}
           // 2. 现在可以安全地关闭旧菜单了，因为它不会影响我们的局部变量
           hideMessageActions();
 
-          const editorModal = document.getElementById("message-editor-modal");
+          const editorModal = domCache.messageEditorModal;
           const editorContainer = document.getElementById(
             "message-editor-container",
           );
@@ -8477,8 +8777,7 @@ ${membersList}
           }
 
           if (newMessages.length === 0) {
-            document
-              .getElementById("message-editor-modal")
+            domCache.messageEditorModal
               .classList.remove("visible");
             return; // 如果是空消息，直接返回，不执行删除操作
           }
@@ -8505,8 +8804,7 @@ ${membersList}
           await db.chats.put(chat);
 
           // 关闭可能打开的模态框并刷新UI
-          document
-            .getElementById("message-editor-modal")
+          domCache.messageEditorModal
             .classList.remove("visible");
           renderChatInterface(state.activeChatId);
           await showCustomAlert("成功", "消息已更新！");
@@ -8518,8 +8816,7 @@ ${membersList}
          */
         function showPostActions(postId) {
           activePostId = postId;
-          document
-            .getElementById("post-actions-modal")
+          domCache.postActionsModal
             .classList.add("visible");
         }
 
@@ -8527,8 +8824,7 @@ ${membersList}
          * 隐藏动态操作菜单
          */
         function hidePostActions() {
-          document
-            .getElementById("post-actions-modal")
+          domCache.postActionsModal
             .classList.remove("visible");
           activePostId = null;
         }
@@ -8705,7 +9001,7 @@ ${membersList}
          * 渲染联系人选择列表
          */
         async function renderContactPicker() {
-          const listEl = document.getElementById("contact-picker-list");
+          const listEl = domCache.contactPickerList;
           listEl.innerHTML = "";
 
           // 只选择单聊角色作为群成员候选
@@ -8821,7 +9117,7 @@ ${membersList}
         }
 
         function renderMemberManagementList() {
-          const listEl = document.getElementById("member-management-list");
+          const listEl = domCache.memberManagementList;
           const chat = state.chats[state.activeChatId];
           listEl.innerHTML = "";
 
@@ -8865,7 +9161,7 @@ ${membersList}
             chat.members.splice(memberIndex, 1);
             await db.chats.put(chat);
             renderMemberManagementList(); // 刷新成员管理列表
-            document.getElementById("chat-settings-btn").click(); // 【核心修正】模拟点击设置按钮，强制刷新整个弹窗
+            domCache.chatSettingsBtn.click(); // 【核心修正】模拟点击设置按钮，强制刷新整个弹窗
           }
         }
 
@@ -8879,7 +9175,7 @@ ${membersList}
           const existingMemberIds = new Set(chat.members.map((m) => m.id));
 
           // 渲染联系人列表，并自动排除已在群内的成员
-          const listEl = document.getElementById("contact-picker-list");
+          const listEl = domCache.contactPickerList;
           listEl.innerHTML = "";
           const contacts = Object.values(state.chats).filter(
             (c) => !c.isGroup && !existingMemberIds.has(c.id),
@@ -9102,14 +9398,14 @@ ${membersList}
 
           // 1. 显示“正在呼叫”界面
           if (chat.isGroup) {
-            document.getElementById("outgoing-call-avatar").src =
+            domCache.outgoingCallAvatar.src =
               chat.settings.myAvatar || defaultMyGroupAvatar;
-            document.getElementById("outgoing-call-name").textContent =
+            domCache.outgoingCallName.textContent =
               chat.settings.myNickname || "我";
           } else {
-            document.getElementById("outgoing-call-avatar").src =
+            domCache.outgoingCallAvatar.src =
               chat.settings.aiAvatar || defaultAvatar;
-            document.getElementById("outgoing-call-name").textContent =
+            domCache.outgoingCallName.textContent =
               chat.name;
           }
           document.querySelector(
@@ -9291,18 +9587,18 @@ ${membersList}
 
           updateParticipantAvatars();
 
-          document.getElementById("video-call-main").innerHTML = `<em>${
+          domCache.videoCallMain.innerHTML = `<em>${
             videoCallState.isGroupCall ? "群聊已建立..." : "正在接通..."
           }</em>`;
           showScreen("video-call-screen");
 
-          document.getElementById("user-speak-btn").style.display =
+          domCache.userSpeakBtn.style.display =
             videoCallState.isUserParticipating ? "block" : "none";
-          document.getElementById("join-call-btn").style.display =
+          domCache.joinCallBtn.style.display =
             videoCallState.isUserParticipating ? "none" : "block";
 
           if (callTimerInterval) clearInterval(callTimerInterval);
-          callTimerInterval = setInterval(updateCallTimer, 1000);
+          callTimerInterval = setInterval(updateCallTimer, CALL_TIMER_UPDATE_INTERVAL);
           updateCallTimer();
 
           triggerAiInCallAction();
@@ -9313,7 +9609,7 @@ ${membersList}
          */
 
         async function endVideoCall() {
-          document.getElementById("video-call-floating-bubble").style.display =
+          domCache.videoCallFloatingBubble.style.display =
             "none";
           if (!videoCallState.isActive) return;
 
@@ -9361,7 +9657,6 @@ ${membersList}
               transcript: [...videoCallState.callHistory],
             };
             await db.callRecords.add(callRecord);
-            console.log("通话记录已保存:", callRecord);
 
             // 2. 在聊天记录里添加对用户可见的“通话结束”消息
             let summaryMessage = {
@@ -9436,7 +9731,7 @@ ${membersList}
           if (!videoCallState.isActive) return;
 
           const chat = state.chats[videoCallState.activeChatId];
-          const bubble = document.getElementById("video-call-floating-bubble");
+          const bubble = domCache.videoCallFloatingBubble;
           const avatarImg = document.getElementById("video-floating-avatar");
 
           // 1. 设置悬浮球头像
@@ -9463,7 +9758,7 @@ ${membersList}
          * 恢复视频通话界面
          */
         function restoreVideoCall() {
-          const bubble = document.getElementById("video-call-floating-bubble");
+          const bubble = domCache.videoCallFloatingBubble;
 
           // 1. 隐藏悬浮球
           bubble.style.display = "none";
@@ -9478,7 +9773,7 @@ ${membersList}
          * 初始化悬浮球的拖拽功能
          */
         function initVideoBubbleDrag() {
-          const bubble = document.getElementById("video-call-floating-bubble");
+          const bubble = domCache.videoCallFloatingBubble;
           let isDragging = false;
           let startX, startY, initialLeft, initialTop;
           let hasMoved = false; // 用于区分点击和拖拽
@@ -9619,8 +9914,8 @@ ${membersList}
           updateParticipantAvatars(); // 更新头像列表，加入用户
 
           // 切换底部按钮
-          document.getElementById("user-speak-btn").style.display = "block";
-          document.getElementById("join-call-btn").style.display = "none";
+          domCache.userSpeakBtn.style.display = "block";
+          domCache.joinCallBtn.style.display = "none";
 
           // 告知AI用户加入了
           triggerAiInCallAction("[系统提示：用户加入了通话]");
@@ -9657,24 +9952,23 @@ ${membersList}
               videoCallState.callRequester ||
               chat.members[0]?.name ||
               "一位成员";
-            document.getElementById("caller-avatar").src =
+            domCache.callerAvatar.src =
               chat.settings.groupAvatar || defaultGroupAvatar;
-            document.getElementById("caller-name").textContent = chat.name; // 显示群名
+            domCache.callerName.textContent = chat.name; // 显示群名
             document.querySelector(
               ".incoming-call-content .caller-text",
             ).textContent = `${requesterName} 邀请你加入群视频`; // 显示具体发起人
           } else {
             // 单聊逻辑保持不变
-            document.getElementById("caller-avatar").src =
+            domCache.callerAvatar.src =
               chat.settings.aiAvatar || defaultAvatar;
-            document.getElementById("caller-name").textContent = chat.name;
+            domCache.callerName.textContent = chat.name;
             document.querySelector(
               ".incoming-call-content .caller-text",
             ).textContent = "邀请你视频通话";
           }
 
-          document
-            .getElementById("incoming-call-modal")
+          domCache.incomingCallModal
             .classList.add("visible");
           playRingtone();
         }
@@ -9683,8 +9977,7 @@ ${membersList}
          * 隐藏AI发起的通话请求模态框 (保持不变)
          */
         function hideIncomingCallModal() {
-          document
-            .getElementById("incoming-call-modal")
+          domCache.incomingCallModal
             .classList.remove("visible");
           stopRingtone();
         }
@@ -9695,7 +9988,7 @@ ${membersList}
           const chat = state.chats[videoCallState.activeChatId];
           const { proxyUrl, apiKey, model } = getActiveApiConfig() || {};
 
-          const callFeed = document.getElementById("video-call-main");
+          const callFeed = domCache.videoCallMain;
 
           const userNickname = chat.settings.myNickname || "我";
 
@@ -9865,9 +10158,6 @@ ${membersList}
               chat.settings.minimaxVoiceId &&
               sanitizedResponse
             ) {
-              console.log(
-                `[视频通话] 检测到语音接入已开启，为“${chat.name}”合成语音...`,
-              );
               // 调用你已有的 playMinimaxAudio 函数来播放语音
               playMinimaxAudio(
                 sanitizedResponse,
@@ -9906,10 +10196,10 @@ ${membersList}
         }
 
         function toggleCallButtons(isGroup) {
-          document.getElementById("video-call-btn").style.display = isGroup
+          domCache.videoCallBtn.style.display = isGroup
             ? "none"
             : "flex";
-          document.getElementById("group-video-call-btn").style.display =
+          domCache.groupVideoCallBtn.style.display =
             isGroup ? "flex" : "none";
         }
 
@@ -9923,7 +10213,7 @@ ${membersList}
           if (!chat) return;
 
           // 1. 触发屏幕震动动画
-          const phoneScreen = document.getElementById("phone-screen");
+          const phoneScreen = domCache.phoneScreen;
           phoneScreen.classList.remove("pat-animation");
           void phoneScreen.offsetWidth;
           phoneScreen.classList.add("pat-animation");
@@ -10150,7 +10440,7 @@ ${membersList}
               updateTimer(); // 立即执行一次以显示初始倒计时
 
               // 【核心修正】在这里，我们为已声明的 timerId 赋值
-              timerId = setInterval(updateTimer, 1000);
+              timerId = setInterval(updateTimer, COUNTDOWN_UPDATE_INTERVAL);
 
               // 将有效的计时器ID存入全局数组，以便下次刷新时可以清除
               activeCountdownTimers.push(timerId);
@@ -10313,7 +10603,7 @@ ${membersList}
             openRedPacketModal();
           } else {
             // 单聊保持原样，打开转账弹窗
-            document.getElementById("transfer-modal").classList.add("visible");
+            domCache.transferModal.classList.add("visible");
           }
         }
 
@@ -10321,29 +10611,29 @@ ${membersList}
          * 打开并初始化发红包模态框
          */
         function openRedPacketModal() {
-          const modal = document.getElementById("red-packet-modal");
+          const modal = domCache.redPacketModal;
           const chat = state.chats[state.activeChatId];
           const isGroup = chat.members && Array.isArray(chat.members);
 
           // 清理输入框
-          document.getElementById("rp-group-amount").value = "";
-          document.getElementById("rp-group-count").value = "";
-          document.getElementById("rp-group-greeting").value = "";
-          document.getElementById("rp-direct-amount").value = "";
-          document.getElementById("rp-direct-greeting").value = "";
-          document.getElementById("rp-group-total").textContent = "¥ 0.00";
-          document.getElementById("rp-direct-total").textContent = "¥ 0.00";
+          domCache.rpGroupAmount.value = "";
+          domCache.rpGroupCount.value = "";
+          domCache.rpGroupGreeting.value = "";
+          domCache.rpDirectAmount.value = "";
+          domCache.rpDirectGreeting.value = "";
+          domCache.rpGroupTotal.textContent = "¥ 0.00";
+          domCache.rpDirectTotal.textContent = "¥ 0.00";
 
           // 填充专属红包的接收人列表
-          const receiverSelect = document.getElementById("rp-direct-receiver");
+          const receiverSelect = domCache.rpDirectReceiver;
           receiverSelect.innerHTML = "";
           
           // 获取页签和内容区域元素
           const tabsContainer = document.querySelector("#red-packet-modal .frame-tabs");
-          const groupTab = document.getElementById("rp-tab-group");
-          const directTab = document.getElementById("rp-tab-direct");
-          const groupContent = document.getElementById("rp-content-group");
-          const directContent = document.getElementById("rp-content-direct");
+          const groupTab = domCache.rpTabGroup;
+          const directTab = domCache.rpTabDirect;
+          const groupContent = domCache.rpContentGroup;
+          const directContent = domCache.rpContentDirect;
 
           if (isGroup) {
             // 群聊：显示两个页签（拼手气 + 专属）
@@ -10389,13 +10679,12 @@ ${membersList}
         async function sendGroupRedPacket() {
           const chat = state.chats[state.activeChatId];
           const amount = parseFloat(
-            document.getElementById("rp-group-amount").value,
+            domCache.rpGroupAmount.value,
           );
           const count = parseInt(
-            document.getElementById("rp-group-count").value,
+            domCache.rpGroupCount.value,
           );
-          const greeting = document
-            .getElementById("rp-group-greeting")
+          const greeting = domCache.rpGroupGreeting
             .value.trim();
 
           if (isNaN(amount) || amount <= 0) {
@@ -10431,8 +10720,7 @@ ${membersList}
 
           appendMessage(newPacket, chat);
           renderChatList();
-          document
-            .getElementById("red-packet-modal")
+          domCache.redPacketModal
             .classList.remove("visible");
         }
 
@@ -10442,12 +10730,11 @@ ${membersList}
         async function sendDirectRedPacket() {
           const chat = state.chats[state.activeChatId];
           const amount = parseFloat(
-            document.getElementById("rp-direct-amount").value,
+            domCache.rpDirectAmount.value,
           );
           const receiverName =
-            document.getElementById("rp-direct-receiver").value;
-          const greeting = document
-            .getElementById("rp-direct-greeting")
+            domCache.rpDirectReceiver.value;
+          const greeting = domCache.rpDirectGreeting
             .value.trim();
 
           if (isNaN(amount) || amount <= 0) {
@@ -10480,8 +10767,7 @@ ${membersList}
 
           appendMessage(newPacket, chat);
           renderChatList();
-          document
-            .getElementById("red-packet-modal")
+          domCache.redPacketModal
             .classList.remove("visible");
         }
 
@@ -10630,7 +10916,7 @@ ${membersList}
           const chat = state.chats[state.activeChatId];
           if (!chat) return;
 
-          const modal = document.getElementById("red-packet-details-modal");
+          const modal = domCache.redPacketDetailsModal;
           const myNickname = chat.settings.myNickname || "我";
 
           // 2. 后续所有逻辑保持不变，直接使用传入的packet对象
@@ -10711,8 +10997,7 @@ ${membersList}
         document
           .getElementById("close-rp-details-btn")
           .addEventListener("click", () => {
-            document
-              .getElementById("red-packet-details-modal")
+            domCache.redPacketDetailsModal
               .classList.remove("visible");
           });
 
@@ -10723,8 +11008,8 @@ ${membersList}
          * 打开创建投票的模态框并初始化
          */
         function openCreatePollModal() {
-          const modal = document.getElementById("create-poll-modal");
-          document.getElementById("poll-question-input").value = "";
+          const modal = domCache.createPollModal;
+          domCache.pollQuestionInput.value = "";
           const optionsContainer = document.getElementById(
             "poll-options-container",
           );
@@ -10769,8 +11054,7 @@ ${membersList}
         async function sendPoll() {
           if (!state.activeChatId) return;
 
-          const question = document
-            .getElementById("poll-question-input")
+          const question = domCache.pollQuestionInput
             .value.trim();
           if (!question) {
             showCustomAlert("提示", "请输入投票问题！");
@@ -10810,8 +11094,7 @@ ${membersList}
           appendMessage(newPollMessage, chat);
           renderChatList();
 
-          document
-            .getElementById("create-poll-modal")
+          domCache.createPollModal
             .classList.remove("visible");
         }
 
@@ -10960,8 +11243,7 @@ ${membersList}
           document.getElementById("ai-avatar-library-title").textContent =
             `“${chat.name}”的头像库`;
           renderAiAvatarLibrary();
-          document
-            .getElementById("ai-avatar-library-modal")
+          domCache.aiAvatarLibraryModal
             .classList.add("visible");
         }
 
@@ -11046,8 +11328,7 @@ ${membersList}
          * 关闭AI头像库管理模态框
          */
         function closeAiAvatarLibraryModal() {
-          document
-            .getElementById("ai-avatar-library-modal")
+          domCache.aiAvatarLibraryModal
             .classList.remove("visible");
         }
 
@@ -11069,7 +11350,7 @@ ${membersList}
          * 【全新】在外观设置页面渲染出所有App图标的设置项
          */
         function renderIconSettings() {
-          const grid = document.getElementById("icon-settings-grid");
+          const grid = domCache.iconSettingsGrid;
           if (!grid) return;
           grid.innerHTML = "";
 
@@ -11151,13 +11432,13 @@ ${membersList}
           if (!state.activeChatId) return;
 
           // 清空上次输入的内容
-          document.getElementById("link-title-input").value = "";
-          document.getElementById("link-description-input").value = "";
-          document.getElementById("link-source-input").value = "";
-          document.getElementById("link-content-input").value = "";
+          domCache.linkTitleInput.value = "";
+          domCache.linkDescriptionInput.value = "";
+          domCache.linkSourceInput.value = "";
+          domCache.linkContentInput.value = "";
 
           // 显示模态框
-          document.getElementById("share-link-modal").classList.add("visible");
+          domCache.shareLinkModal.classList.add("visible");
         }
 
         /**
@@ -11166,22 +11447,18 @@ ${membersList}
         async function sendUserLinkShare() {
           if (!state.activeChatId) return;
 
-          const title = document
-            .getElementById("link-title-input")
+          const title = domCache.linkTitleInput
             .value.trim();
           if (!title) {
             showCustomAlert("提示", "标题是必填项哦！");
             return;
           }
 
-          const description = document
-            .getElementById("link-description-input")
+          const description = domCache.linkDescriptionInput
             .value.trim();
-          const sourceName = document
-            .getElementById("link-source-input")
+          const sourceName = domCache.linkSourceInput
             .value.trim();
-          const content = document
-            .getElementById("link-content-input")
+          const content = domCache.linkContentInput
             .value.trim();
 
           const chat = state.chats[state.activeChatId];
@@ -11208,8 +11485,7 @@ ${membersList}
           renderChatList();
 
           // 关闭模态框
-          document
-            .getElementById("share-link-modal")
+          domCache.shareLinkModal
             .classList.remove("visible");
         }
 
@@ -11256,8 +11532,8 @@ ${membersList}
          * @param {string} theme - 要应用的主题名称
          */
         function applyTheme(theme) {
-          const phoneScreen = document.getElementById("phone-screen");
-          const toggleSwitch = document.getElementById("theme-toggle-switch");
+          const phoneScreen = domCache.phoneScreen;
+          const toggleSwitch = domCache.themeToggleSwitch;
 
         const isDark = theme === "dark";
 
@@ -11295,7 +11571,7 @@ ${membersList}
          * 切换当前的主题
          */
         function toggleTheme() {
-          const toggleSwitch = document.getElementById("theme-toggle-switch");
+          const toggleSwitch = domCache.themeToggleSwitch;
           // 直接根据开关的选中状态来决定新主题
           const newTheme = toggleSwitch.checked ? "dark" : "light";
           applyTheme(newTheme);
@@ -11345,7 +11621,7 @@ ${membersList}
           };
 
           // 3. 【核心修正】仅在更新“回复预览栏”时，才使用“预览片段”
-          const previewBar = document.getElementById("reply-preview-bar");
+          const previewBar = domCache.replyPreviewBar;
           previewBar.querySelector(".sender").textContent =
             `回复 ${currentReplyContext.senderName}:`;
           previewBar.querySelector(".text").textContent = previewSnippet; // <--- 这里用的是缩略版！
@@ -11353,7 +11629,7 @@ ${membersList}
 
           // 4. 后续操作保持不变
           hideMessageActions();
-          document.getElementById("chat-input").focus();
+          domCache.chatInput.focus();
         }
 
         /**
@@ -11361,7 +11637,7 @@ ${membersList}
          */
         function cancelReplyMode() {
           currentReplyContext = null;
-          document.getElementById("reply-preview-bar").style.display = "none";
+          domCache.replyPreviewBar.style.display = "none";
         }
 
         let activeTransferTimestamp = null; // 用于暂存被点击的转账消息的时间戳
@@ -11380,8 +11656,7 @@ ${membersList}
             document.getElementById("transfer-sender-name").textContent =
               message.senderName;
           }
-          document
-            .getElementById("transfer-actions-modal")
+          domCache.transferActionsModal
             .classList.add("visible");
         }
 
@@ -11389,8 +11664,7 @@ ${membersList}
          * 隐藏处理转账的操作菜单
          */
         function hideTransferActionModal() {
-          document
-            .getElementById("transfer-actions-modal")
+          domCache.transferActionsModal
             .classList.remove("visible");
           activeTransferTimestamp = null;
         }
@@ -11455,7 +11729,7 @@ ${membersList}
         async function renderCallHistoryScreen() {
           showScreen("call-history-screen"); // <--【核心修正】把它移动到最前面！
 
-          const listEl = document.getElementById("call-history-list");
+          const listEl = domCache.callHistoryList;
           const titleEl = document.getElementById("call-history-title");
           listEl.innerHTML = "";
           titleEl.textContent = "所有通话记录";
@@ -11564,7 +11838,7 @@ ${membersList}
           const record = await db.callRecords.get(recordId);
           if (!record) return;
 
-          const modal = document.getElementById("call-transcript-modal");
+          const modal = domCache.callTranscriptModal;
           const titleEl = document.getElementById("transcript-modal-title");
           const bodyEl = document.getElementById("transcript-modal-body");
 
@@ -11658,7 +11932,7 @@ ${membersList}
 
         // 放在你的JS功能函数定义区
         async function openShareTargetPicker() {
-          const modal = document.getElementById("share-target-modal");
+          const modal = domCache.shareTargetModal;
           const listEl = document.getElementById("share-target-list");
           listEl.innerHTML = "";
 
@@ -11687,15 +11961,14 @@ ${membersList}
         }
 
         function closeMusicPlayerWithAnimation(callback) {
-          const overlay = document.getElementById("music-player-overlay");
+          const overlay = domCache.musicPlayerOverlay;
           if (!overlay.classList.contains("visible")) {
             if (callback) callback();
             return;
           }
           overlay.classList.remove("visible");
           setTimeout(() => {
-            document
-              .getElementById("music-playlist-panel")
+            domCache.musicPlaylistPanel
               .classList.remove("visible");
             if (callback) callback();
           }, 400);
@@ -11724,7 +11997,7 @@ ${membersList}
         }
 
         function renderLyrics() {
-          const lyricsList = document.getElementById("music-lyrics-list");
+          const lyricsList = domCache.musicLyricsList;
           lyricsList.innerHTML = "";
           if (
             !musicState.parsedLyrics ||
@@ -11759,7 +12032,7 @@ ${membersList}
         }
 
         function updateLyricsUI() {
-          const lyricsList = document.getElementById("music-lyrics-list");
+          const lyricsList = domCache.musicLyricsList;
           const container = document.getElementById("music-lyrics-container");
           const lines = lyricsList.querySelectorAll(".lyric-line");
           lines.forEach((line) => line.classList.remove("active"));
@@ -11812,12 +12085,11 @@ ${membersList}
         async function handleRecallClick() {
           if (!activeMessageTimestamp) return;
 
-          const RECALL_TIME_LIMIT_MS = 2 * 60 * 1000; // 设置2分钟的撤回时限
           const messageTime = activeMessageTimestamp;
           const now = Date.now();
 
           // 检查是否超过了撤回时限
-          if (now - messageTime > RECALL_TIME_LIMIT_MS) {
+          if (now - messageTime > RECALL_TIME_LIMIT) {
             hideMessageActions();
             await showCustomAlert(
               "操作失败",
@@ -11887,8 +12159,7 @@ ${membersList}
          */
         async function openCategoryManager() {
           await renderCategoryListInManager();
-          document
-            .getElementById("world-book-category-manager-modal")
+          domCache.worldBookCategoryManagerModal
             .classList.add("visible");
         }
 
@@ -11896,7 +12167,7 @@ ${membersList}
          * 在模态框中渲染已存在的分类列表
          */
         async function renderCategoryListInManager() {
-          const listEl = document.getElementById("existing-categories-list");
+          const listEl = domCache.existingCategoriesList;
           const categories = await db.worldBookCategories.toArray();
           listEl.innerHTML = "";
           if (categories.length === 0) {
@@ -12003,7 +12274,7 @@ ${membersList}
           }
 
           updateClock();
-          setInterval(updateClock, 1000 * 30);
+          setInterval(updateClock, CLOCK_UPDATE_INTERVAL);
           applyGlobalWallpaper();
           initBatteryManager();
 
@@ -12084,11 +12355,9 @@ ${membersList}
           // --- 各种事件监听器 ---
           // ==========================================================
 
-          document
-            .getElementById("custom-modal-cancel")
+          domCache.customModalCancel
             .addEventListener("click", hideCustomModal);
-          document
-            .getElementById("custom-modal-overlay")
+          domCache.customModalOverlay
             .addEventListener("click", (e) => {
               if (e.target === modalOverlay) hideCustomModal();
             });
@@ -12098,13 +12367,11 @@ ${membersList}
           document
             .getElementById("import-btn")
             .addEventListener("click", () =>
-              document.getElementById("import-data-input").click(),
+              domCache.importDataInput.click(),
             );
-          document
-            .getElementById("import-data-input")
+          domCache.importDataInput
             .addEventListener("change", (e) => importBackup(e.target.files[0]));
-          document
-            .getElementById("back-to-list-btn")
+          domCache.backToListBtn
             .addEventListener("click", () => {
               applyScopedCss("", "#chat-messages", "custom-bubble-style"); // 清除真实聊天界面的自定义样式
               applyScopedCss(
@@ -12156,7 +12423,7 @@ ${membersList}
                     summary: {
                       enabled: false,
                       mode: "manual",
-                      count: 50,
+                      count: AUTO_SUMMARY_MESSAGE_COUNT,
                       prompt:
                         "请总结上述对话的主要内容，保留重要信息和情感脉络。",
                       lastSummaryIndex: -1,
@@ -12177,8 +12444,7 @@ ${membersList}
           document
             .getElementById("transfer-cancel-btn")
             .addEventListener("click", () =>
-              document
-                .getElementById("transfer-modal")
+              domCache.transferModal
                 .classList.remove("visible"),
             );
           document
@@ -12194,8 +12460,7 @@ ${membersList}
           document
             .getElementById("music-return-btn")
             .addEventListener("click", returnToChat);
-          document
-            .getElementById("music-play-pause-btn")
+          domCache.musicPlayPauseBtn
             .addEventListener("click", togglePlayPause);
           document
             .getElementById("music-next-btn")
@@ -12203,22 +12468,19 @@ ${membersList}
           document
             .getElementById("music-prev-btn")
             .addEventListener("click", playPrev);
-          document
-            .getElementById("music-mode-btn")
+          domCache.musicModeBtn
             .addEventListener("click", changePlayMode);
           document
             .getElementById("music-playlist-btn")
             .addEventListener("click", () => {
               updatePlaylistUI();
-              document
-                .getElementById("music-playlist-panel")
+              domCache.musicPlaylistPanel
                 .classList.add("visible");
             });
           document
             .getElementById("close-playlist-btn")
             .addEventListener("click", () =>
-              document
-                .getElementById("music-playlist-panel")
+              domCache.musicPlaylistPanel
                 .classList.remove("visible"),
             );
           document
@@ -12227,10 +12489,9 @@ ${membersList}
           document
             .getElementById("add-song-local-btn")
             .addEventListener("click", () =>
-              document.getElementById("local-song-upload-input").click(),
+              domCache.localSongUploadInput.click(),
             );
-          document
-            .getElementById("local-song-upload-input")
+          domCache.localSongUploadInput
             .addEventListener("change", addSongFromLocal);
           audioPlayer.addEventListener("ended", playNext);
           audioPlayer.addEventListener("pause", () => {
@@ -12246,9 +12507,8 @@ ${membersList}
             }
           });
 
-          const chatInput = document.getElementById("chat-input");
-          document
-            .getElementById("send-btn")
+          const chatInput = domCache.chatInput;
+          domCache.sendBtn
             .addEventListener("click", async () => {
               const content = chatInput.value.trim();
               if (!content || !state.activeChatId) return;
@@ -12299,7 +12559,7 @@ ${membersList}
           chatInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              document.getElementById("send-btn").click();
+              domCache.sendBtn.click();
             }
           });
           chatInput.addEventListener("input", () => {
@@ -12307,13 +12567,13 @@ ${membersList}
             chatInput.style.height = chatInput.scrollHeight + "px";
           });
 
-          const frameColorInput = document.getElementById("frame-color-input");
-          const frameColorValue = document.getElementById("frame-color-value");
+          const frameColorInput = domCache.frameColorInput;
+          const frameColorValue = domCache.frameColorValue;
 
           frameColorInput.addEventListener("input", (e) => {
             frameColorValue.textContent = e.target.value;
             // 实时预览：直接修改DOM，但不保存
-            document.getElementById("phone-frame").style.backgroundColor =
+            domCache.phoneFrame.style.backgroundColor =
               e.target.value;
           });
 
@@ -12323,7 +12583,7 @@ ${membersList}
               // 重置为默认值（这里假设默认白色，实际保存时为空字符串让CSS生效）
               frameColorInput.value = "#ffffff";
               frameColorValue.textContent = "#ffffff";
-              document.getElementById("phone-frame").style.backgroundColor = ""; // 清除内联样式
+              domCache.phoneFrame.style.backgroundColor = ""; // 清除内联样式
             });
 
           if (screenWidthInput) {
@@ -12392,8 +12652,8 @@ ${membersList}
 
           if (resetPhoneSizeBtn) {
             resetPhoneSizeBtn.addEventListener("click", () => {
-              const defaultWidth = 365;
-              const defaultHeight = 680;
+              const defaultWidth = DEFAULT_SCREEN_WIDTH;
+              const defaultHeight = DEFAULT_SCREEN_HEIGHT;
               const defaultOffset = 15;
 
               document.documentElement.style.setProperty(
@@ -12482,7 +12742,7 @@ ${membersList}
               // 修正逻辑：如果当前 style.backgroundColor 为空（被重置了），则保存 null。
               // 否则保存 input 的值。
               if (
-                document.getElementById("phone-frame").style.backgroundColor ===
+                domCache.phoneFrame.style.backgroundColor ===
                 ""
               ) {
                 state.globalSettings.phoneFrameColor = null;
@@ -12515,13 +12775,11 @@ ${membersList}
           document
             .getElementById("cancel-config-editor-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("api-config-editor-modal")
+              domCache.apiConfigEditorModal
                 .classList.remove("visible");
             });
 
-          document
-            .getElementById("api-configs-list")
+          domCache.apiConfigsList
             .addEventListener("click", async (e) => {
               const target = e.target;
               const item = target.closest(".api-config-item");
@@ -12556,11 +12814,9 @@ ${membersList}
           document
             .getElementById("config-fetch-models-btn")
             .addEventListener("click", async () => {
-              const url = document
-                .getElementById("config-url-input")
+              const url = domCache.configUrlInput
                 .value.trim();
-              const key = document
-                .getElementById("config-key-input")
+              const key = domCache.configKeyInput
                 .value.trim();
               if (!url || !key) return showCustomAlert("提示", "请先填写反代地址和密钥");
               try {
@@ -12602,11 +12858,9 @@ ${membersList}
           document
             .getElementById("summary-fetch-models-btn")
             .addEventListener("click", async () => {
-              const url = document
-                .getElementById("summary-custom-api-url")
+              const url = domCache.summaryCustomApiUrl
                 .value.trim();
-              const key = document
-                .getElementById("summary-custom-api-key")
+              const key = domCache.summaryCustomApiKey
                 .value.trim();
               if (!url || !key) {
                 showCustomAlert("提示", "请先填写API地址和密钥");
@@ -12645,22 +12899,19 @@ ${membersList}
             });
 
           // Global Settings Auto-save
-          document
-            .getElementById("background-activity-switch")
+          domCache.backgroundActivitySwitch
             .addEventListener("change", async (e) => {
               state.globalSettings.enableBackgroundActivity = e.target.checked;
               await db.globalSettings.put(state.globalSettings);
             });
-          document
-            .getElementById("background-interval-input")
+          domCache.backgroundIntervalInput
             .addEventListener("change", async (e) => {
               state.globalSettings.backgroundActivityInterval = parseInt(
                 e.target.value,
               );
               await db.globalSettings.put(state.globalSettings);
             });
-          document
-            .getElementById("block-cooldown-input")
+          domCache.blockCooldownInput
             .addEventListener("change", async (e) => {
               state.globalSettings.blockCooldownHours = parseFloat(
                 e.target.value,
@@ -12710,8 +12961,7 @@ ${membersList}
                 (wb) => wb.id === editingWorldBookId,
               );
               if (book) {
-                const newName = document
-                  .getElementById("world-book-name-input")
+                const newName = domCache.worldBookNameInput
                   .value.trim();
                 if (!newName) {
                   showCustomAlert("提示", "书名不能为空！");
@@ -12729,15 +12979,14 @@ ${membersList}
                 book.categoryId = categoryId ? parseInt(categoryId) : null;
 
                 await db.worldBooks.put(book);
-                document.getElementById("world-book-editor-title").textContent =
+                domCache.worldBookEditorTitle.textContent =
                   newName;
                 editingWorldBookId = null;
                 renderWorldBookScreen();
                 showScreen("world-book-screen");
               }
             });
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               const aiImage = e.target.closest(".ai-generated-image");
               if (aiImage) {
@@ -12791,8 +13040,7 @@ ${membersList}
             }
           });
 
-          document
-            .getElementById("chat-settings-btn")
+          domCache.chatSettingsBtn
             .addEventListener("click", async () => {
               if (!state.activeChatId) return;
               const chat = state.chats[state.activeChatId];
@@ -12806,9 +13054,9 @@ ${membersList}
                 style: "",
                 novelai: false,
               };
-              document.getElementById("offline-mode-toggle").checked =
+              domCache.offlineModeToggle.checked =
                 offlineSettings.enabled;
-              document.getElementById("offline-mode-config").style.display =
+              domCache.offlineModeConfig.style.display =
                 offlineSettings.enabled ? "block" : "none";
 
               const presetSelect = document.getElementById(
@@ -12823,9 +13071,9 @@ ${membersList}
                 presetSelect.appendChild(option);
               });
 
-              document.getElementById("offline-prompt-input").value =
+              domCache.offlinePromptInput.value =
                 offlineSettings.prompt || "";
-              document.getElementById("offline-style-input").value =
+              domCache.offlineStyleInput.value =
                 offlineSettings.style || "";
 
 
@@ -12833,18 +13081,17 @@ ${membersList}
               presetSelect.onchange = () => {
                 const val = presetSelect.value;
                 if (offlinePresets[val] && val !== "custom") {
-                  document.getElementById("offline-prompt-input").value =
+                  domCache.offlinePromptInput.value =
                     offlinePresets[val].prompt;
-                  document.getElementById("offline-style-input").value =
+                  domCache.offlineStyleInput.value =
                     offlinePresets[val].style;
                 }
               };
 
               // Bind offline mode toggle event listener (must be re-bound each time settings open)
-              document
-                .getElementById("offline-mode-toggle")
+              domCache.offlineModeToggle
                 .addEventListener("change", (e) => {
-                  document.getElementById("offline-mode-config").style.display = e
+                  domCache.offlineModeConfig.style.display = e
                     .target.checked
                     ? "block"
                     : "none";
@@ -12878,9 +13125,9 @@ ${membersList}
                 isGroup ? "none" : "block";
 
               // --- 加载表单数据 ---
-              document.getElementById("chat-name-input").value = chat.name;
+              domCache.chatNameInput.value = chat.name;
               // 【新增】加载AI备注
-              document.getElementById("ai-remark-input").value =
+              domCache.aiRemarkInput.value =
                 chat.settings.aiRemark || "";
 
               // --- Load Bubble Settings UI ---
@@ -12911,15 +13158,15 @@ ${membersList}
                 realCameraSwitch.checked = chat.settings.useRealCamera || false;
               }
 
-              document.getElementById("my-persona").value =
+              domCache.myPersona.value =
                 chat.settings.myPersona;
-              document.getElementById("my-avatar-preview").src =
+              domCache.myAvatarPreview.src =
                 chat.settings.myAvatar ||
                 (isGroup ? defaultMyGroupAvatar : defaultAvatar);
-              document.getElementById("max-memory").value =
+              domCache.maxMemory.value =
                 chat.settings.maxMemory;
-              const bgPreview = document.getElementById("bg-preview");
-              const removeBgBtn = document.getElementById("remove-bg-btn");
+              const bgPreview = domCache.bgPreview;
+              const removeBgBtn = domCache.removeBgBtn;
               if (chat.settings.background) {
                 bgPreview.src = chat.settings.background;
                 bgPreview.style.display = "block";
@@ -12930,15 +13177,15 @@ ${membersList}
               }
 
               if (isGroup) {
-                document.getElementById("my-group-nickname-input").value =
+                domCache.myGroupNicknameInput.value =
                   chat.settings.myNickname || "";
-                document.getElementById("group-avatar-preview").src =
+                domCache.groupAvatarPreview.src =
                   chat.settings.groupAvatar || defaultGroupAvatar;
                 renderGroupMemberSettings(chat.members);
               } else {
-                document.getElementById("ai-persona").value =
+                domCache.aiPersona.value =
                   chat.settings.aiPersona;
-                document.getElementById("ai-avatar-preview").src =
+                domCache.aiAvatarPreview.src =
                   chat.settings.aiAvatar || defaultAvatar;
 
                 // 【核心修改2】如果是单聊，就加载分组列表到下拉框
@@ -13033,7 +13280,7 @@ ${membersList}
               // 加载总结设置
               if (chat.settings.summary) {
                 const summarySettings = chat.settings.summary;
-                document.getElementById("summary-toggle").checked =
+                domCache.summaryToggle.checked =
                   summarySettings.enabled;
                 const modeRadios = document.getElementsByName("summary-mode");
                 for (const radio of modeRadios) {
@@ -13042,24 +13289,24 @@ ${membersList}
                     break;
                   }
                 }
-                document.getElementById("summary-count-input").value =
+                domCache.summaryCountInput.value =
                   summarySettings.count;
                 // 显示/隐藏详细选项
-                document.getElementById("summary-options").style.display =
+                domCache.summaryOptions.style.display =
                   summarySettings.enabled ? "block" : "none";
                 
                 // 加载自定义API设置
-                document.getElementById("summary-custom-api-toggle").checked =
+                domCache.summaryCustomApiToggle.checked =
                   summarySettings.useCustomApi || false;
-                document.getElementById("summary-custom-api-url").value =
+                domCache.summaryCustomApiUrl.value =
                   summarySettings.customApiUrl || "";
-                document.getElementById("summary-custom-api-key").value =
+                domCache.summaryCustomApiKey.value =
                   summarySettings.customApiKey || "";
                 document.getElementById("summary-stream-toggle").checked =
                   summarySettings.enableStream || false;
                 
                 // 填充模型下拉框
-                const summaryModelSelect = document.getElementById("summary-custom-model-select");
+                const summaryModelSelect = domCache.summaryCustomModelSelect;
                 summaryModelSelect.innerHTML = "";
                 if (summarySettings.customModel) {
                   const option = document.createElement("option");
@@ -13069,7 +13316,7 @@ ${membersList}
                 }
                 
                 // 根据toggle状态显示/隐藏自定义API选项
-                const summaryCustomApiOptions = document.getElementById("summary-custom-api-options");
+                const summaryCustomApiOptions = domCache.summaryCustomApiOptions;
                 summaryCustomApiOptions.style.display = summarySettings.useCustomApi ? "flex" : "none";
               }
 
@@ -13144,36 +13391,36 @@ ${membersList}
               );
               if (themeRadio) themeRadio.checked = true;
               const fontSizeSlider =
-                document.getElementById("font-size-slider");
+                domCache.fontSizeSlider;
               fontSizeSlider.value = chat.settings.fontSize || 13;
-              document.getElementById("font-size-value").textContent =
+              domCache.fontSizeValue.textContent =
                 `${fontSizeSlider.value}px`;
               const customCssInput =
-                document.getElementById("custom-css-input");
+                domCache.customCssInput;
               customCssInput.value = chat.settings.customCss || "";
 
               updateSettingsPreview();
               
               // Add event listener for custom API toggle (only add once)
-              const summaryCustomApiToggle = document.getElementById("summary-custom-api-toggle");
+              const summaryCustomApiToggle = domCache.summaryCustomApiToggle;
               summaryCustomApiToggle.removeEventListener("change", handleSummaryCustomApiToggle); // Remove if exists
               summaryCustomApiToggle.addEventListener("change", handleSummaryCustomApiToggle);
               
               showScreen('chat-settings-screen');
               // 可选：添加视差效果
-              document.getElementById('chat-interface-screen').classList.add('settings-open');
+              domCache.chatInterfaceScreen.classList.add('settings-open');
             });
           
           // Chat settings back button
           document
             .getElementById("chat-settings-back-btn")
             .addEventListener("click", () => {
-              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              domCache.chatInterfaceScreen.classList.remove('settings-open');
               showScreen("chat-interface-screen");
             });
           
           function handleSummaryCustomApiToggle(e) {
-            const options = document.getElementById("summary-custom-api-options");
+            const options = domCache.summaryCustomApiOptions;
             options.style.display = e.target.checked ? "flex" : "none";
           }
 
@@ -13196,21 +13443,19 @@ ${membersList}
             editingMemberId = memberId;
             const chat = state.chats[state.activeChatId];
             const member = chat.members.find((m) => m.id === memberId);
-            document.getElementById("member-name-input").value =
+            domCache.memberNameInput.value =
               member.groupNickname;
             document.getElementById("member-persona-input").value =
               member.persona;
-            document.getElementById("member-avatar-preview").src =
+            domCache.memberAvatarPreview.src =
               member.avatar;
-            document
-              .getElementById("member-settings-modal")
+            domCache.memberSettingsModal
               .classList.add("visible");
           }
           document
             .getElementById("cancel-member-settings-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("member-settings-modal")
+              domCache.memberSettingsModal
                 .classList.remove("visible");
               editingMemberId = null;
             });
@@ -13222,8 +13467,7 @@ ${membersList}
               const member = chat.members.find((m) => m.id === editingMemberId);
 
               // ★★★【核心重构】★★★
-              const newNickname = document
-                .getElementById("member-name-input")
+              const newNickname = domCache.memberNameInput
                 .value.trim();
               if (!newNickname) {
                 showCustomAlert("提示", "群昵称不能为空！");
@@ -13238,19 +13482,17 @@ ${membersList}
               ).src;
 
               renderGroupMemberSettings(chat.members);
-              document
-                .getElementById("member-settings-modal")
+              domCache.memberSettingsModal
                 .classList.remove("visible");
             });
-          document
-            .getElementById("reset-theme-btn")
+          domCache.resetThemeBtn
             .addEventListener("click", () => {
-              document.getElementById("theme-default").checked = true;
+              domCache.themeDefault.checked = true;
             });
           document
             .getElementById("cancel-chat-settings-btn")
             .addEventListener("click", () => {
-              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              domCache.chatInterfaceScreen.classList.remove('settings-open');
               showScreen('chat-interface-screen');
             });
 
@@ -13259,8 +13501,7 @@ ${membersList}
             .addEventListener("click", async () => {
               if (!state.activeChatId) return;
               const chat = state.chats[state.activeChatId];
-              const newName = document
-                .getElementById("chat-name-input")
+              const newName = domCache.chatNameInput
                 .value.trim();
               if (!newName) return showCustomAlert("提示", "备注名/群名不能为空！");
               chat.name = newName;
@@ -13272,10 +13513,9 @@ ${membersList}
                 : "default";
 
               chat.settings.fontSize = parseInt(
-                document.getElementById("font-size-slider").value,
+                domCache.fontSizeSlider.value,
               );
-              chat.settings.customCss = document
-                .getElementById("custom-css-input")
+              chat.settings.customCss = domCache.customCssInput
                 .value.trim();
 
               const userBubbleColorValue =
@@ -13287,9 +13527,9 @@ ${membersList}
               chat.settings.aiBubbleColor = aiBubbleColorValue || null;
 
               chat.settings.myPersona =
-                document.getElementById("my-persona").value;
+                domCache.myPersona.value;
               chat.settings.myAvatar =
-                document.getElementById("my-avatar-preview").src;
+                domCache.myAvatarPreview.src;
               const checkedBooks = document.querySelectorAll(
                 "#world-book-checkboxes-container input.wb-book-checkbox:checked",
               );
@@ -13298,20 +13538,18 @@ ${membersList}
               );
 
               if (chat.isGroup) {
-                chat.settings.myNickname = document
-                  .getElementById("my-group-nickname-input")
+                chat.settings.myNickname = domCache.myGroupNicknameInput
                   .value.trim();
                 chat.settings.groupAvatar = document.getElementById(
                   "group-avatar-preview",
                 ).src;
               } else {
                 chat.settings.aiPersona =
-                  document.getElementById("ai-persona").value;
+                  domCache.aiPersona.value;
                 chat.settings.aiAvatar =
-                  document.getElementById("ai-avatar-preview").src;
+                  domCache.aiAvatarPreview.src;
                 // 【新增】保存AI备注
-                chat.settings.aiRemark = document
-                  .getElementById("ai-remark-input")
+                chat.settings.aiRemark = domCache.aiRemarkInput
                   .value.trim();
 
                 const selectedGroupId = document.getElementById(
@@ -13323,7 +13561,7 @@ ${membersList}
               }
 
               chat.settings.maxMemory =
-                parseInt(document.getElementById("max-memory").value) || 10;
+                parseInt(domCache.maxMemory.value) || 10;
 
               const voiceAccessSwitchSave = document.getElementById(
                 "video-call-voice-access-switch",
@@ -13337,7 +13575,7 @@ ${membersList}
 
               if (!chat.settings.summary) chat.settings.summary = {}; // 防止意外
               chat.settings.summary.enabled =
-                document.getElementById("summary-toggle").checked;
+                domCache.summaryToggle.checked;
               const selectedModeRadio = document.querySelector(
                 'input[name="summary-mode"]:checked',
               );
@@ -13346,7 +13584,7 @@ ${membersList}
                 : "manual";
               chat.settings.summary.count =
                 parseInt(
-                  document.getElementById("summary-count-input").value,
+                  domCache.summaryCountInput.value,
                 ) || 50;
 
               // Save custom API settings for summary
@@ -13355,14 +13593,12 @@ ${membersList}
               chat.settings.summary.useCustomApi = document.getElementById(
                 "summary-custom-api-toggle",
               ).checked;
-              chat.settings.summary.customApiUrl = document
-                .getElementById("summary-custom-api-url")
+              chat.settings.summary.customApiUrl = domCache.summaryCustomApiUrl
                 .value.trim();
-              chat.settings.summary.customApiKey = document
-                .getElementById("summary-custom-api-key")
+              chat.settings.summary.customApiKey = domCache.summaryCustomApiKey
                 .value.trim();
               chat.settings.summary.customModel =
-                document.getElementById("summary-custom-model-select").value ||
+                domCache.summaryCustomModelSelect.value ||
                 "gpt-4o-mini";
               chat.settings.summary.enableStream = document.getElementById(
                 "summary-stream-toggle",
@@ -13370,10 +13606,10 @@ ${membersList}
 
               // Save Offline Mode
               chat.settings.offlineMode = {
-                enabled: document.getElementById("offline-mode-toggle").checked,
-                preset: document.getElementById("offline-preset-select").value,
-                prompt: document.getElementById("offline-prompt-input").value,
-                style: document.getElementById("offline-style-input").value,
+                enabled: domCache.offlineModeToggle.checked,
+                preset: domCache.offlinePresetSelect.value,
+                prompt: domCache.offlinePromptInput.value,
+                style: domCache.offlineStyleInput.value,
               };
               await db.chats.put(chat);
 
@@ -13383,16 +13619,15 @@ ${membersList}
                 "custom-bubble-style",
               );
 
-              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              domCache.chatInterfaceScreen.classList.remove('settings-open');
               showScreen('chat-interface-screen');
               renderChatInterface(state.activeChatId);
               renderChatList();
             });
 
-          document
-            .getElementById("summary-toggle")
+          domCache.summaryToggle
             .addEventListener("change", (e) => {
-              document.getElementById("summary-options").style.display = e
+              domCache.summaryOptions.style.display = e
                 .target.checked
                 ? "block"
                 : "none";
@@ -13424,7 +13659,7 @@ ${membersList}
               }
 
               // 关闭设置屏幕
-              document.getElementById('chat-interface-screen').classList.remove('settings-open');
+              domCache.chatInterfaceScreen.classList.remove('settings-open');
               showScreen('chat-interface-screen');
 
               await showCustomAlert(
@@ -13479,51 +13714,50 @@ ${membersList}
           setupFileUpload(
             "ai-avatar-input",
             (base64) =>
-              (document.getElementById("ai-avatar-preview").src = base64),
+              (domCache.aiAvatarPreview.src = base64),
           );
           setupFileUpload(
             "my-avatar-input",
             (base64) =>
-              (document.getElementById("my-avatar-preview").src = base64),
+              (domCache.myAvatarPreview.src = base64),
           );
           setupFileUpload(
             "group-avatar-input",
             (base64) =>
-              (document.getElementById("group-avatar-preview").src = base64),
+              (domCache.groupAvatarPreview.src = base64),
           );
           setupFileUpload(
             "member-avatar-input",
             (base64) =>
-              (document.getElementById("member-avatar-preview").src = base64),
+              (domCache.memberAvatarPreview.src = base64),
           );
           setupFileUpload("bg-input", (base64) => {
             if (state.activeChatId) {
               state.chats[state.activeChatId].settings.background = base64;
-              const bgPreview = document.getElementById("bg-preview");
+              const bgPreview = domCache.bgPreview;
               bgPreview.src = base64;
               bgPreview.style.display = "block";
-              document.getElementById("remove-bg-btn").style.display =
+              domCache.removeBgBtn.style.display =
                 "inline-block";
             }
           });
           setupFileUpload(
             "preset-avatar-input",
             (base64) =>
-              (document.getElementById("preset-avatar-preview").src = base64),
+              (domCache.presetAvatarPreview.src = base64),
           );
-          document
-            .getElementById("remove-bg-btn")
+          domCache.removeBgBtn
             .addEventListener("click", () => {
               if (state.activeChatId) {
                 state.chats[state.activeChatId].settings.background = "";
-                const bgPreview = document.getElementById("bg-preview");
+                const bgPreview = domCache.bgPreview;
                 bgPreview.src = "";
                 bgPreview.style.display = "none";
-                document.getElementById("remove-bg-btn").style.display = "none";
+                domCache.removeBgBtn.style.display = "none";
               }
             });
 
-          const stickerPanel = document.getElementById("sticker-panel");
+          const stickerPanel = domCache.stickerPanel;
           document
             .getElementById("open-sticker-panel-btn")
             .addEventListener("click", () => {
@@ -13562,10 +13796,9 @@ ${membersList}
           document
             .getElementById("upload-sticker-btn")
             .addEventListener("click", () =>
-              document.getElementById("sticker-upload-input").click(),
+              domCache.stickerUploadInput.click(),
             );
-          document
-            .getElementById("sticker-upload-input")
+          domCache.stickerUploadInput
             .addEventListener("change", async (event) => {
               const file = event.target.files[0];
               if (!file) return;
@@ -13594,10 +13827,9 @@ ${membersList}
           document
             .getElementById("upload-image-btn")
             .addEventListener("click", () =>
-              document.getElementById("image-upload-input").click(),
+              domCache.imageUploadInput.click(),
             );
-          document
-            .getElementById("image-upload-input")
+          domCache.imageUploadInput
             .addEventListener("change", async (event) => {
               const file = event.target.files[0];
               if (!file || !state.activeChatId) return;
@@ -13725,7 +13957,7 @@ ${membersList}
                 productInfo: productInfo,
                 amount: amount,
                 status: "pending",
-                countdownEndTime: now + 15 * 60 * 1000,
+                countdownEndTime: now + WAIMAI_COUNTDOWN_DURATION,
                 timestamp: now,
               };
               if (chat.settings?.offlineMode?.enabled) {
@@ -13827,7 +14059,7 @@ ${membersList}
               }
             });
 
-          const fontUrlInput = document.getElementById("font-url-input");
+          const fontUrlInput = domCache.fontUrlInput;
           fontUrlInput.addEventListener("input", () =>
             applyCustomFont(fontUrlInput.value.trim(), true),
           );
@@ -13855,13 +14087,11 @@ ${membersList}
                 switchToChatListView(item.dataset.view),
               );
             });
-          document
-            .getElementById("qzone-back-btn")
+          domCache.qzoneBackBtn
             .addEventListener("click", () =>
               switchToChatListView("messages-view"),
             );
-          document
-            .getElementById("qzone-nickname")
+          domCache.qzoneNickname
             .addEventListener("click", async () => {
               const newNickname = await showCustomPrompt(
                 "修改昵称",
@@ -13877,15 +14107,14 @@ ${membersList}
           document
             .getElementById("qzone-avatar-container")
             .addEventListener("click", () =>
-              document.getElementById("qzone-avatar-input").click(),
+              domCache.qzoneAvatarInput.click(),
             );
           document
             .getElementById("qzone-banner-container")
             .addEventListener("click", () =>
-              document.getElementById("qzone-banner-input").click(),
+              domCache.qzoneBannerInput.click(),
             );
-          document
-            .getElementById("qzone-avatar-input")
+          domCache.qzoneAvatarInput
             .addEventListener("change", async (event) => {
               const file = event.target.files[0];
               if (file) {
@@ -13900,8 +14129,7 @@ ${membersList}
               }
               event.target.value = null;
             });
-          document
-            .getElementById("qzone-banner-input")
+          domCache.qzoneBannerInput
             .addEventListener("change", async (event) => {
               const file = event.target.files[0];
               if (file) {
@@ -13922,7 +14150,7 @@ ${membersList}
             .addEventListener("click", async () => {
               // 1. 重置并获取模态框
               resetCreatePostModal();
-              const modal = document.getElementById("create-post-modal");
+              const modal = domCache.createPostModal;
 
               // 2. 设置为“说说”模式
               modal.dataset.mode = "shuoshuo";
@@ -13961,7 +14189,7 @@ ${membersList}
             .getElementById("create-post-btn")
             .addEventListener("click", async () => {
               resetCreatePostModal();
-              const modal = document.getElementById("create-post-modal");
+              const modal = domCache.createPostModal;
 
               modal.dataset.mode = "complex";
 
@@ -14024,11 +14252,10 @@ ${membersList}
           document
             .getElementById("album-upload-photo-btn")
             .addEventListener("click", () =>
-              document.getElementById("album-photo-input").click(),
+              domCache.albumPhotoInput.click(),
             );
 
-          document
-            .getElementById("album-photo-input")
+          domCache.albumPhotoInput
             .addEventListener("change", async (event) => {
               if (!state.activeAlbumId) return;
               const files = event.target.files;
@@ -14075,8 +14302,7 @@ ${membersList}
 
           // --- ↓↓↓ 从这里开始复制，完整替换掉旧的 photos-grid-page 监听器 ↓↓↓ ---
 
-          document
-            .getElementById("photos-grid-page")
+          domCache.photosGridPage
             .addEventListener("click", async (e) => {
               const deleteBtn = e.target.closest(".photo-delete-btn");
               const photoThumb = e.target.closest(".photo-thumb");
@@ -14125,11 +14351,9 @@ ${membersList}
           document
             .getElementById("photo-viewer-close-btn")
             .addEventListener("click", closePhotoViewer);
-          document
-            .getElementById("photo-viewer-next-btn")
+          domCache.photoViewerNextBtn
             .addEventListener("click", showNextPhoto);
-          document
-            .getElementById("photo-viewer-prev-btn")
+          domCache.photoViewerPrevBtn
             .addEventListener("click", showPrevPhoto);
 
           // 恢复键盘左右箭头和ESC键的功能
@@ -14173,26 +14397,23 @@ ${membersList}
           document
             .getElementById("cancel-create-post-btn")
             .addEventListener("click", () =>
-              document
-                .getElementById("create-post-modal")
+              domCache.createPostModal
                 .classList.remove("visible"),
             );
           document
             .getElementById("post-upload-local-btn")
             .addEventListener("click", () =>
-              document.getElementById("post-local-image-input").click(),
+              domCache.postLocalImageInput.click(),
             );
-          document
-            .getElementById("post-local-image-input")
+          domCache.postLocalImageInput
             .addEventListener("change", (event) => {
               const file = event.target.files[0];
               if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                  document.getElementById("post-image-preview").src =
+                  domCache.postImagePreview.src =
                     e.target.result;
-                  document
-                    .getElementById("post-image-preview-container")
+                  domCache.postImagePreviewContainer
                     .classList.add("visible");
                   document.getElementById(
                     "post-image-desc-group",
@@ -14211,23 +14432,22 @@ ${membersList}
                 "url",
               );
               if (url) {
-                document.getElementById("post-image-preview").src = url;
-                document
-                  .getElementById("post-image-preview-container")
+                domCache.postImagePreview.src = url;
+                domCache.postImagePreviewContainer
                   .classList.add("visible");
-                document.getElementById("post-image-desc-group").style.display =
+                domCache.postImageDescGroup.style.display =
                   "block";
               }
             });
           document
             .getElementById("post-remove-image-btn")
             .addEventListener("click", () => resetCreatePostModal());
-          const imageModeBtn = document.getElementById("switch-to-image-mode");
+          const imageModeBtn = domCache.switchToImageMode;
           const textImageModeBtn = document.getElementById(
             "switch-to-text-image-mode",
           );
           const imageModeContent =
-            document.getElementById("image-mode-content");
+            domCache.imageModeContent;
           const textImageModeContent = document.getElementById(
             "text-image-mode-content",
           );
@@ -14247,7 +14467,7 @@ ${membersList}
           document
             .getElementById("confirm-create-post-btn")
             .addEventListener("click", async () => {
-              const modal = document.getElementById("create-post-modal");
+              const modal = domCache.createPostModal;
               const mode = modal.dataset.mode;
 
               // --- 1. 获取通用的可见性设置 ---
@@ -14274,8 +14494,7 @@ ${membersList}
 
               // --- 2. 根据模式构建不同的 post 对象 ---
               if (mode === "shuoshuo") {
-                const content = document
-                  .getElementById("post-public-text")
+                const content = domCache.postPublicText
                   .value.trim();
                 if (!content) {
                   showCustomAlert("提示", "说说内容不能为空哦！");
@@ -14288,18 +14507,15 @@ ${membersList}
                 };
               } else {
                 // 处理 'complex' 模式 (图片/文字图)
-                const publicText = document
-                  .getElementById("post-public-text")
+                const publicText = domCache.postPublicText
                   .value.trim();
-                const isImageModeActive = document
-                  .getElementById("image-mode-content")
+                const isImageModeActive = domCache.imageModeContent
                   .classList.contains("active");
 
                 if (isImageModeActive) {
                   const imageUrl =
-                    document.getElementById("post-image-preview").src;
-                  const imageDescription = document
-                    .getElementById("post-image-description")
+                    domCache.postImagePreview.src;
+                  const imageDescription = domCache.postImageDescription
                     .value.trim();
                   if (
                     !imageUrl ||
@@ -14324,8 +14540,7 @@ ${membersList}
                   };
                 } else {
                   // 文字图模式
-                  const hiddenText = document
-                    .getElementById("post-hidden-text")
+                  const hiddenText = domCache.postHiddenText
                     .value.trim();
                   if (!hiddenText) {
                     showCustomAlert("提示", "请输入文字图描述！");
@@ -14391,7 +14606,7 @@ ${membersList}
               showCustomAlert("提示", "动态发布成功！");
             });
 
-          const postsList = document.getElementById("qzone-posts-list");
+          const postsList = domCache.qzonePostsList;
           let swipeState = {
             isDragging: false,
             startX: 0,
@@ -14610,13 +14825,13 @@ ${membersList}
                     );
                     if (chat.history.length < originalHistoryLength) {
                       chat.settings.offlineMode = {
-                        enabled: document.getElementById("offline-mode-toggle")
+                        enabled: domCache.offlineModeToggle
                           .checked,
-                        preset: document.getElementById("offline-preset-select")
+                        preset: domCache.offlinePresetSelect
                           .value,
-                        prompt: document.getElementById("offline-prompt-input")
+                        prompt: domCache.offlinePromptInput
                           .value,
-                        style: document.getElementById("offline-style-input")
+                        style: domCache.offlineStyleInput
                           .value,
                       };
 
@@ -14719,8 +14934,7 @@ ${membersList}
           });
 
           // 绑定动态页和收藏页的返回按钮
-          document
-            .getElementById("qzone-back-btn")
+          domCache.qzoneBackBtn
             .addEventListener("click", () =>
               switchToChatListView("messages-view"),
             );
@@ -14731,7 +14945,7 @@ ${membersList}
             );
 
           // 收藏页搜索功能
-          const searchInput = document.getElementById("favorites-search-input");
+          const searchInput = domCache.favoritesSearchInput;
           const searchClearBtn = document.getElementById(
             "favorites-search-clear-btn",
           );
@@ -14850,13 +15064,13 @@ ${membersList}
 
           // 收藏页面的"编辑"按钮事件 (已修正)
           const favoritesEditBtn =
-            document.getElementById("favorites-edit-btn");
-          const favoritesView = document.getElementById("favorites-view");
+            domCache.favoritesEditBtn;
+          const favoritesView = domCache.favoritesView;
           const favoritesActionBar = document.getElementById(
             "favorites-action-bar",
           );
-          const mainBottomNav = document.getElementById("chat-list-bottom-nav"); // 获取主导航栏
-          const favoritesList = document.getElementById("favorites-list"); // 获取收藏列表
+          const mainBottomNav = domCache.chatListBottomNav; // 获取主导航栏
+          const favoritesList = domCache.favoritesList; // 获取收藏列表
 
           favoritesEditBtn.addEventListener("click", () => {
             isFavoritesSelectionMode = !isFavoritesSelectionMode;
@@ -14886,8 +15100,7 @@ ${membersList}
           });
 
           // 收藏列表的点击选择事件 (事件委托)
-          document
-            .getElementById("favorites-list")
+          domCache.favoritesList
             .addEventListener("click", (e) => {
               const target = e.target;
               const card = target.closest(".favorite-item-card");
@@ -14955,7 +15168,6 @@ ${membersList}
 
           if (state.globalSettings.enableBackgroundActivity) {
             startBackgroundSimulation();
-            console.log("后台活动模拟已自动启动。");
           }
 
           // --- 统一处理所有影响预览的控件的事件 ---
@@ -14968,10 +15180,10 @@ ${membersList}
             });
 
           // 2. 监听字体大小滑块
-          const fontSizeSlider = document.getElementById("font-size-slider");
+          const fontSizeSlider = domCache.fontSizeSlider;
           fontSizeSlider.addEventListener("input", () => {
             // a. 实时更新数值显示
-            document.getElementById("font-size-value").textContent =
+            domCache.fontSizeValue.textContent =
               `${fontSizeSlider.value}px`;
             // b. 更新预览
             updateSettingsPreview();
@@ -14979,24 +15191,23 @@ ${membersList}
 
           // 3. 监听自定义CSS输入框
           const customCssInputForPreview =
-            document.getElementById("custom-css-input");
+            domCache.customCssInput;
           customCssInputForPreview.addEventListener(
             "input",
             updateSettingsPreview,
           );
 
           // 4. 监听重置按钮
-          document
-            .getElementById("reset-theme-btn")
+          domCache.resetThemeBtn
             .addEventListener("click", () => {
-              document.getElementById("theme-default").checked = true;
+              domCache.themeDefault.checked = true;
               updateSettingsPreview();
             });
 
           document
             .getElementById("reset-custom-css-btn")
             .addEventListener("click", () => {
-              document.getElementById("custom-css-input").value = "";
+              domCache.customCssInput.value = "";
               updateSettingsPreview();
             });
 
@@ -15021,12 +15232,11 @@ ${membersList}
           document
             .getElementById("close-group-manager-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("group-management-modal")
+              domCache.groupManagementModal
                 .classList.remove("visible");
               // 刷新聊天设置里的分组列表
               const chatSettingsBtn =
-                document.getElementById("chat-settings-btn");
+                domCache.chatSettingsBtn;
               if (
                 document
                   .getElementById("chat-settings-screen")
@@ -15039,8 +15249,7 @@ ${membersList}
           document
             .getElementById("add-new-group-btn")
             .addEventListener("click", addNewGroup);
-          document
-            .getElementById("existing-groups-list")
+          domCache.existingGroupsList
             .addEventListener("click", (e) => {
               if (e.target.classList.contains("delete-group-btn")) {
                 const groupId = parseInt(e.target.dataset.id);
@@ -15092,8 +15301,7 @@ ${membersList}
               showScreen("chat-list-screen");
             });
 
-          document
-            .getElementById("contact-picker-list")
+          domCache.contactPickerList
             .addEventListener("click", (e) => {
               const item = e.target.closest(".contact-picker-item");
               if (!item) return;
@@ -15121,8 +15329,7 @@ ${membersList}
               showScreen("chat-settings-screen");
             });
 
-          document
-            .getElementById("member-management-list")
+          domCache.memberManagementList
             .addEventListener("click", (e) => {
               // 【已恢复】移除成员的事件
               if (e.target.classList.contains("remove-member-btn")) {
@@ -15151,11 +15358,9 @@ ${membersList}
             .addEventListener("click", createNewMemberInGroup);
 
           // 绑定单聊和群聊的发起按钮
-          document
-            .getElementById("video-call-btn")
+          domCache.videoCallBtn
             .addEventListener("click", handleInitiateCall);
-          document
-            .getElementById("group-video-call-btn")
+          domCache.groupVideoCallBtn
             .addEventListener("click", handleInitiateCall);
 
           // 绑定“挂断”按钮
@@ -15172,8 +15377,7 @@ ${membersList}
             });
 
           // 【全新】绑定“加入通话”按钮
-          document
-            .getElementById("join-call-btn")
+          domCache.joinCallBtn
             .addEventListener("click", handleUserJoinCall);
 
 
@@ -15254,8 +15458,7 @@ ${membersList}
             });
 
           // 绑定用户在通话中发言的按钮
-          document
-            .getElementById("user-speak-btn")
+          domCache.userSpeakBtn
             .addEventListener("click", async () => {
               if (!videoCallState.isActive) return;
 
@@ -15288,7 +15491,7 @@ ${membersList}
             .addEventListener("click", () => {
               // 在切换前，确保"收藏"页面的编辑模式已关闭
               if (isFavoritesSelectionMode) {
-                document.getElementById("favorites-edit-btn").click();
+                domCache.favoritesEditBtn.click();
               }
               switchToChatListView("memories-view");
               renderMemoriesScreen(); // 点击时渲染
@@ -15305,15 +15508,13 @@ ${membersList}
           document
             .getElementById("add-countdown-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("create-countdown-modal")
+              domCache.createCountdownModal
                 .classList.add("visible");
             });
           document
             .getElementById("cancel-create-countdown-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("create-countdown-modal")
+              domCache.createCountdownModal
                 .classList.remove("visible");
             });
           document
@@ -15347,8 +15548,7 @@ ${membersList}
               };
 
               await db.memories.add(newCountdown);
-              document
-                .getElementById("create-countdown-modal")
+              domCache.createCountdownModal
                 .classList.remove("visible");
               renderMemoriesScreen();
             });
@@ -15385,7 +15585,7 @@ ${membersList}
                 await db.chats.put(chat);
 
                 // 关闭设置屏幕，并刷新聊天界面
-                document.getElementById('chat-interface-screen').classList.remove('settings-open');
+                domCache.chatInterfaceScreen.classList.remove('settings-open');
                 showScreen('chat-interface-screen');
                 renderChatInterface(state.activeChatId);
                 // 刷新聊天列表，可能会有UI变化
@@ -15393,8 +15593,7 @@ ${membersList}
               }
             });
 
-          document
-            .getElementById("chat-lock-overlay")
+          domCache.chatLockOverlay
             .addEventListener("click", async (e) => {
               const chat = state.chats[state.activeChatId];
               if (!chat) return;
@@ -15483,7 +15682,7 @@ ${membersList}
           document
             .getElementById("transfer-btn")
             .addEventListener("click", () => {
-              document.getElementById("transfer-modal").classList.add("visible");
+              domCache.transferModal.classList.add("visible");
             });
 
           // 2. 红包按钮 - 打开红包弹窗
@@ -15497,8 +15696,7 @@ ${membersList}
           document
             .getElementById("cancel-red-packet-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("red-packet-modal")
+              domCache.redPacketModal
                 .classList.remove("visible");
             });
           document
@@ -15509,10 +15707,10 @@ ${membersList}
             .addEventListener("click", sendDirectRedPacket);
 
           // 3. 红包模态框的页签切换逻辑
-          const rpTabGroup = document.getElementById("rp-tab-group");
-          const rpTabDirect = document.getElementById("rp-tab-direct");
-          const rpContentGroup = document.getElementById("rp-content-group");
-          const rpContentDirect = document.getElementById("rp-content-direct");
+          const rpTabGroup = domCache.rpTabGroup;
+          const rpTabDirect = domCache.rpTabDirect;
+          const rpContentGroup = domCache.rpContentGroup;
+          const rpContentDirect = domCache.rpContentDirect;
 
           rpTabGroup.addEventListener("click", () => {
             rpTabGroup.classList.add("active");
@@ -15528,23 +15726,20 @@ ${membersList}
           });
 
           // 4. 实时更新红包金额显示
-          document
-            .getElementById("rp-group-amount")
+          domCache.rpGroupAmount
             .addEventListener("input", (e) => {
               const amount = parseFloat(e.target.value) || 0;
-              document.getElementById("rp-group-total").textContent =
+              domCache.rpGroupTotal.textContent =
                 `¥ ${amount.toFixed(2)}`;
             });
-          document
-            .getElementById("rp-direct-amount")
+          domCache.rpDirectAmount
             .addEventListener("input", (e) => {
               const amount = parseFloat(e.target.value) || 0;
-              document.getElementById("rp-direct-total").textContent =
+              domCache.rpDirectTotal.textContent =
                 `¥ ${amount.toFixed(2)}`;
             });
 
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // 1. 找到被点击的红包卡片
               const packetCard = e.target.closest(".red-packet-card");
@@ -15560,8 +15755,7 @@ ${membersList}
             });
 
           // 在输入框工具栏添加按钮
-          document
-            .getElementById("send-poll-btn")
+          domCache.sendPollBtn
             .addEventListener("click", openCreatePollModal);
 
           // 投票创建模态框的按钮
@@ -15571,8 +15765,7 @@ ${membersList}
           document
             .getElementById("cancel-create-poll-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("create-poll-modal")
+              domCache.createPollModal
                 .classList.remove("visible");
             });
           document
@@ -15580,8 +15773,7 @@ ${membersList}
             .addEventListener("click", sendPoll);
 
           // 使用事件委托处理投票卡片内的所有点击事件
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               const pollCard = e.target.closest(".poll-card");
               if (!pollCard) return;
@@ -15623,8 +15815,7 @@ ${membersList}
             .getElementById("close-ai-avatar-library-btn")
             .addEventListener("click", closeAiAvatarLibraryModal);
 
-          document
-            .getElementById("icon-settings-grid")
+          domCache.iconSettingsGrid
             .addEventListener("click", async (e) => {
               if (e.target.classList.contains("change-icon-btn")) {
                 const item = e.target.closest(".icon-setting-item");
@@ -15650,8 +15841,7 @@ ${membersList}
               }
             });
 
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // 使用 .closest() 向上查找被点击的卡片
               const linkCard = e.target.closest(".link-share-card");
@@ -15679,8 +15869,7 @@ ${membersList}
           document
             .getElementById("cancel-share-link-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("share-link-modal")
+              domCache.shareLinkModal
                 .classList.remove("visible");
             });
 
@@ -15689,8 +15878,7 @@ ${membersList}
             .getElementById("confirm-share-link-btn")
             .addEventListener("click", sendUserLinkShare);
 
-          document
-            .getElementById("theme-toggle-switch")
+          domCache.themeToggleSwitch
             .addEventListener("change", toggleTheme);
 
           const sizePanelToggle = document.getElementById("show-size-panel-toggle");
@@ -15724,8 +15912,7 @@ ${membersList}
 
           // 在你的 init() 函数的事件监听器区域...
 
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // 1. 向上查找被点击的元素是否在一个消息气泡内
               const bubble = e.target.closest(".message-bubble");
@@ -15776,8 +15963,7 @@ ${membersList}
             });
 
           // 3. 监听卡片点击的逻辑保持不变
-          document
-            .getElementById("call-history-list")
+          domCache.callHistoryList
             .addEventListener("click", (e) => {
               const card = e.target.closest(".call-record-card");
               if (card && card.dataset.recordId) {
@@ -15789,13 +15975,11 @@ ${membersList}
           document
             .getElementById("close-transcript-modal-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("call-transcript-modal")
+              domCache.callTranscriptModal
                 .classList.remove("visible");
             });
 
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // 1. 检查点击的是否是语音条
               const voiceBody = e.target.closest(".voice-message-body");
@@ -15827,8 +16011,7 @@ ${membersList}
               }
             });
 
-          document
-            .getElementById("chat-header-status")
+          domCache.chatHeaderStatus
             .addEventListener("click", handleEditStatusClick);
 
           // 在 init() 的事件监听器区域添加
@@ -15893,8 +16076,7 @@ ${membersList}
               }
 
               // 4. 收尾工作
-              document
-                .getElementById("share-target-modal")
+              domCache.shareTargetModal
                 .classList.remove("visible");
               exitSelectionMode(); // 退出多选模式
               await showCustomAlert(
@@ -15908,14 +16090,12 @@ ${membersList}
           document
             .getElementById("cancel-share-target-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("share-target-modal")
+              domCache.shareTargetModal
                 .classList.remove("visible");
             });
 
           // 在 init() 的事件监听器区域添加
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // ...你已有的其他点击事件逻辑...
 
@@ -15991,8 +16171,7 @@ ${membersList}
             }
           });
 
-          document
-            .getElementById("playlist-body")
+          domCache.playlistBody
             .addEventListener("click", async (e) => {
               const target = e.target;
               if (target.classList.contains("delete-track-btn")) {
@@ -16011,7 +16190,7 @@ ${membersList}
                 const index = parseInt(target.dataset.index);
                 if (isNaN(index)) return;
                 const lrcContent = await new Promise((resolve) => {
-                  const lrcInput = document.getElementById("lrc-upload-input");
+                  const lrcInput = domCache.lrcUploadInput;
                   const handler = (event) => {
                     const file = event.target.files[0];
                     if (file) {
@@ -16051,8 +16230,7 @@ ${membersList}
             });
 
           // 使用事件委托来处理所有“已撤回消息”的点击事件
-          document
-            .getElementById("chat-messages")
+          domCache.chatMessages
             .addEventListener("click", (e) => {
               // 检查被点击的元素或其父元素是否是“已撤回”提示
               const placeholder = e.target.closest(
@@ -16090,16 +16268,14 @@ ${membersList}
           document
             .getElementById("close-category-manager-btn")
             .addEventListener("click", () => {
-              document
-                .getElementById("world-book-category-manager-modal")
+              domCache.worldBookCategoryManagerModal
                 .classList.remove("visible");
               renderWorldBookScreen(); // 关闭后刷新主列表
             });
           document
             .getElementById("add-new-category-btn")
             .addEventListener("click", addNewCategory);
-          document
-            .getElementById("existing-categories-list")
+          domCache.existingCategoriesList
             .addEventListener("click", (e) => {
               if (e.target.classList.contains("delete-group-btn")) {
                 const categoryId = parseInt(e.target.dataset.id);
