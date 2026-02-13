@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ephone-v5';
+const CACHE_NAME = 'ephone-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
