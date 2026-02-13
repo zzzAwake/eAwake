@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ephone-v6';
+const CACHE_NAME = 'ephone-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -14,19 +14,18 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing ephone-v5 Service Worker...');
+  console.log(`[SW] Installing ${CACHE_NAME} Service Worker...`);
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Caching app shell');
       return cache.addAll(ASSETS_TO_CACHE);
-    })
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 // Activate Event
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating ephone-v5 Service Worker...');
+  console.log(`[SW] Activating ${CACHE_NAME} Service Worker...`);
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
@@ -43,19 +42,31 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - 修复版
+// Fetch Event
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  
-  // 1. 导航请求 → Network First, 回退到缓存的 index.html
+
+  // 非 GET 请求直接放行（POST API 调用等）
+  if (event.request.method !== 'GET') return;
+
+  // 非同源第三方请求直接放行
+  if (url.origin !== self.location.origin && !ASSETS_TO_CACHE.includes(event.request.url)) {
+    return;
+  }
+
+  // 1. 导航请求 → Network First, 回退到缓存, 再回退到离线页
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
         .catch(() => caches.match('./index.html'))
+        .then(response => response || new Response(
+          '<html><body><h1>EPhone 离线</h1><p>请连接网络后重试。</p></body></html>',
+          { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+        ))
     );
     return;
   }
-  
+
   // 2. 检查是否为已知资源
   const isKnownAsset = ASSETS_TO_CACHE.some(asset => {
     if (asset.startsWith('http')) {
@@ -64,28 +75,28 @@ self.addEventListener('fetch', (event) => {
     const assetPath = asset.replace(/^\.\//, '/');
     return url.pathname === assetPath || url.pathname.endsWith(assetPath);
   });
-  
+
   // 3. 已知资源 → Cache First
   if (isKnownAsset) {
     event.respondWith(
       caches.match(event.request).then((response) => {
         return response || fetch(event.request).then((fetchResponse) => {
-          // 缓存新获取的资源
-  console.log('[SW] Saving new fetch response into ephone-v5 cache');
+          console.log(`[SW] Saving new fetch response into ${CACHE_NAME} cache`);
           return caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, fetchResponse.clone());
             return fetchResponse;
           });
         });
-      })
+      }).catch(() => new Response('Resource unavailable offline', { status: 503 }))
     );
     return;
   }
-  
-  // 4. 其他请求 → Network First
+
+  // 4. 其他同源 GET 请求 → Network First
   event.respondWith(
     fetch(event.request)
       .catch(() => caches.match(event.request))
+      .then(response => response || new Response('', { status: 504 }))
   );
 });
 
