@@ -3949,19 +3949,22 @@
               </div>
           `;
           } else if (
-            typeof msg.content === "string" &&
-            STICKER_REGEX.test(msg.content)
+            msg.type === "sticker" ||
+            (typeof msg.content === "string" && STICKER_REGEX.test(msg.content))
           ) {
             bubble.classList.add("is-sticker");
             contentHtml = `<img src="${msg.content}" alt="${
               msg.meaning || "Sticker"
             }" class="sticker-image">`;
           } else if (
-            Array.isArray(msg.content) &&
-            msg.content[0]?.type === "image_url"
+            msg.type === "image" ||
+            (Array.isArray(msg.content) && msg.content[0]?.type === "image_url")
           ) {
-            bubble.classList.add("has-image");
-            const imageUrl = msg.content[0].image_url.url;
+            // 添加 is-ai-image 类以去除气泡背景和内边距
+            bubble.classList.add("is-ai-image");
+            const imageUrl = Array.isArray(msg.content)
+              ? msg.content[0].image_url.url
+              : msg.content;
             contentHtml = `<img src="${imageUrl}" class="chat-image" alt="User uploaded image">`;
           } else {
             contentHtml = String(msg.content || "").replace(/\n/g, "<br>");
@@ -6382,6 +6385,9 @@ ${membersList}
           const msg = {
             role: "user",
             content: sticker.url,
+            // 添加 type: "sticker" 显式标识，方便 transformChatData 处理
+            // 避免被当作普通文本处理成 base64 字符串
+            type: "sticker",
             meaning: sticker.name,
             timestamp: Date.now(),
           };

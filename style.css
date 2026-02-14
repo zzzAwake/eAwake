@@ -1419,7 +1419,9 @@
         display: block;
       }
       .message-bubble.has-image .content {
-        padding: 5px;
+        padding: 0px;
+        background: transparent !important;
+        box-shadow: none;
       }
       #custom-modal-overlay {
         position: fixed;
@@ -1619,8 +1621,8 @@
         display: none;
       }
       .message-bubble.is-ai-image .content {
-        padding: 5px;
-        background: transparent;
+        padding: 0px;
+        background: transparent !important;
         box-shadow: none;
         border: none;
         backdrop-filter: none;
@@ -1753,18 +1755,18 @@
       .message-bubble.user .content {
         background-color: var(--user-bubble-color, rgba(255, 255, 255, 0.75));
         color: #585858;
-        border-radius: 8px 2px 8px 8px;
+        border-radius: 10px;
       }
       .message-bubble.ai .content {
         background-color: var(--ai-bubble-color, rgba(255, 255, 255, 0.7));
         color: #585858;
-        border-radius: 2px 8px 8px 8px;
+        border-radius: 10px;
       }
       /* 自定义气泡颜色覆盖 */
-      #chat-messages[style*="--user-bubble-color"] .message-bubble.user .content {
+      #chat-messages[style*="--user-bubble-color"] .message-bubble.user:not(.is-ai-image) .content {
         background-color: var(--user-bubble-color) !important;
       }
-      #chat-messages[style*="--ai-bubble-color"] .message-bubble.ai .content {
+      #chat-messages[style*="--ai-bubble-color"] .message-bubble.ai:not(.is-ai-image) .content {
         background-color: var(--ai-bubble-color) !important;
       }
       .message-bubble::after {
