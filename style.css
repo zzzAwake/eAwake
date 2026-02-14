@@ -1939,7 +1939,7 @@
       .message-bubble.is-red-packet .content,
       .message-bubble.is-poll .content {
         padding: 0;
-        background-color: transparent;
+        background-color: transparent !important;
         box-shadow: none;
         border: none;
         backdrop-filter: none;
