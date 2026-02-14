@@ -518,6 +518,20 @@ const DEFAULT_URLS = {
           },
         };
 
+        function getMemberInfo(chat, senderName) {
+          if (!chat || !chat.isGroup) return null;
+          const member = chat.members?.find((m) => m.originalName === senderName);
+          return member
+            ? {
+                nickname: member.groupNickname || member.originalName,
+                avatar: member.avatar || DEFAULT_URLS.MEMBER_AVATAR,
+              }
+            : {
+                nickname: senderName || "未知成员",
+                avatar: DEFAULT_URLS.MEMBER_AVATAR,
+              };
+        }
+
         // 搜索状态
         let chatSearchState = {
           query: "",
@@ -2032,18 +2046,9 @@ const DEFAULT_URLS = {
               } else {
                 // AI/成员消息
                 if (chat.isGroup) {
-                  // ★★★★★ 这就是唯一的、核心的修改！ ★★★★★
-                  // 我们现在使用 originalName 去匹配，而不是旧的 name
-                  const member = chat.members.find(
-                    (m) => m.originalName === msg.senderName,
-                  );
-                  // ★★★★★ 修改结束 ★★★★★
-
+                  const memberInfo = getMemberInfo(chat, msg.senderName);
                   senderName = msg.senderName;
-                  // 因为现在能正确找到 member 对象了，所以也能正确获取到他的头像
-                  senderAvatar = member
-                    ? member.avatar
-                    : defaultGroupMemberAvatar;
+                  senderAvatar = memberInfo.avatar;
                 } else {
                   // 单聊的逻辑保持不变
                   senderName = chat.name;
@@ -3636,20 +3641,10 @@ const DEFAULT_URLS = {
           // ★★★【核心重构】★★★
           // 这段逻辑现在用于查找成员对象，并显示其“群昵称”
           if (chat.isGroup && !isUser) {
-            // 1. 使用AI返回的“本名”(`msg.senderName`)去列表里查找成员对象
-            const member = chat.members.find(
-              (m) => m.originalName === msg.senderName,
-            );
-
-            // 2. 创建用于显示名字的 div
+            const memberInfo = getMemberInfo(chat, msg.senderName);
             const senderNameDiv = document.createElement("div");
             senderNameDiv.className = "sender-name";
-
-            // 3. 如果找到了成员，就显示他的“群昵称”；如果找不到，就显示AI返回的“本名”作为备用
-            senderNameDiv.textContent = member
-              ? member.groupNickname
-              : msg.senderName || "未知成员";
-
+            senderNameDiv.textContent = memberInfo.nickname;
             wrapper.appendChild(senderNameDiv);
           }
 
@@ -3666,10 +3661,8 @@ const DEFAULT_URLS = {
             if (isUser) {
               avatarSrc = chat.settings.myAvatar || defaultMyGroupAvatar;
             } else {
-              const member = chat.members.find(
-                (m) => m.originalName === msg.senderName,
-              );
-              avatarSrc = member ? member.avatar : defaultGroupMemberAvatar;
+              const memberInfo = getMemberInfo(chat, msg.senderName);
+              avatarSrc = memberInfo.avatar;
             }
           } else {
             if (isUser) {
@@ -3826,11 +3819,8 @@ const DEFAULT_URLS = {
             let displayName;
             // 如果是群聊
             if (chat.isGroup) {
-              // 就执行原来的逻辑：在成员列表里查找昵称
-              const member = chat.members.find(
-                (m) => m.originalName === msg.senderName,
-              );
-              displayName = member ? member.groupNickname : msg.senderName;
+              const memberInfo = getMemberInfo(chat, msg.senderName);
+              displayName = memberInfo.nickname;
             } else {
               // 否则（是单聊），直接使用聊天对象的名称
               displayName = chat.name;
