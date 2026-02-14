@@ -13341,13 +13341,7 @@ ${membersList}
                 updateWorldBookSelectionDisplay();
               });
 
-              // 加载并更新所有预览相关控件
-              const themeRadio = document.querySelector(
-                `input[name="theme-select"][value="${
-                  chat.settings.theme || "default"
-                }"]`,
-              );
-              if (themeRadio) themeRadio.checked = true;
+              // 加载并更新字体大小控件
               const fontSizeSlider =
                 document.getElementById("font-size-slider");
               fontSizeSlider.value = chat.settings.fontSize || 13;
@@ -13469,12 +13463,6 @@ ${membersList}
                 .value.trim();
               if (!newName) return showCustomAlert("提示", "备注名/群名不能为空！");
               chat.name = newName;
-              const selectedThemeRadio = document.querySelector(
-                'input[name="theme-select"]:checked',
-              );
-              chat.settings.theme = selectedThemeRadio
-                ? selectedThemeRadio.value
-                : "default";
 
               chat.settings.fontSize = parseInt(
                 document.getElementById("font-size-slider").value,
