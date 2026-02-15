@@ -13442,11 +13442,6 @@ ${membersList}
                 .classList.remove("visible");
             });
           document
-            .getElementById("reset-theme-btn")
-            .addEventListener("click", () => {
-              document.getElementById("theme-default").checked = true;
-            });
-          document
             .getElementById("cancel-chat-settings-btn")
             .addEventListener("click", () => {
               DOM.get('chat-interface-screen').classList.remove('settings-open');
