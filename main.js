@@ -15173,14 +15173,6 @@ ${membersList}
             updateSettingsPreview,
           );
 
-          // 4. 监听重置按钮
-          document
-            .getElementById("reset-theme-btn")
-            .addEventListener("click", () => {
-              document.getElementById("theme-default").checked = true;
-              updateSettingsPreview();
-            });
-
           document
             .getElementById("reset-custom-css-btn")
             .addEventListener("click", () => {
