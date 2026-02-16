@@ -126,7 +126,7 @@ class OnlineChatManager {
                     this.reconnectAttempts = 0;
                     if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
                     if (this.heartbeatTimer) { clearInterval(this.heartbeatTimer); this.heartbeatTimer = null; }
-                    if (this.ws) { this.isConnected = false; try { this.ws.close(); } catch(e) {} this.ws = null; }
+                    if (this.isConnected) { this.disconnect(); }
                     this.updateConnectionUI(false);
                 }
                 this.saveSettings();
@@ -337,8 +337,9 @@ class OnlineChatManager {
                 userId: document.getElementById('online-app-my-id')?.value || '',
                 nickname: document.getElementById('online-app-my-nickname')?.value || '',
                 avatar: this.avatar || '',
-                serverUrl: document.getElementById('online-app-server-url')?.value || '',
-                serverKey: document.getElementById('online-app-server-key')?.value || '',
+                // Save Supabase config
+                supabaseUrl: document.getElementById('online-app-supabase-url')?.value || document.getElementById('online-app-server-url')?.value || '',
+                supabaseKey: document.getElementById('online-app-supabase-key')?.value || document.getElementById('online-app-server-key')?.value || '',
                 wasConnected: this.shouldAutoReconnect
             };
             const str = JSON.stringify(settings);
@@ -346,18 +347,6 @@ class OnlineChatManager {
             localStorage.setItem('online-app-settings', JSON.stringify(settings));
         } catch (e) {
             console.error('保存连接APP设置失败:', e);
-            try {
-                const min = {
-                    enabled: document.getElementById('online-app-enable-switch')?.checked || false,
-                    userId: document.getElementById('online-app-my-id')?.value || '',
-                    nickname: document.getElementById('online-app-my-nickname')?.value || '',
-                    avatar: '',
-                    serverUrl: document.getElementById('online-app-server-url')?.value || '',
-                    serverKey: document.getElementById('online-app-server-key')?.value || '',
-                    wasConnected: this.shouldAutoReconnect
-                };
-                localStorage.setItem('online-app-settings', JSON.stringify(min));
-            } catch (err) { console.error('保存简化设置也失败:', err); }
         }
     }
 
@@ -375,6 +364,10 @@ class OnlineChatManager {
                 const idInput = document.getElementById('online-app-my-id');
                 const nickInput = document.getElementById('online-app-my-nickname');
                 const avatarPreview = document.getElementById('online-app-avatar-preview');
+                
+                // Supabase Inputs
+                const supabaseUrlInput = document.getElementById('online-app-supabase-url');
+                const supabaseKeyInput = document.getElementById('online-app-supabase-key');
                 const serverInput = document.getElementById('online-app-server-url');
                 const serverKeyInput = document.getElementById('online-app-server-key');
 
@@ -387,8 +380,15 @@ class OnlineChatManager {
                     this.userId = s.userId || null;
                 }
                 if (nickInput) nickInput.value = s.nickname || '';
-                if (serverInput) serverInput.value = s.serverUrl || '';
-                if (serverKeyInput) serverKeyInput.value = s.serverKey || '';
+                
+                // Load URL/Key
+                const url = s.supabaseUrl || s.serverUrl || '';
+                const key = s.supabaseKey || s.serverKey || '';
+                
+                if (supabaseUrlInput) supabaseUrlInput.value = url;
+                if (supabaseKeyInput) supabaseKeyInput.value = key;
+                if (serverInput) serverInput.value = url;
+                if (serverKeyInput) serverKeyInput.value = key;
 
                 if (s.avatar && (s.avatar.startsWith('data:image/') || s.avatar.startsWith('http'))) {
                     this.avatar = s.avatar;
@@ -424,21 +424,105 @@ class OnlineChatManager {
 
     // ==================== WebSocket连接 ====================
 
+    // ==================== 辅助方法 ====================
+
+    bindChannelListeners(channel) {
+        channel
+            .on('presence', { event: 'sync' }, () => this.syncOnlineUsers())
+            .on('broadcast', { event: 'friend_request' }, ({ payload }) => {
+                if (payload && payload.toUserId === this.userId) {
+                    this.onFriendRequest(payload);
+                }
+            })
+            .on('broadcast', { event: 'friend_request_accepted' }, ({ payload }) => {
+                if (payload && payload.toUserId === this.userId) {
+                    this.onFriendRequestAccepted(payload);
+                }
+            })
+            .on('broadcast', { event: 'friend_request_rejected' }, ({ payload }) => {
+                if (payload && payload.toUserId === this.userId) {
+                    this.onFriendRequestRejected(payload);
+                }
+            })
+            .on('broadcast', { event: 'dm' }, ({ payload }) => {
+                console.log('[Broadcast] 收到DM:', payload);
+                if (payload.toUserId === this.userId) {
+                    this.onReceiveMessage(payload);
+                }
+            })
+            .on('broadcast', { event: 'group_msg' }, ({ payload }) => {
+                console.log('[Broadcast] 收到群消息:', payload);
+                if (payload.members && payload.members.includes(this.userId) && payload.fromUserId !== this.userId) {
+                    this.onReceiveGroupMessage(payload);
+                }
+            })
+            .on('broadcast', { event: 'group_create' }, ({ payload }) => {
+                console.log('[Broadcast] 收到群创建:', payload);
+                if (payload.members && payload.members.some(m => m.userId === this.userId) && payload.creatorId !== this.userId) {
+                    this.onReceiveGroupMessage({ ...payload, type: 'receive_group_created' });
+                }
+            })
+            .on('broadcast', { event: 'ai_join' }, ({ payload }) => {
+                if (payload && payload.members && payload.members.includes(this.userId)) {
+                    this.onAiCharacterJoin(payload);
+                }
+            })
+            .on('broadcast', { event: 'ai_leave' }, ({ payload }) => {
+                if (payload && payload.members && payload.members.includes(this.userId)) {
+                    this.onAiCharacterLeave(payload);
+                }
+            });
+    }
+
+    async handleChannelStatus(topic, status, err) {
+        console.log(`[Supabase] 频道 '${topic}' 状态: ${status}`, err || '');
+        
+        if (status === 'SUBSCRIBED') {
+            await this.channel.track({
+                userId: this.userId,
+                nickname: this.nickname,
+                avatar: this.getSafeAvatar(),
+                onlineAt: new Date().toISOString()
+            });
+            this.onRegisterSuccess();
+            console.log(`[Supabase] ✅ 已成功加入频道: ${topic}`);
+        } else if (status === 'CHANNEL_ERROR') {
+            console.error(`[Supabase] ❌ 频道错误:`, err);
+            this.updateConnectionUI(false);
+            // 降级处理：不再弹窗，尝试自动重连
+            if (this.shouldAutoReconnect && !this.reconnectTimer) {
+                console.log('[Supabase] 检测到频道错误，3秒后尝试自动重连...');
+                this.reconnectTimer = setTimeout(() => {
+                    this.reconnectTimer = null;
+                    console.log('[Supabase] 执行自动重连...');
+                    this.connect();
+                }, 3000);
+            }
+        } else if (status === 'TIMED_OUT') {
+            console.warn(`[Supabase] ⚠️ 连接超时，正在重试...`);
+        } else if (status === 'CLOSED') {
+            console.log(`[Supabase] 🔌 频道已断开`);
+        }
+    }
+
     async connect() {
         const idInput = document.getElementById('online-app-my-id');
         const nickInput = document.getElementById('online-app-my-nickname');
+        const supabaseUrlInput = document.getElementById('online-app-supabase-url');
+        const supabaseKeyInput = document.getElementById('online-app-supabase-key');
         const serverInput = document.getElementById('online-app-server-url');
         const serverKeyInput = document.getElementById('online-app-server-key');
 
         this.userId = idInput?.value.trim();
         this.nickname = nickInput?.value.trim();
-        this.serverUrl = serverInput?.value.trim();
-        this.serverKey = serverKeyInput?.value.trim();
+        
+        this.supabaseUrl = supabaseUrlInput?.value.trim() || serverInput?.value.trim();
+        this.supabaseKey = supabaseKeyInput?.value.trim() || serverKeyInput?.value.trim();
 
         if (!this.userId) { alert('请设置你的ID'); return; }
         if (!this.nickname) { alert('请设置你的昵称'); return; }
-        if (!this.serverUrl) { alert('请输入Supabase URL'); return; }
-        if (!this.serverKey) { alert('请输入Supabase Key'); return; }
+        if (!this.supabaseUrl) { alert('请输入Supabase URL'); return; }
+        if (!this.supabaseKey) { alert('请输入Supabase Key'); return; }
 
         // 重新加载该ID绑定的数据
         this.friendRequests = [];
@@ -450,71 +534,50 @@ class OnlineChatManager {
         this.updateConnectingUI();
 
         try {
-            // 初始化 Supabase 客户端
+            let cleanUrl = this.supabaseUrl;
+            if (!cleanUrl.startsWith('http')) cleanUrl = 'https://' + cleanUrl;
+            cleanUrl = cleanUrl.replace('://db.', '://');
+            console.log('正在连接 Supabase:', cleanUrl);
+
+            // 初始化 Client (如果尚未初始化或配置变更)
             // @ts-ignore
-            this.supabase = window.supabase.createClient(this.serverUrl, this.serverKey);
+            if (!window.supabase) throw new Error('Supabase SDK 未加载');
             
-            // 订阅全局频道
-            this.channel = this.supabase.channel('ephone-global');
+            // 为了确保连接参数最新，这里我们总是重新创建 Client (开销很小)
+            // @ts-ignore
+            this.supabase = window.supabase.createClient(cleanUrl, this.supabaseKey, {
+                realtime: {
+                    params: { eventsPerSecond: 10 }
+                }
+            });
             
-            this.channel
-                .on('presence', { event: 'sync' }, () => this.syncOnlineUsers())
-                // 监听好友请求广播
-                .on('broadcast', { event: 'friend_request' }, ({ payload }) => {
-                    if (payload && payload.toUserId === this.userId) {
-                        this.onFriendRequest(payload);
-                    }
-                })
-                .on('broadcast', { event: 'friend_request_accepted' }, ({ payload }) => {
-                    if (payload && payload.toUserId === this.userId) {
-                        this.onFriendRequestAccepted(payload);
-                    }
-                })
-                .on('broadcast', { event: 'friend_request_rejected' }, ({ payload }) => {
-                    if (payload && payload.toUserId === this.userId) {
-                        this.onFriendRequestRejected(payload);
-                    }
-                })
-                // 监听聊天消息 (DM)
-                .on('broadcast', { event: 'dm' }, ({ payload }) => {
-                    console.log('[Broadcast] 收到DM:', payload);
-                    if (payload.toUserId === this.userId) {
-                        this.onReceiveMessage(payload);
-                    }
-                })
-                // 监听群聊消息
-                .on('broadcast', { event: 'group_msg' }, ({ payload }) => {
-                    console.log('[Broadcast] 收到群消息:', payload);
-                    if (payload.members && payload.members.includes(this.userId) && payload.fromUserId !== this.userId) {
-                        this.onReceiveGroupMessage(payload);
-                    }
-                })
-                // 监听群创建
-                .on('broadcast', { event: 'group_create' }, ({ payload }) => {
-                    console.log('[Broadcast] 收到群创建:', payload);
-                    if (payload.members && payload.members.some(m => m.userId === this.userId) && payload.creatorId !== this.userId) {
-                        // 补充 type 字段以适配原有逻辑
-                        this.onReceiveGroupMessage({ ...payload, type: 'receive_group_created' });
-                    }
-                })
-                .subscribe(async (status) => {
-                    if (status === 'SUBSCRIBED') {
-                        await this.channel.track({
-                            userId: this.userId,
-                            nickname: this.nickname,
-                            avatar: this.getSafeAvatar(),
-                            onlineAt: new Date().toISOString()
-                        });
-                        this.onRegisterSuccess();
-                        console.log('已连接到 Supabase 实时频道');
-                    } else {
-                        console.error('Supabase 订阅状态:', status);
-                        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                             this.updateConnectionUI(false);
-                             alert('连接服务器失败: ' + status);
-                        }
-                    }
-                });
+            // 使用符合规范的 Topic 名称 (scope:id:entity)
+            // 这里使用全局聊天室 'ephone:global:chat'
+            const CHANNEL_TOPIC = 'ephone:global:chat';
+            
+            // 检查是否已有同名频道 (复用逻辑)
+            // 注意：由于我们重建了Client，getChannels()是空的。
+            // 如果要支持跨页面复用，Client应该设为全局单例。
+            // 但考虑到这里的场景，我们只需确保不要在同一个实例上重复订阅。
+            
+            if (this.channel) {
+                console.log('[Supabase] 清理旧频道...');
+                await this.supabase.removeChannel(this.channel);
+            }
+
+            console.log(`[Supabase] 初始化新频道: ${CHANNEL_TOPIC}`);
+            this.channel = this.supabase.channel(CHANNEL_TOPIC, {
+                config: {
+                    presence: { key: this.userId },
+                    broadcast: { self: false }
+                }
+            });
+            
+            this.bindChannelListeners(this.channel);
+            
+            this.channel.subscribe((status, err) => {
+                this.handleChannelStatus(CHANNEL_TOPIC, status, err);
+            });
 
         } catch (error) {
             console.error('Supabase连接失败:', error);
@@ -1416,8 +1479,12 @@ class OnlineChatManager {
             const enableSwitch = document.getElementById('online-app-enable-switch');
             if (enableSwitch && enableSwitch.checked) {
                 const idInput = document.getElementById('online-app-my-id');
+                const supabaseUrlInput = document.getElementById('online-app-supabase-url');
                 const serverInput = document.getElementById('online-app-server-url');
-                if (idInput?.value && serverInput?.value) {
+                
+                const hasUrl = (supabaseUrlInput && supabaseUrlInput.value) || (serverInput && serverInput.value);
+                
+                if (idInput?.value && hasUrl) {
                     console.log('[连接APP] 自动重连...');
                     setTimeout(() => this.connect(), 1000);
                 }
