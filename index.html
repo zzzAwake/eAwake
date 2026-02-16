@@ -24,9 +24,11 @@
   <script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="update-notification.js?v=0.0.16" defer></script>
   <script src="prompt-manager.js" defer></script>
   <script src="online-chat-manager.js" defer></script>
@@ -7245,9 +7247,15 @@
                 </div>
               </div>
               <div class="settings-item">
-                <label>服务器地址</label>
+                <label>Supabase URL</label>
                 <div class="settings-right">
-                  <input type="text" id="online-app-server-url" placeholder="wss://your-server.com/ws">
+                  <input type="text" id="online-app-supabase-url" placeholder="https://your-project.supabase.co">
+                </div>
+              </div>
+              <div class="settings-item">
+                <label>Supabase Anon Key</label>
+                <div class="settings-right">
+                  <input type="password" id="online-app-supabase-key" placeholder="your-anon-key">
                 </div>
               </div>
               <div class="settings-item">
