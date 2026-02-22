@@ -26,6 +26,58 @@ class OnlineChatManager {
         this.myAiCharacter = null; // 当前用户拉入群聊的AI角色 { chatId(主屏幕chatId), originalName, avatar, ownerUserId }
         this.aiCharactersInGroup = {}; // groupId -> [{ characterId, originalName, avatar, ownerUserId, ownerNickname }]
         this.isAiResponding = false; // AI是否正在回复中
+        this.aiRequestLifecycle = {
+            requestId: null,
+            controller: null,
+            endState: 'idle',
+            retryCount: 0,
+            fallbackUsed: false,
+            provider: null,
+            updatedAt: 0
+        };
+    }
+
+    beginAiRequestLifecycle(requestId, controller, metadata = {}) {
+        this.aiRequestLifecycle = {
+            ...this.aiRequestLifecycle,
+            requestId,
+            controller,
+            endState: 'pending',
+            retryCount: 0,
+            fallbackUsed: false,
+            provider: metadata.provider || null,
+            updatedAt: Date.now()
+        };
+        this.isAiResponding = true;
+        return this.aiRequestLifecycle;
+    }
+
+    isCurrentAiRequest(requestId) {
+        return Boolean(requestId) && this.aiRequestLifecycle.requestId === requestId;
+    }
+
+    updateAiRequestLifecycle(requestId, nextState, metadata = {}) {
+        if (!this.isCurrentAiRequest(requestId)) {
+            return false;
+        }
+
+        this.aiRequestLifecycle = {
+            ...this.aiRequestLifecycle,
+            endState: nextState,
+            ...metadata,
+            updatedAt: Date.now()
+        };
+
+        if (nextState === 'completed' || nextState === 'errored' || nextState === 'aborted') {
+            this.isAiResponding = false;
+            this.aiRequestLifecycle = {
+                ...this.aiRequestLifecycle,
+                controller: null,
+                updatedAt: Date.now()
+            };
+        }
+
+        return true;
     }
 
     // ==================== 数据持久化 (独立于QQ) ====================
@@ -286,7 +338,10 @@ class OnlineChatManager {
     // ==================== 视图切换 ====================
 
     showView(viewId) {
-        document.querySelectorAll('#online-app-screen .online-app-view').forEach(v => v.classList.remove('active'));
+        const views = document.querySelectorAll('#online-app-screen .online-app-view');
+        for (const v of views) {
+            v.classList.remove('active');
+        }
         const view = document.getElementById(viewId);
         if (view) view.classList.add('active');
 
@@ -1541,7 +1596,9 @@ class OnlineChatManager {
                     keysToRemove.push(key);
                 }
             }
-            keysToRemove.forEach(k => localStorage.removeItem(k));
+            for (const k of keysToRemove) {
+                localStorage.removeItem(k);
+            }
 
             // 重置 UI
             const idInput = document.getElementById('online-app-my-id');
@@ -2081,6 +2138,7 @@ class OnlineChatManager {
 
         // 保存/加载AI角色数据
         saveAiCharacters() {
+            let cleanupStreamingPreview = () => {};
             try {
                 localStorage.setItem(this._getStorageKey('ai-characters'), JSON.stringify(this.aiCharactersInGroup));
             } catch (e) { console.error('保存AI角色数据失败:', e); }
@@ -2111,7 +2169,15 @@ class OnlineChatManager {
 
         // 调用API让AI角色回复
         async triggerAiCharacterResponse() {
-            if (this.isAiResponding) return;
+            const previousController = this.aiRequestLifecycle.controller;
+            const previousRequestId = this.aiRequestLifecycle.requestId;
+            if (previousController && previousRequestId) {
+                try {
+                    previousController.abort();
+                } catch (abortError) {
+                }
+                this.updateAiRequestLifecycle(previousRequestId, 'aborted');
+            }
 
             const groupId = this.activeChatId;
             const chat = this.chats[groupId];
@@ -2134,15 +2200,19 @@ class OnlineChatManager {
 
             // 获取API配置（使用拉入者的API设置）
             const apiConfig = window.state.apiConfig;
-            if (!apiConfig || !apiConfig.proxyUrl || !apiConfig.apiKey || !apiConfig.model) {
-                alert('请先在主屏幕的API设置中配置API');
+            const missingConfigFields = [];
+            if (!apiConfig || !apiConfig.proxyUrl) missingConfigFields.push('proxyUrl');
+            if (!apiConfig || !apiConfig.apiKey) missingConfigFields.push('apiKey');
+            if (!apiConfig || !apiConfig.model) missingConfigFields.push('model');
+            if (missingConfigFields.length > 0) {
+                alert(`API配置无效，缺少: ${missingConfigFields.join(', ')}。请先在主屏幕的API设置中补全。`);
                 return;
             }
 
-            this.isAiResponding = true;
             const btn = document.getElementById('online-app-ai-call-btn');
             if (btn) { btn.disabled = true; btn.textContent = '思考中...'; }
 
+            let cleanupStreamingPreview = () => {};
             try {
                 const { proxyUrl, apiKey, model } = apiConfig;
 
@@ -2152,39 +2222,222 @@ class OnlineChatManager {
                 // 构建消息历史
                 const messagesPayload = this.buildAiCharacterMessages(chat, myChar);
 
-                // 调用API
                 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
                 const isGemini = proxyUrl === GEMINI_API_URL;
-
-                let response;
-                if (isGemini) {
-                    const geminiConfig = this.toGeminiRequest(model, apiKey, systemPrompt, messagesPayload);
-                    response = await fetch(geminiConfig.url, geminiConfig.data);
-                } else {
-                    response = await fetch(`${proxyUrl}/v1/chat/completions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${getRandomValue(apiKey)}`
-                        },
-                        body: JSON.stringify({
-                            model: model,
-                            messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload],
-                            temperature: (window.state.globalSettings && window.state.globalSettings.apiTemperature) || 0.8,
-                            stream: false
-                        })
+                const geminiConfig = isGemini ? this.toGeminiRequest(model, apiKey, systemPrompt, messagesPayload) : null;
+                const streamRequestId = (window.createStreamRequestId ? window.createStreamRequestId('online-group') : `online-group-${Date.now()}`);
+                const requestController = new AbortController();
+                this.beginAiRequestLifecycle(streamRequestId, requestController, {
+                    provider: isGemini ? 'gemini' : 'openai-compatible'
+                });
+                const isCurrentRequest = () => this.isCurrentAiRequest(streamRequestId);
+                const streamEventGuard = window.createStreamEventGuard
+                    ? window.createStreamEventGuard(streamRequestId)
+                    : ((event) => {
+                        if (!event || !event.requestId || event.requestId !== streamRequestId) {
+                            throw new Error('[streamChat] 协议错误: requestId 缺失或不匹配，已拒绝写入');
+                        }
+                        return event;
                     });
+                const streamFlags = window.getStreamRolloutFlags ? window.getStreamRolloutFlags() : { streamEnabled: false, fallbackEnabled: true };
+                let streamProtocolMeta = {
+                    requestId: streamRequestId,
+                    provider: isGemini ? 'gemini' : 'openai-compatible',
+                    fallbackUsed: false,
+                    endState: 'pending',
+                    ttft: null,
+                    streamEnabled: streamFlags.streamEnabled,
+                    fallbackEnabled: streamFlags.fallbackEnabled
+                };
+
+                const STREAMING_RENDER_THROTTLE_MS = 120;
+                let aiContent = '';
+                let streamDeltaCount = 0;
+                let streamRenderFlushCount = 0;
+                let streamStorageWriteCount = 0;
+                let pendingRenderTimer = null;
+                const streamingPreviewId = `online-ai-preview-${streamRequestId}`;
+                const streamingPreviewMessage = {
+                    role: 'ai',
+                    content: '',
+                    timestamp: Date.now(),
+                    senderUserId: myChar.characterId,
+                    senderNickname: myChar.originalName,
+                    senderAvatar: myChar.avatar,
+                    isAiCharacter: true,
+                    isStreamingPreview: true,
+                    streamRequestId,
+                    streamPreviewId: streamingPreviewId
+                };
+                const flushPreviewRender = () => {
+                    if (this.activeChatId === groupId) {
+                        this.renderMessages(chat);
+                        streamRenderFlushCount += 1;
+                    }
+                };
+                const schedulePreviewRender = () => {
+                    if (pendingRenderTimer) {
+                        return;
+                    }
+                    pendingRenderTimer = setTimeout(() => {
+                        pendingRenderTimer = null;
+                        flushPreviewRender();
+                    }, STREAMING_RENDER_THROTTLE_MS);
+                };
+                const flushPreviewRenderNow = () => {
+                    if (pendingRenderTimer) {
+                        clearTimeout(pendingRenderTimer);
+                        pendingRenderTimer = null;
+                    }
+                    flushPreviewRender();
+                };
+                cleanupStreamingPreview = () => {
+                    if (pendingRenderTimer) {
+                        clearTimeout(pendingRenderTimer);
+                        pendingRenderTimer = null;
+                    }
+                    if (!chat || !Array.isArray(chat.history)) return;
+                    const beforeLength = chat.history.length;
+                    chat.history = chat.history.filter(m => m.streamPreviewId !== streamingPreviewId);
+                    if (chat.history.length !== beforeLength && this.activeChatId === groupId) {
+                        this.renderMessages(chat);
+                    }
+                };
+
+                if (!Array.isArray(chat.history)) chat.history = [];
+                chat.history.push(streamingPreviewMessage);
+                if (this.activeChatId === groupId) {
+                    this.appendMessageToUI(streamingPreviewMessage, chat);
                 }
 
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error?.message || `API错误: ${response.status}`);
-                }
+                await window.streamChat({
+                    proxyUrl,
+                    apiKey: getRandomValue(apiKey),
+                    model,
+                    systemPrompt,
+                    messagesPayload,
+                    isGemini,
+                    geminiConfig,
+                    signal: requestController.signal,
+                    requestId: streamRequestId,
+                    onStart: (event) => {
+                        if (!isCurrentRequest()) {
+                            return;
+                        }
+                        const safeEvent = streamEventGuard(event);
+                        streamProtocolMeta = {
+                            requestId: safeEvent.requestId,
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed,
+                            endState: safeEvent.endState,
+                            ttft: safeEvent.ttft ?? streamProtocolMeta.ttft,
+                            streamEnabled: streamFlags.streamEnabled,
+                            fallbackEnabled: streamFlags.fallbackEnabled
+                        };
+                        this.updateAiRequestLifecycle(streamRequestId, safeEvent.endState, {
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed
+                        });
+                    },
+                    onDelta: (event) => {
+                        if (!isCurrentRequest()) {
+                            return;
+                        }
+                        const safeEvent = streamEventGuard(event);
+                        streamProtocolMeta = {
+                            requestId: safeEvent.requestId,
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed,
+                            endState: safeEvent.endState,
+                            ttft: safeEvent.ttft ?? streamProtocolMeta.ttft,
+                            streamEnabled: streamFlags.streamEnabled,
+                            fallbackEnabled: streamFlags.fallbackEnabled
+                        };
+                        if (safeEvent.delta) {
+                            aiContent += safeEvent.delta;
+                            streamDeltaCount += 1;
+                            streamingPreviewMessage.content = aiContent;
+                            schedulePreviewRender();
+                        }
+                        this.updateAiRequestLifecycle(streamRequestId, 'streaming', {
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed
+                        });
+                    },
+                    onDone: (event) => {
+                        if (!isCurrentRequest()) {
+                            return;
+                        }
+                        const safeEvent = streamEventGuard(event);
+                        streamProtocolMeta = {
+                            requestId: safeEvent.requestId,
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed,
+                            endState: safeEvent.endState,
+                            ttft: safeEvent.ttft ?? streamProtocolMeta.ttft,
+                            streamEnabled: streamFlags.streamEnabled,
+                            fallbackEnabled: streamFlags.fallbackEnabled
+                        };
+                        aiContent = safeEvent.finalText || aiContent;
+                        streamingPreviewMessage.content = aiContent;
+                        flushPreviewRenderNow();
+                        this.updateAiRequestLifecycle(streamRequestId, 'completed', {
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed
+                        });
+                    },
+                    onError: (event) => {
+                        if (!isCurrentRequest()) {
+                            return;
+                        }
+                        const safeEvent = streamEventGuard(event);
+                        streamProtocolMeta = {
+                            requestId: safeEvent.requestId,
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed,
+                            endState: safeEvent.endState,
+                            ttft: safeEvent.ttft ?? streamProtocolMeta.ttft,
+                            streamEnabled: streamFlags.streamEnabled,
+                            fallbackEnabled: streamFlags.fallbackEnabled
+                        };
+                        this.updateAiRequestLifecycle(streamRequestId, 'errored', {
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed
+                        });
+                        throw new Error(safeEvent.errorMessage || '流式协议错误');
+                    },
+                    onAbort: (event) => {
+                        if (!isCurrentRequest()) {
+                            return;
+                        }
+                        const safeEvent = streamEventGuard(event);
+                        streamProtocolMeta = {
+                            requestId: safeEvent.requestId,
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed,
+                            endState: safeEvent.endState
+                        };
+                        this.updateAiRequestLifecycle(streamRequestId, 'aborted', {
+                            provider: safeEvent.provider,
+                            fallbackUsed: safeEvent.fallbackUsed
+                        });
+                    }
+                });
 
-                const data = await response.json();
-                const aiContent = getGeminiResponseText(data);
+                if (!isCurrentRequest()) {
+                    return;
+                }
 
                 if (!aiContent) throw new Error('AI返回了空内容');
+                if (streamProtocolMeta.endState !== 'completed') {
+                    throw new Error(`AI流式协议未完成: ${streamProtocolMeta.endState}`);
+                }
+                this.updateAiRequestLifecycle(streamRequestId, 'completed', {
+                    provider: streamProtocolMeta.provider,
+                    fallbackUsed: streamProtocolMeta.fallbackUsed
+                });
+
+                cleanupStreamingPreview();
 
                 // 解析AI回复，提取文本消息
                 const replyTexts = this.parseAiCharacterResponse(aiContent);
@@ -2231,13 +2484,60 @@ class OnlineChatManager {
                 }
 
                 this.saveChats();
+                streamStorageWriteCount += 1;
+                if (typeof window.pushTask11Evidence === 'function') {
+                    window.pushTask11Evidence('onlineChat', {
+                        source: 'runtime',
+                        requestId: streamRequestId,
+                        endState: streamProtocolMeta.endState,
+                        deltaCount: streamDeltaCount,
+                        renderFlushCount: streamRenderFlushCount,
+                        storageWrites: streamStorageWriteCount,
+                        tokenToWriteRatio: streamStorageWriteCount > 0 ? (streamDeltaCount / streamStorageWriteCount) : null,
+                        parseCompatible: true
+                    });
+                }
                 this.renderChatList();
+                console.info('[online AI request end]', {
+                    requestId: streamProtocolMeta.requestId,
+                    provider: streamProtocolMeta.provider,
+                    streamEnabled: streamProtocolMeta.streamEnabled,
+                    fallbackEnabled: streamProtocolMeta.fallbackEnabled,
+                    fallbackUsed: streamProtocolMeta.fallbackUsed,
+                    endState: streamProtocolMeta.endState,
+                    ttft: streamProtocolMeta.ttft ?? null
+                });
 
             } catch (error) {
+                cleanupStreamingPreview();
+                if (typeof window.pushTask11Evidence === 'function') {
+                    window.pushTask11Evidence('onlineChat', {
+                        source: 'runtime',
+                        requestId: this.aiRequestLifecycle.requestId,
+                        endState: error && error.name === 'AbortError' ? 'aborted' : 'errored'
+                    });
+                }
+                if (error && error.name === 'AbortError') {
+                    const activeRequestId = this.aiRequestLifecycle.requestId;
+                    if (activeRequestId) {
+                        this.updateAiRequestLifecycle(activeRequestId, 'aborted');
+                    }
+                    return;
+                }
                 console.error('AI角色回复失败:', error);
+                const activeRequestId = this.aiRequestLifecycle.requestId;
+                if (activeRequestId) {
+                    this.updateAiRequestLifecycle(activeRequestId, 'errored');
+                }
                 alert('AI角色回复失败: ' + error.message);
             } finally {
-                this.isAiResponding = false;
+                const activeRequestId = this.aiRequestLifecycle.requestId;
+                if (activeRequestId) {
+                    const activeEndState = this.aiRequestLifecycle.endState;
+                    if (activeEndState !== 'completed' && activeEndState !== 'errored' && activeEndState !== 'aborted') {
+                        this.updateAiRequestLifecycle(activeRequestId, 'errored');
+                    }
+                }
                 if (btn) { btn.disabled = false; btn.textContent = '调用AI'; }
             }
         }

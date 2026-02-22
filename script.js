@@ -168,6 +168,117 @@ console.log(`EPhone 设备ID: ${EPHONE_DEVICE_ID}`);
 
 // 全局 API 调用控制器
 let currentApiController = null;
+let mainChatRequestLifecycle = {
+  requestId: null,
+  controller: null,
+  endState: 'idle',
+  retryCount: 0,
+  fallbackUsed: false,
+  provider: null,
+  updatedAt: 0
+};
+
+function beginMainChatRequestLifecycle(requestId, controller, metadata = {}) {
+  mainChatRequestLifecycle = {
+    ...mainChatRequestLifecycle,
+    requestId,
+    controller,
+    endState: 'pending',
+    retryCount: 0,
+    fallbackUsed: false,
+    provider: metadata.provider || null,
+    updatedAt: Date.now()
+  };
+  currentApiController = controller;
+  return mainChatRequestLifecycle;
+}
+
+function isMainChatRequestCurrent(requestId) {
+  return Boolean(requestId) && mainChatRequestLifecycle.requestId === requestId;
+}
+
+function updateMainChatRequestLifecycle(requestId, nextState, metadata = {}) {
+  if (!isMainChatRequestCurrent(requestId)) {
+    return false;
+  }
+
+  mainChatRequestLifecycle = {
+    ...mainChatRequestLifecycle,
+    endState: nextState,
+    ...metadata,
+    updatedAt: Date.now()
+  };
+
+  if (nextState === 'completed' || nextState === 'errored' || nextState === 'aborted') {
+    if (currentApiController === mainChatRequestLifecycle.controller) {
+      currentApiController = null;
+    }
+    mainChatRequestLifecycle = {
+      ...mainChatRequestLifecycle,
+      controller: null,
+      updatedAt: Date.now()
+    };
+  }
+
+  return true;
+}
+
+function createFeatureRequestLifecycle() {
+  return {
+    requestId: null,
+    controller: null,
+    endState: 'idle',
+    fallbackUsed: false,
+    provider: null,
+    entry: null,
+    updatedAt: 0
+  };
+}
+
+function beginFeatureRequestLifecycle(lifecycle, requestId, controller, metadata = {}) {
+  if (!lifecycle) return;
+  lifecycle.requestId = requestId;
+  lifecycle.controller = controller;
+  lifecycle.endState = 'pending';
+  lifecycle.fallbackUsed = false;
+  lifecycle.provider = metadata.provider || null;
+  lifecycle.entry = metadata.entry || null;
+  lifecycle.updatedAt = Date.now();
+}
+
+function isFeatureRequestCurrent(lifecycle, requestId) {
+  return Boolean(lifecycle && requestId) && lifecycle.requestId === requestId;
+}
+
+function updateFeatureRequestLifecycle(lifecycle, requestId, nextState, metadata = {}) {
+  if (!isFeatureRequestCurrent(lifecycle, requestId)) {
+    return false;
+  }
+
+  lifecycle.endState = nextState;
+  Object.assign(lifecycle, metadata);
+  lifecycle.updatedAt = Date.now();
+
+  if (nextState === 'completed' || nextState === 'errored' || nextState === 'aborted') {
+    lifecycle.controller = null;
+    lifecycle.updatedAt = Date.now();
+  }
+
+  return true;
+}
+
+function abortFeatureRequestIfRunning(lifecycle) {
+  if (!lifecycle || !lifecycle.controller || !lifecycle.requestId) {
+    return;
+  }
+
+  const previousRequestId = lifecycle.requestId;
+  try {
+    lifecycle.controller.abort();
+  } catch (abortError) {
+  }
+  updateFeatureRequestLifecycle(lifecycle, previousRequestId, 'aborted');
+}
 
 let isPinActivated = localStorage.getItem('ephonePinActivated') === 'true';
 
@@ -1030,6 +1141,739 @@ function getGeminiResponseText(data) {
   throw new Error(errorReason);
 }
 
+function createStreamRequestId(prefix = 'stream') {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getStreamRolloutFlags(customFlags = {}) {
+  const globalSettings = (window.state && window.state.globalSettings) ? window.state.globalSettings : {};
+  const streamEnabled = typeof customFlags.streamEnabled === 'boolean'
+    ? customFlags.streamEnabled
+    : (typeof globalSettings.streamEnabled === 'boolean' ? globalSettings.streamEnabled : false);
+  const fallbackEnabled = typeof customFlags.fallbackEnabled === 'boolean'
+    ? customFlags.fallbackEnabled
+    : (typeof globalSettings.fallbackEnabled === 'boolean' ? globalSettings.fallbackEnabled : true);
+
+  return {
+    streamEnabled,
+    fallbackEnabled
+  };
+}
+
+function createStreamEventGuard(expectedRequestId) {
+  return function validateStreamEvent(event) {
+    if (!event || typeof event !== 'object') {
+      throw new Error('[streamChat] 协议错误: 事件对象无效');
+    }
+    if (!event.requestId) {
+      throw new Error('[streamChat] 协议错误: 事件缺少 requestId，已拒绝写入');
+    }
+    if (event.requestId !== expectedRequestId) {
+      throw new Error(`[streamChat] 协议错误: requestId 不匹配，期望 ${expectedRequestId}，收到 ${event.requestId}，已拒绝写入`);
+    }
+    return event;
+  };
+}
+
+async function streamChat(options = {}) {
+  const {
+    proxyUrl,
+    apiKey,
+    model,
+    systemPrompt,
+    messagesPayload,
+    isGemini,
+    geminiConfig,
+    signal,
+    requestId,
+    streamEnabled,
+    fallbackEnabled,
+    onStart,
+    onDelta,
+    onDone,
+    onError,
+    onAbort
+  } = options;
+
+  const finalRequestId = requestId || createStreamRequestId('chat');
+  const provider = isGemini ? 'gemini' : 'openai-compatible';
+  const startTimestamp = Date.now();
+  let firstTokenTimestamp = null;
+  const markFirstTokenTimestamp = () => {
+    if (firstTokenTimestamp === null) {
+      firstTokenTimestamp = Date.now();
+    }
+  };
+  const getTtft = () => {
+    if (firstTokenTimestamp === null) return null;
+    return Math.max(firstTokenTimestamp - startTimestamp, 0);
+  };
+  const flags = getStreamRolloutFlags({ streamEnabled, fallbackEnabled });
+  const guardEvent = createStreamEventGuard(finalRequestId);
+  let currentFallbackUsed = false;
+  let streamDeltaEmitted = false;
+
+  const emit = (type, payload = {}) => {
+    const event = {
+      type,
+      requestId: payload.requestId || finalRequestId,
+      provider,
+      fallbackUsed: currentFallbackUsed,
+      endState: payload.endState || 'pending',
+      ...payload
+    };
+    event.ttft = getTtft();
+
+    const validEvent = guardEvent(event);
+    const handlerMap = {
+      start: onStart,
+      delta: onDelta,
+      done: onDone,
+      error: onError,
+      abort: onAbort
+    };
+    const handler = handlerMap[type];
+    if (type === 'delta') {
+      markFirstTokenTimestamp();
+      streamDeltaEmitted = true;
+    }
+    if (type === 'done' && !streamDeltaEmitted) {
+      markFirstTokenTimestamp();
+    }
+    if (typeof handler === 'function') {
+      handler(validEvent);
+    }
+    return validEvent;
+  };
+
+  const toErrorMessage = async (response) => {
+    let errorMsg = `API 返回错误: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error && errorData.error.message) {
+        errorMsg += ` - ${errorData.error.message}`;
+      } else {
+        errorMsg += ` - ${JSON.stringify(errorData)}`;
+      }
+    } catch (jsonError) {
+      errorMsg += ` - 响应内容: ${await response.text()}`;
+    }
+    return errorMsg;
+  };
+
+  const fetchNonStream = async () => {
+    const response = isGemini
+      ? await fetch(geminiConfig.url, {
+        ...geminiConfig.data,
+        signal
+      })
+      : await fetch(`${proxyUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{
+            role: 'system',
+            content: systemPrompt
+          }, ...messagesPayload],
+          temperature: (window.state && window.state.globalSettings && window.state.globalSettings.apiTemperature) || 0.8,
+          stream: false
+        }),
+        signal
+      });
+
+    if (!response.ok) {
+      throw new Error(await toErrorMessage(response));
+    }
+
+    const data = await response.json();
+    const finalText = getGeminiResponseText(data);
+    return {
+      data,
+      finalText,
+      responseStatus: response.status,
+      responseStatusText: response.statusText
+    };
+  };
+
+  const toGeminiStreamUrl = (baseUrl) => {
+    if (!baseUrl || typeof baseUrl !== 'string') {
+      throw new Error('[streamChat] Gemini stream URL 无效');
+    }
+
+    if (baseUrl.includes(':streamGenerateContent')) {
+      return baseUrl.includes('alt=sse') ? baseUrl : `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}alt=sse`;
+    }
+
+    if (baseUrl.includes(':generateContent?')) {
+      return baseUrl.replace(':generateContent?', ':streamGenerateContent?alt=sse&');
+    }
+
+    if (baseUrl.endsWith(':generateContent')) {
+      return `${baseUrl.replace(':generateContent', ':streamGenerateContent')}?alt=sse`;
+    }
+
+    return `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}alt=sse`;
+  };
+
+  const fetchOpenAiStream = async () => {
+    const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{
+          role: 'system',
+          content: systemPrompt
+        }, ...messagesPayload],
+        temperature: (window.state && window.state.globalSettings && window.state.globalSettings.apiTemperature) || 0.8,
+        stream: true
+      }),
+      signal
+    });
+
+    if (!response.ok) {
+      throw new Error(await toErrorMessage(response));
+    }
+
+    if (!response.body) {
+      throw new Error('[streamChat] 服务器未返回可读流 response.body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let finalText = '';
+    let doneReceived = false;
+
+    const processBufferedLines = () => {
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() || '';
+
+      for (const rawLine of lines) {
+        if (doneReceived) {
+          break;
+        }
+
+        const line = rawLine.trim();
+        if (!line || !line.startsWith('data:')) {
+          continue;
+        }
+
+        const payload = line.slice(5).trim();
+        if (!payload) {
+          continue;
+        }
+
+        if (payload === '[DONE]') {
+          doneReceived = true;
+          break;
+        }
+
+        try {
+          const parsed = JSON.parse(payload);
+          const delta = parsed && parsed.choices && parsed.choices[0] && parsed.choices[0].delta
+            ? parsed.choices[0].delta.content
+            : '';
+          if (delta && !doneReceived) {
+            finalText += delta;
+            emit('delta', {
+              endState: 'streaming',
+              delta
+            });
+          }
+        } catch (e) {
+        }
+      }
+    };
+
+    try {
+      while (!doneReceived) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        processBufferedLines();
+      }
+
+      if (!doneReceived) {
+        buffer += decoder.decode();
+        processBufferedLines();
+      }
+    } finally {
+      try {
+        reader.releaseLock();
+      } catch (releaseError) {
+      }
+    }
+
+    if (!finalText) {
+      throw new Error('[streamChat] 流式返回为空');
+    }
+
+    return {
+      data: null,
+      finalText,
+      responseStatus: response.status,
+      responseStatusText: response.statusText
+    };
+  };
+
+  const fetchGeminiStream = async () => {
+    const streamUrl = toGeminiStreamUrl(geminiConfig && geminiConfig.url);
+    const response = await fetch(streamUrl, {
+      ...(geminiConfig ? geminiConfig.data : {}),
+      signal
+    });
+
+    if (!response.ok) {
+      throw new Error(await toErrorMessage(response));
+    }
+
+    if (!response.body) {
+      throw new Error('[streamChat] Gemini 流式返回缺少 response.body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let finalText = '';
+    let doneReceived = false;
+
+    const processBufferedLines = () => {
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() || '';
+
+      for (const rawLine of lines) {
+        if (doneReceived) {
+          break;
+        }
+
+        const line = rawLine.trim();
+        if (!line || !line.startsWith('data:')) {
+          continue;
+        }
+
+        const payload = line.slice(5).trim();
+        if (!payload) {
+          continue;
+        }
+
+        if (payload === '[DONE]') {
+          doneReceived = true;
+          break;
+        }
+
+        try {
+          const parsed = JSON.parse(payload);
+          const chunkText = getGeminiResponseText(parsed);
+          let delta = '';
+
+          if (chunkText) {
+            if (chunkText.startsWith(finalText)) {
+              delta = chunkText.slice(finalText.length);
+              finalText = chunkText;
+            } else {
+              delta = chunkText;
+              finalText += chunkText;
+            }
+          }
+
+          if (delta) {
+            emit('delta', {
+              endState: 'streaming',
+              delta
+            });
+          }
+
+          const finishReason = parsed
+            && parsed.candidates
+            && parsed.candidates[0]
+            && parsed.candidates[0].finishReason;
+          if (finishReason) {
+            doneReceived = true;
+            break;
+          }
+        } catch (e) {
+        }
+      }
+    };
+
+    try {
+      while (!doneReceived) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        processBufferedLines();
+      }
+
+      if (!doneReceived) {
+        buffer += decoder.decode();
+        processBufferedLines();
+      }
+    } finally {
+      try {
+        reader.releaseLock();
+      } catch (releaseError) {
+      }
+    }
+
+    if (!finalText) {
+      throw new Error('[streamChat] Gemini 流式返回为空');
+    }
+
+    return {
+      data: null,
+      finalText,
+      responseStatus: response.status,
+      responseStatusText: response.statusText
+    };
+  };
+
+  emit('start', {
+    endState: 'pending'
+  });
+
+  try {
+    const flags = getStreamRolloutFlags({ streamEnabled, fallbackEnabled });
+    let result = null;
+
+    if (flags.streamEnabled) {
+      if (isGemini) {
+        try {
+          result = await fetchGeminiStream();
+        } catch (streamError) {
+          if (streamError && streamError.name === 'AbortError') {
+            throw streamError;
+          }
+          if (!flags.fallbackEnabled || streamDeltaEmitted) {
+            throw streamError;
+          }
+          currentFallbackUsed = true;
+          result = await fetchNonStream();
+        }
+      } else {
+        try {
+          result = await fetchOpenAiStream();
+        } catch (streamError) {
+          if (streamError && streamError.name === 'AbortError') {
+            throw streamError;
+          }
+          if (!flags.fallbackEnabled || streamDeltaEmitted) {
+            throw streamError;
+          }
+          currentFallbackUsed = true;
+          result = await fetchNonStream();
+        }
+      }
+    } else {
+      result = await fetchNonStream();
+    }
+
+    emit('done', {
+      endState: 'completed',
+      finalText: result.finalText
+    });
+
+    const finalTtft = getTtft();
+    return {
+      requestId: finalRequestId,
+      provider,
+      fallbackUsed: currentFallbackUsed,
+      endState: 'completed',
+      finalText: result.finalText,
+      data: result.data,
+      responseStatus: result.responseStatus,
+      responseStatusText: result.responseStatusText
+      ,
+      streamEnabled: flags.streamEnabled,
+      fallbackEnabled: flags.fallbackEnabled,
+      ttft: finalTtft
+    };
+  } catch (error) {
+    if (error && error.name === 'AbortError') {
+      emit('abort', {
+        endState: 'aborted'
+      });
+      throw error;
+    }
+
+    emit('error', {
+      endState: 'errored',
+      errorType: (error && error.name) ? error.name : 'StreamChatError',
+      errorMessage: (error && error.message) ? error.message : '未知错误'
+    });
+    throw error;
+  }
+}
+
+window.streamChat = streamChat;
+window.createStreamRequestId = createStreamRequestId;
+window.createStreamEventGuard = createStreamEventGuard;
+window.getStreamRolloutFlags = getStreamRolloutFlags;
+
+function ensureTask10EvidenceStore() {
+  if (!window.__task10Evidence || typeof window.__task10Evidence !== 'object') {
+    window.__task10Evidence = {
+      drawGuess: [],
+      werewolf: []
+    };
+  }
+  if (!Array.isArray(window.__task10Evidence.drawGuess)) {
+    window.__task10Evidence.drawGuess = [];
+  }
+  if (!Array.isArray(window.__task10Evidence.werewolf)) {
+    window.__task10Evidence.werewolf = [];
+  }
+  return window.__task10Evidence;
+}
+
+function pushTask10Evidence(channel, payload = {}) {
+  const store = ensureTask10EvidenceStore();
+  if (!store[channel] || !Array.isArray(store[channel])) {
+    store[channel] = [];
+  }
+  store[channel].push({
+    timestamp: Date.now(),
+    ...payload
+  });
+}
+
+function ensureTask11EvidenceStore() {
+  if (!window.__task11Evidence || typeof window.__task11Evidence !== 'object') {
+    window.__task11Evidence = {
+      mainChat: [],
+      onlineChat: []
+    };
+  }
+  if (!Array.isArray(window.__task11Evidence.mainChat)) {
+    window.__task11Evidence.mainChat = [];
+  }
+  if (!Array.isArray(window.__task11Evidence.onlineChat)) {
+    window.__task11Evidence.onlineChat = [];
+  }
+  return window.__task11Evidence;
+}
+
+function pushTask11Evidence(channel, payload = {}) {
+  const store = ensureTask11EvidenceStore();
+  if (!store[channel] || !Array.isArray(store[channel])) {
+    store[channel] = [];
+  }
+  store[channel].push({
+    timestamp: Date.now(),
+    ...payload
+  });
+}
+  window.pushTask11Evidence = pushTask11Evidence;
+
+async function runFeatureTextStreamRequest(options = {}) {
+  const {
+    lifecycle,
+    entry = 'feature-text',
+    proxyUrl,
+    apiKey,
+    model,
+    systemPrompt,
+    messagesPayload,
+    isGemini,
+    geminiConfig,
+    streamEnabled,
+    fallbackEnabled,
+    onDeltaText
+  } = options;
+
+  if (!lifecycle) {
+    throw new Error('请求生命周期对象缺失');
+  }
+
+  abortFeatureRequestIfRunning(lifecycle);
+
+  const streamRequestId = createStreamRequestId(entry);
+  const requestController = new AbortController();
+  const provider = isGemini ? 'gemini' : 'openai-compatible';
+  beginFeatureRequestLifecycle(lifecycle, streamRequestId, requestController, {
+    provider,
+    entry
+  });
+
+  const isCurrentRequest = () => isFeatureRequestCurrent(lifecycle, streamRequestId);
+  const streamEventGuard = createStreamEventGuard(streamRequestId);
+  const streamFlags = getStreamRolloutFlags({ streamEnabled, fallbackEnabled });
+  let streamProtocolMeta = {
+    requestId: streamRequestId,
+    provider,
+    fallbackUsed: false,
+    endState: 'pending'
+  };
+  let aiResponseContent = '';
+
+  try {
+    const streamResult = await streamChat({
+      proxyUrl,
+      apiKey,
+      model,
+      systemPrompt,
+      messagesPayload,
+      isGemini,
+      geminiConfig,
+      signal: requestController.signal,
+      requestId: streamRequestId,
+      streamEnabled: streamFlags.streamEnabled,
+      fallbackEnabled: streamFlags.fallbackEnabled,
+      onStart: (event) => {
+        if (!isCurrentRequest()) return;
+        const safeEvent = streamEventGuard(event);
+        streamProtocolMeta = {
+          requestId: safeEvent.requestId,
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          endState: safeEvent.endState
+        };
+        updateFeatureRequestLifecycle(lifecycle, streamRequestId, safeEvent.endState, {
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          entry
+        });
+      },
+      onDelta: (event) => {
+        if (!isCurrentRequest()) return;
+        const safeEvent = streamEventGuard(event);
+        if (safeEvent.delta) {
+          aiResponseContent += safeEvent.delta;
+          if (typeof onDeltaText === 'function') {
+            onDeltaText(safeEvent.delta, aiResponseContent, safeEvent);
+          }
+        }
+        streamProtocolMeta = {
+          requestId: safeEvent.requestId,
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          endState: safeEvent.endState
+        };
+        updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'streaming', {
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          entry
+        });
+      },
+      onDone: (event) => {
+        if (!isCurrentRequest()) return;
+        const safeEvent = streamEventGuard(event);
+        streamProtocolMeta = {
+          requestId: safeEvent.requestId,
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          endState: safeEvent.endState
+        };
+        aiResponseContent = safeEvent.finalText || aiResponseContent;
+        updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'completed', {
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          entry
+        });
+      },
+      onError: (event) => {
+        if (!isCurrentRequest()) return;
+        const safeEvent = streamEventGuard(event);
+        streamProtocolMeta = {
+          requestId: safeEvent.requestId,
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          endState: safeEvent.endState
+        };
+        updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'errored', {
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          entry
+        });
+      },
+      onAbort: (event) => {
+        if (!isCurrentRequest()) return;
+        const safeEvent = streamEventGuard(event);
+        streamProtocolMeta = {
+          requestId: safeEvent.requestId,
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          endState: safeEvent.endState
+        };
+        updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'aborted', {
+          provider: safeEvent.provider,
+          fallbackUsed: safeEvent.fallbackUsed,
+          entry
+        });
+      }
+    });
+
+    if (!isCurrentRequest()) {
+      return {
+        ignored: true,
+        requestId: streamRequestId,
+        endState: streamProtocolMeta.endState,
+        fallbackUsed: streamProtocolMeta.fallbackUsed,
+        provider: streamProtocolMeta.provider,
+        streamEnabled: streamFlags.streamEnabled,
+        fallbackEnabled: streamFlags.fallbackEnabled,
+        finalText: ''
+      };
+    }
+
+    if (!aiResponseContent && streamResult && typeof streamResult.finalText === 'string') {
+      aiResponseContent = streamResult.finalText;
+    }
+
+    if (!streamResult) {
+      throw new Error('[streamChat] 未返回有效结果');
+    }
+
+    updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'completed', {
+      provider: streamProtocolMeta.provider,
+      fallbackUsed: streamProtocolMeta.fallbackUsed,
+      entry
+    });
+
+    return {
+      ignored: false,
+      requestId: streamResult.requestId,
+      endState: streamProtocolMeta.endState,
+      fallbackUsed: streamProtocolMeta.fallbackUsed,
+      provider: streamProtocolMeta.provider,
+      streamEnabled: streamFlags.streamEnabled,
+      fallbackEnabled: streamFlags.fallbackEnabled,
+      finalText: aiResponseContent,
+      data: streamResult.data,
+      ttft: streamResult.ttft
+    };
+  } catch (error) {
+    if (error && error.name === 'AbortError') {
+      updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'aborted', {
+        provider: streamProtocolMeta.provider,
+        fallbackUsed: streamProtocolMeta.fallbackUsed,
+        entry
+      });
+      throw error;
+    }
+
+    if (isCurrentRequest()) {
+      updateFeatureRequestLifecycle(lifecycle, streamRequestId, 'errored', {
+        provider: streamProtocolMeta.provider,
+        fallbackUsed: streamProtocolMeta.fallbackUsed,
+        entry
+      });
+    }
+    throw error;
+  }
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1159,9 +2003,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const stopApiCallBtn = document.getElementById('stop-api-call-btn');
   if (stopApiCallBtn) {
     stopApiCallBtn.addEventListener('click', () => {
-      if (currentApiController) {
+      const activeRequestId = mainChatRequestLifecycle.requestId;
+      const activeController = mainChatRequestLifecycle.controller || currentApiController;
+      if (activeController) {
         console.log('用户点击暂停调用按钮，正在取消API请求...');
-        currentApiController.abort();
+        activeController.abort();
+        if (activeRequestId) {
+          updateMainChatRequestLifecycle(activeRequestId, 'aborted');
+        }
 
         // 立即隐藏按钮并移除动画
         stopApiCallBtn.style.display = 'none';
@@ -2885,6 +3734,8 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedTimestamps: new Set()
     }
   };
+  const drawGuessRequestLifecycle = createFeatureRequestLifecycle();
+  const werewolfRequestLifecycle = createFeatureRequestLifecycle();
   let originalChatMessagesPaddingTop = null;
 
 
@@ -13346,6 +14197,109 @@ ${stickerContext}
       }
     }
     let needsImmediateReaction = false;
+    let streamingPlaceholderTimestamp = null;
+    const STREAMING_RENDER_THROTTLE_MS = 80;
+    let pendingStreamingRenderContent = null;
+    let streamingRenderTimer = null;
+    let streamDeltaCount = 0;
+    let streamRenderFlushCount = 0;
+    let streamStorageWriteCount = 0;
+    let hasPersistedMainChatState = false;
+
+    async function persistMainChatStateOnce(reason) {
+      if (hasPersistedMainChatState) {
+        return;
+      }
+      await db.chats.put(chat);
+      hasPersistedMainChatState = true;
+      streamStorageWriteCount += 1;
+    }
+
+    function flushStreamingPlaceholderRender(force = false) {
+      if (!streamingPlaceholderTimestamp || !isViewingThisChat) {
+        return;
+      }
+      if (!force && pendingStreamingRenderContent === null) {
+        return;
+      }
+
+      const bubble = document.querySelector(`.message-bubble[data-timestamp="${streamingPlaceholderTimestamp}"]`);
+      if (!bubble) {
+        pendingStreamingRenderContent = null;
+        return;
+      }
+      const contentEl = bubble.querySelector('.content');
+      if (!contentEl) {
+        pendingStreamingRenderContent = null;
+        return;
+      }
+
+      const plainText = qqUndefinedFilter(String(pendingStreamingRenderContent || ''));
+      const html = parseMarkdown(plainText).replace(/\n/g, '<br>');
+      contentEl.innerHTML = html || '&nbsp;';
+      pendingStreamingRenderContent = null;
+      streamRenderFlushCount += 1;
+    }
+
+    function renderStreamingPlaceholderContent(content) {
+      pendingStreamingRenderContent = String(content || '');
+      if (streamingRenderTimer) {
+        return;
+      }
+      streamingRenderTimer = setTimeout(() => {
+        streamingRenderTimer = null;
+        flushStreamingPlaceholderRender(false);
+      }, STREAMING_RENDER_THROTTLE_MS);
+    }
+
+    function forceRenderStreamingPlaceholderContent(content) {
+      pendingStreamingRenderContent = String(content || '');
+      if (streamingRenderTimer) {
+        clearTimeout(streamingRenderTimer);
+        streamingRenderTimer = null;
+      }
+      flushStreamingPlaceholderRender(true);
+    }
+
+    function removeStreamingPlaceholder() {
+      if (!streamingPlaceholderTimestamp) {
+        return;
+      }
+
+      if (streamingRenderTimer) {
+        clearTimeout(streamingRenderTimer);
+        streamingRenderTimer = null;
+      }
+      pendingStreamingRenderContent = null;
+
+      chat.history = chat.history.filter(msg => msg.timestamp !== streamingPlaceholderTimestamp);
+
+      const bubble = document.querySelector(`.message-bubble[data-timestamp="${streamingPlaceholderTimestamp}"]`);
+      const wrapper = bubble ? bubble.closest('.message-wrapper') : null;
+      if (wrapper && wrapper.parentNode) {
+        wrapper.parentNode.removeChild(wrapper);
+      }
+
+      streamingPlaceholderTimestamp = null;
+    }
+
+    async function ensureStreamingPlaceholder(isCurrentMainChatRequest) {
+      if (!isViewingThisChat || !isCurrentMainChatRequest() || streamingPlaceholderTimestamp) {
+        return;
+      }
+
+      const temporaryMessage = {
+        role: 'assistant',
+        senderName: chat.name,
+        content: '▍',
+        timestamp: Date.now() + 1,
+        isTemporary: true
+      };
+
+      streamingPlaceholderTimestamp = temporaryMessage.timestamp;
+      chat.history.push(temporaryMessage);
+      await appendMessage(temporaryMessage, chat, true);
+    }
     try {
       const {
         proxyUrl,
@@ -15596,8 +16550,23 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
       let isGemini = proxyUrl === GEMINI_API_URL;
       let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesPayload)
 
-      // 创建新的 AbortController
-      currentApiController = new AbortController();
+      const previousController = mainChatRequestLifecycle.controller;
+      const previousRequestId = mainChatRequestLifecycle.requestId;
+      if (previousController && previousRequestId) {
+        try {
+          previousController.abort();
+        } catch (abortError) {
+        }
+        updateMainChatRequestLifecycle(previousRequestId, 'aborted');
+      }
+
+      const streamRequestId = createStreamRequestId('main-chat');
+      const requestController = new AbortController();
+      beginMainChatRequestLifecycle(streamRequestId, requestController, {
+        provider: isGemini ? 'gemini' : 'openai-compatible'
+      });
+
+      const isCurrentMainChatRequest = () => isMainChatRequestCurrent(streamRequestId);
 
       // 显示暂停调用按钮
       const stopBtn = document.getElementById('stop-api-call-btn');
@@ -15607,10 +16576,20 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
       }
 
       // 记录API请求数据
+      const streamEventGuard = createStreamEventGuard(streamRequestId);
+      const streamFlags = getStreamRolloutFlags();
+      let streamProtocolMeta = {
+        requestId: streamRequestId,
+        provider: isGemini ? 'gemini' : 'openai-compatible',
+        fallbackUsed: false,
+        endState: 'pending'
+      };
+
       const requestData = {
         timestamp: Date.now(),
         chatId: chatId,
         chatName: chat.name,
+        requestId: streamRequestId,
         model: model,
         systemPrompt: systemPrompt,
         messages: isGemini ? messagesPayload : [{
@@ -15619,83 +16598,205 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
         }, ...messagesPayload],
         temperature: state.globalSettings.apiTemperature || 0.8,
         isGemini: isGemini,
-        apiUrl: isGemini ? geminiConfig.url : `${proxyUrl}/v1/chat/completions`
+        apiUrl: isGemini ? geminiConfig.url : `${proxyUrl}/v1/chat/completions`,
+        streamEnabled: streamFlags.streamEnabled,
+        fallbackEnabled: streamFlags.fallbackEnabled
       };
 
-      let response;
+      let aiResponseContent = '';
+      let streamResult = null;
+
       try {
-        response = isGemini ?
-          await fetch(geminiConfig.url, {
-            ...geminiConfig.data,
-            signal: currentApiController.signal
-          }) :
-          await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [{
-                role: 'system',
-                content: systemPrompt
-              }, ...messagesPayload],
-              temperature: state.globalSettings.apiTemperature || 0.8,
-              stream: false
-            }),
-            signal: currentApiController.signal
-          });
+        await ensureStreamingPlaceholder(isCurrentMainChatRequest);
+
+        streamResult = await streamChat({
+          proxyUrl,
+          apiKey,
+          model,
+          systemPrompt,
+          messagesPayload,
+          isGemini,
+          geminiConfig,
+          signal: requestController.signal,
+          requestId: streamRequestId,
+          streamEnabled: streamFlags.streamEnabled,
+          fallbackEnabled: streamFlags.fallbackEnabled,
+          onStart: (event) => {
+            if (!isCurrentMainChatRequest()) {
+              return;
+            }
+            const safeEvent = streamEventGuard(event);
+            streamProtocolMeta = {
+              requestId: safeEvent.requestId,
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed,
+              endState: safeEvent.endState
+            };
+            updateMainChatRequestLifecycle(streamRequestId, safeEvent.endState, {
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed
+            });
+          },
+          onDelta: (event) => {
+            if (!isCurrentMainChatRequest()) {
+              return;
+            }
+            const safeEvent = streamEventGuard(event);
+            if (safeEvent.delta) {
+              aiResponseContent += safeEvent.delta;
+              streamDeltaCount += 1;
+              renderStreamingPlaceholderContent(aiResponseContent);
+            }
+            streamProtocolMeta = {
+              requestId: safeEvent.requestId,
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed,
+              endState: safeEvent.endState
+            };
+            updateMainChatRequestLifecycle(streamRequestId, 'streaming', {
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed
+            });
+          },
+          onDone: (event) => {
+            if (!isCurrentMainChatRequest()) {
+              return;
+            }
+            const safeEvent = streamEventGuard(event);
+            streamProtocolMeta = {
+              requestId: safeEvent.requestId,
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed,
+              endState: safeEvent.endState
+            };
+            aiResponseContent = safeEvent.finalText || aiResponseContent;
+            forceRenderStreamingPlaceholderContent(aiResponseContent);
+            updateMainChatRequestLifecycle(streamRequestId, 'completed', {
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed
+            });
+          },
+          onError: (event) => {
+            if (!isCurrentMainChatRequest()) {
+              return;
+            }
+            const safeEvent = streamEventGuard(event);
+            streamProtocolMeta = {
+              requestId: safeEvent.requestId,
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed,
+              endState: safeEvent.endState
+            };
+            updateMainChatRequestLifecycle(streamRequestId, 'errored', {
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed
+            });
+          },
+          onAbort: (event) => {
+            if (!isCurrentMainChatRequest()) {
+              return;
+            }
+            const safeEvent = streamEventGuard(event);
+            streamProtocolMeta = {
+              requestId: safeEvent.requestId,
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed,
+              endState: safeEvent.endState
+            };
+            updateMainChatRequestLifecycle(streamRequestId, 'aborted', {
+              provider: safeEvent.provider,
+              fallbackUsed: safeEvent.fallbackUsed
+            });
+          }
+        });
+
+        if (!isCurrentMainChatRequest()) {
+          return;
+        }
+
+        if (!aiResponseContent && streamResult && typeof streamResult.finalText === 'string') {
+          aiResponseContent = streamResult.finalText;
+        }
       } catch (networkError) {
-        // 隐藏暂停调用按钮
-        if (stopBtn) {
+        if (stopBtn && isCurrentMainChatRequest()) {
           stopBtn.style.display = 'none';
           stopBtn.classList.remove('active');
         }
 
         // 检查是否是用户主动取消
         if (networkError.name === 'AbortError') {
+          streamProtocolMeta.endState = 'aborted';
+          removeStreamingPlaceholder();
+          if (typeof pushTask11Evidence === 'function') {
+            pushTask11Evidence('mainChat', {
+              source: 'runtime',
+              requestId: streamRequestId,
+              endState: 'aborted',
+              deltaCount: streamDeltaCount,
+              renderFlushCount: streamRenderFlushCount,
+              storageWrites: streamStorageWriteCount
+            });
+          }
+          updateMainChatRequestLifecycle(streamRequestId, 'aborted', {
+            provider: streamProtocolMeta.provider,
+            fallbackUsed: streamProtocolMeta.fallbackUsed
+          });
           console.log('API调用已被用户取消');
           // 不添加任何消息到聊天历史，避免AI看到系统消息而困惑
           return;
         }
+        if (isCurrentMainChatRequest()) {
+          updateMainChatRequestLifecycle(streamRequestId, 'errored', {
+            provider: streamProtocolMeta.provider,
+            fallbackUsed: streamProtocolMeta.fallbackUsed
+          });
+        }
         throw new Error(`网络请求失败: ${networkError.message}`);
       } finally {
-        // 清理 controller 和隐藏按钮
-        currentApiController = null;
-        if (stopBtn) {
+        if (stopBtn && isCurrentMainChatRequest()) {
           stopBtn.style.display = 'none';
           stopBtn.classList.remove('active');
         }
       }
 
-      if (!response.ok) {
-        let errorMsg = `API 返回错误: ${response.status} ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          if (errorData.error && errorData.error.message) {
-            errorMsg += ` - ${errorData.error.message}`;
-          } else {
-            errorMsg += ` - ${JSON.stringify(errorData)}`;
-          }
-        } catch (jsonError) {
-          errorMsg += ` - 响应内容: ${await response.text()}`;
-        }
-        throw new Error(errorMsg);
+      if (!isCurrentMainChatRequest()) {
+        return;
       }
 
-      const data = await response.json();
-      const aiResponseContent = getGeminiResponseText(data);
+      if (!streamResult) {
+        throw new Error('[streamChat] 未返回有效结果');
+      }
+
+      updateMainChatRequestLifecycle(streamRequestId, 'completed', {
+        provider: streamProtocolMeta.provider,
+        fallbackUsed: streamProtocolMeta.fallbackUsed
+      });
 
       // 记录API响应数据
       const responseData = {
         ...requestData,
         responseTimestamp: Date.now(),
-        responseData: data,
+        responseData: streamResult.data,
         aiResponseContent: aiResponseContent,
-        responseStatus: response.status,
-        responseStatusText: response.statusText
+        responseStatus: streamResult.responseStatus,
+        responseStatusText: streamResult.responseStatusText,
+        provider: streamProtocolMeta.provider,
+        fallbackUsed: streamProtocolMeta.fallbackUsed,
+        endState: streamProtocolMeta.endState,
+        streamEnabled: streamFlags.streamEnabled,
+        fallbackEnabled: streamFlags.fallbackEnabled,
+        ttft: streamResult.ttft ?? null
       };
+
+      console.info('[main AI request end]', {
+        requestId: streamResult.requestId,
+        provider: streamProtocolMeta.provider,
+        streamEnabled: streamFlags.streamEnabled,
+        fallbackEnabled: streamFlags.fallbackEnabled,
+        fallbackUsed: streamProtocolMeta.fallbackUsed,
+        endState: streamProtocolMeta.endState,
+        ttft: streamResult.ttft ?? null
+      });
 
       // 方案4：只有在全局设置中启用API历史记录时才保存
       if (state.globalSettings.enableApiHistory) {
@@ -15711,11 +16812,9 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
         }
       }
 
-      // 保存到数据库
-      await db.chats.put(chat);
-
       lastRawAiResponse = aiResponseContent;
       lastResponseTimestamps = [];
+      removeStreamingPlaceholder();
       chat.history = chat.history.filter(msg => !msg.isTemporary);
       const messagesArray = parseAiResponse(aiResponseContent);
 
@@ -15864,7 +16963,7 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
               timestamp: Date.now()
             };
             chat.history.push(aiMessage);
-            await db.chats.put(chat);
+            await persistMainChatStateOnce('video_call_response_reject');
             showScreen('chat-interface-screen');
             renderChatInterface(chatId);
           }
@@ -15883,7 +16982,7 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
               timestamp: Date.now()
             };
             chat.history.push(aiMessage);
-            await db.chats.put(chat);
+            await persistMainChatStateOnce('voice_call_response_reject');
             showScreen('chat-interface-screen');
             renderChatInterface(chatId);
           }
@@ -16140,7 +17239,7 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
                 };
               }
 
-              await db.chats.put(chat);
+              await persistMainChatStateOnce('kinship_response_update');
               renderChatInterface(chatId);
             }
             break;
@@ -18254,7 +19353,20 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
         await triggerAiResponse();
         return;
       }
-      await db.chats.put(chat);
+      await persistMainChatStateOnce('main_chat_final');
+
+      if (typeof pushTask11Evidence === 'function') {
+        pushTask11Evidence('mainChat', {
+          source: 'runtime',
+          requestId: streamRequestId,
+          endState: streamProtocolMeta.endState,
+          deltaCount: streamDeltaCount,
+          renderFlushCount: streamRenderFlushCount,
+          storageWrites: streamStorageWriteCount,
+          tokenToWriteRatio: streamStorageWriteCount > 0 ? (streamDeltaCount / streamStorageWriteCount) : null,
+          parseCompatible: true
+        });
+      }
 
       const qzoneActionTaken = messagesArray.some(action =>
         action.type === 'qzone_post' ||
@@ -18272,6 +19384,7 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
 
 
     } catch (error) {
+      removeStreamingPlaceholder();
 
       chat.history = chat.history.filter(msg => !msg.isTemporary);
 
@@ -18286,7 +19399,7 @@ ${chat.settings.myAvatarLibrary && chat.settings.myAvatarLibrary.length > 0 ? ch
       }
 
       if (!chat.isGroup && chat.relationship?.status === 'blocked_by_ai') {
-        await db.chats.put(chat);
+        await persistMainChatStateOnce('main_chat_error_blocked_by_ai');
       }
 
       videoCallState.isAwaitingResponse = false;
@@ -24242,6 +25355,96 @@ ${longTermMemoryContext}
     preCallContext: ""
   };
 
+  let inCallRequestLifecycle = {
+    requestId: null,
+    controller: null,
+    endState: 'idle',
+    updatedAt: 0
+  };
+
+  let inCallStreamingPlaceholder = {
+    requestId: null,
+    element: null
+  };
+
+  function pushInCallStreamDebug(event = {}) {
+    try {
+      if (!window.__inCallStreamDebug || !Array.isArray(window.__inCallStreamDebug.events)) {
+        window.__inCallStreamDebug = {
+          events: []
+        };
+      }
+      window.__inCallStreamDebug.events.push({
+        ...event,
+        timestamp: Date.now()
+      });
+      if (window.__inCallStreamDebug.events.length > 500) {
+        window.__inCallStreamDebug.events = window.__inCallStreamDebug.events.slice(-500);
+      }
+    } catch (debugError) {
+      console.warn('[in-call debug]', debugError);
+    }
+  }
+
+  function beginInCallRequestLifecycle(requestId, controller) {
+    inCallRequestLifecycle = {
+      requestId,
+      controller,
+      endState: 'pending',
+      updatedAt: Date.now()
+    };
+    pushInCallStreamDebug({
+      type: 'begin',
+      requestId
+    });
+  }
+
+  function isInCallRequestCurrent(requestId) {
+    return Boolean(requestId) && inCallRequestLifecycle.requestId === requestId;
+  }
+
+  function updateInCallRequestLifecycle(requestId, nextState) {
+    if (!isInCallRequestCurrent(requestId)) {
+      return false;
+    }
+
+    inCallRequestLifecycle = {
+      ...inCallRequestLifecycle,
+      endState: nextState,
+      updatedAt: Date.now()
+    };
+
+    pushInCallStreamDebug({
+      type: 'lifecycle',
+      requestId,
+      endState: nextState
+    });
+
+    if (nextState === 'completed' || nextState === 'errored' || nextState === 'aborted') {
+      inCallRequestLifecycle = {
+        ...inCallRequestLifecycle,
+        controller: null,
+        updatedAt: Date.now()
+      };
+    }
+
+    return true;
+  }
+
+  function clearInCallStreamingPlaceholder(requestId = null) {
+    if (requestId && inCallStreamingPlaceholder.requestId && inCallStreamingPlaceholder.requestId !== requestId) {
+      return;
+    }
+    const el = inCallStreamingPlaceholder.element;
+    if (el && el.parentNode) {
+      el.parentNode.removeChild(el);
+    }
+    inCallStreamingPlaceholder = {
+      requestId: null,
+      element: null
+    };
+  }
+
   let voiceCallState = {
     isActive: false,
     isAwaitingResponse: false,
@@ -24300,6 +25503,14 @@ ${longTermMemoryContext}
   function startVideoCall() {
     const chat = state.chats[videoCallState.activeChatId];
     if (!chat) return;
+
+    clearInCallStreamingPlaceholder();
+    inCallRequestLifecycle = {
+      requestId: null,
+      controller: null,
+      endState: 'idle',
+      updatedAt: Date.now()
+    };
 
     videoCallState.isActive = true;
     videoCallState.isAwaitingResponse = false;
@@ -24360,6 +25571,14 @@ ${longTermMemoryContext}
   }
   async function endVideoCall() {
     if (!videoCallState.isActive) return;
+    if (inCallRequestLifecycle.controller && inCallRequestLifecycle.requestId) {
+      try {
+        inCallRequestLifecycle.controller.abort();
+      } catch (abortError) {
+      }
+      updateInCallRequestLifecycle(inCallRequestLifecycle.requestId, 'aborted');
+    }
+    clearInCallStreamingPlaceholder();
     stopTtsQueue();
     document.getElementById('video-call-restore-btn').style.display = 'none';
     const duration = Math.floor((Date.now() - videoCallState.startTime) / 1000);
@@ -24703,28 +25922,180 @@ ${linkedContents}
       });
     }
 
+    const previousController = inCallRequestLifecycle.controller;
+    const previousRequestId = inCallRequestLifecycle.requestId;
+    if (previousController && previousRequestId) {
+      try {
+        previousController.abort();
+      } catch (abortError) {
+      }
+      updateInCallRequestLifecycle(previousRequestId, 'aborted');
+      clearInCallStreamingPlaceholder(previousRequestId);
+      pushInCallStreamDebug({
+        type: 'abort-previous',
+        requestId: previousRequestId
+      });
+    }
+
+    const streamRequestId = createStreamRequestId('in-call');
+    const requestController = new AbortController();
+    beginInCallRequestLifecycle(streamRequestId, requestController);
+    const isCurrentInCallRequest = () => isInCallRequestCurrent(streamRequestId) && videoCallState.isActive;
+
+    const streamEventGuard = createStreamEventGuard(streamRequestId);
+    const streamFlags = getStreamRolloutFlags();
+    let streamProtocolMeta = {
+      requestId: streamRequestId,
+      provider: proxyUrl === GEMINI_API_URL ? 'gemini' : 'openai-compatible',
+      fallbackUsed: false,
+      endState: 'pending'
+    };
+    let aiResponse = '';
+    let streamResult = null;
+
+    const connectingElement = callFeed.querySelector('em');
+    if (connectingElement) connectingElement.remove();
+    clearInCallStreamingPlaceholder();
+    const streamingBubble = document.createElement('div');
+    streamingBubble.className = 'call-message-bubble ai-speech';
+    streamingBubble.dataset.requestId = streamRequestId;
+    streamingBubble.textContent = '...';
+    callFeed.appendChild(streamingBubble);
+    callFeed.scrollTop = callFeed.scrollHeight;
+    inCallStreamingPlaceholder = {
+      requestId: streamRequestId,
+      element: streamingBubble
+    };
+
     try {
       let isGemini = proxyUrl === GEMINI_API_URL;
       let geminiConfig = toGeminiRequestData(model, apiKey, inCallPrompt, messagesForApi)
-      const response = isGemini ? await fetch(geminiConfig.url, geminiConfig.data) : await fetch(`${proxyUrl}/v1/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+
+      streamResult = await streamChat({
+        proxyUrl,
+        apiKey,
+        model,
+        systemPrompt: inCallPrompt,
+        messagesPayload: messagesForApi.slice(1),
+        isGemini,
+        geminiConfig,
+        signal: requestController.signal,
+        requestId: streamRequestId,
+        streamEnabled: streamFlags.streamEnabled,
+        fallbackEnabled: streamFlags.fallbackEnabled,
+        onStart: (event) => {
+          if (!isCurrentInCallRequest()) {
+            return;
+          }
+          const safeEvent = streamEventGuard(event);
+          streamProtocolMeta = {
+            requestId: safeEvent.requestId,
+            provider: safeEvent.provider,
+            fallbackUsed: safeEvent.fallbackUsed,
+            endState: safeEvent.endState
+          };
+          updateInCallRequestLifecycle(streamRequestId, safeEvent.endState);
         },
-        body: JSON.stringify({
-          model: model,
-          messages: messagesForApi,
-          temperature: state.globalSettings.apiTemperature || 0.8
-        })
+        onDelta: (event) => {
+          if (!isCurrentInCallRequest()) {
+            return;
+          }
+          const safeEvent = streamEventGuard(event);
+          if (safeEvent.delta) {
+            aiResponse += safeEvent.delta;
+            if (inCallStreamingPlaceholder.element && inCallStreamingPlaceholder.requestId === streamRequestId) {
+              inCallStreamingPlaceholder.element.textContent = aiResponse;
+            }
+            pushInCallStreamDebug({
+              type: 'delta',
+              requestId: safeEvent.requestId,
+              length: aiResponse.length
+            });
+          }
+          streamProtocolMeta = {
+            requestId: safeEvent.requestId,
+            provider: safeEvent.provider,
+            fallbackUsed: safeEvent.fallbackUsed,
+            endState: safeEvent.endState
+          };
+          updateInCallRequestLifecycle(streamRequestId, 'streaming');
+        },
+        onDone: (event) => {
+          if (!isCurrentInCallRequest()) {
+            return;
+          }
+          const safeEvent = streamEventGuard(event);
+          streamProtocolMeta = {
+            requestId: safeEvent.requestId,
+            provider: safeEvent.provider,
+            fallbackUsed: safeEvent.fallbackUsed,
+            endState: safeEvent.endState
+          };
+          aiResponse = safeEvent.finalText || aiResponse;
+          if (inCallStreamingPlaceholder.element && inCallStreamingPlaceholder.requestId === streamRequestId) {
+            inCallStreamingPlaceholder.element.textContent = aiResponse;
+          }
+          updateInCallRequestLifecycle(streamRequestId, 'completed');
+          pushInCallStreamDebug({
+            type: 'done',
+            requestId: safeEvent.requestId,
+            length: aiResponse.length,
+            endState: safeEvent.endState
+          });
+        },
+        onError: (event) => {
+          if (!isCurrentInCallRequest()) {
+            return;
+          }
+          const safeEvent = streamEventGuard(event);
+          streamProtocolMeta = {
+            requestId: safeEvent.requestId,
+            provider: safeEvent.provider,
+            fallbackUsed: safeEvent.fallbackUsed,
+            endState: safeEvent.endState
+          };
+          updateInCallRequestLifecycle(streamRequestId, 'errored');
+          pushInCallStreamDebug({
+            type: 'error',
+            requestId: safeEvent.requestId,
+            endState: safeEvent.endState
+          });
+        },
+        onAbort: (event) => {
+          if (!isCurrentInCallRequest()) {
+            return;
+          }
+          const safeEvent = streamEventGuard(event);
+          streamProtocolMeta = {
+            requestId: safeEvent.requestId,
+            provider: safeEvent.provider,
+            fallbackUsed: safeEvent.fallbackUsed,
+            endState: safeEvent.endState
+          };
+          updateInCallRequestLifecycle(streamRequestId, 'aborted');
+          pushInCallStreamDebug({
+            type: 'abort',
+            requestId: safeEvent.requestId,
+            endState: safeEvent.endState
+          });
+        }
       });
-      if (!response.ok) throw new Error((await response.json()).error.message);
 
-      const data = await response.json();
-      const aiResponse = isGemini ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+      if (!isCurrentInCallRequest()) {
+        return;
+      }
 
-      const connectingElement = callFeed.querySelector('em');
-      if (connectingElement) connectingElement.remove();
+      if (!aiResponse && streamResult && typeof streamResult.finalText === 'string') {
+        aiResponse = streamResult.finalText;
+      }
+
+      if (!streamResult) {
+        throw new Error('[streamChat] 未返回有效结果');
+      }
+
+      clearInCallStreamingPlaceholder(streamRequestId);
+      updateInCallRequestLifecycle(streamRequestId, 'completed');
+
       if (videoCallState.isGroupCall) {
         const speechArray = parseAiResponse(aiResponse);
         speechArray.forEach(turn => {
@@ -24770,24 +26141,34 @@ ${linkedContents}
         if (enableTts && voiceId) {
           playVideoCallPureTTS(aiResponse, voiceId);
         }
-        // ===============================================
-
-        // ================= 头像动画修复 =================
-        // 原因：querySelector 默认只选第一个元素（通常是用户自己），导致AI说话时用户头像在动，或者样式错位。
-        // 修复：增加 [data-participant-id="ai"] 精确查找对方的头像。
         const speakingAvatar = document.querySelector(`.participant-avatar-wrapper[data-participant-id="ai"] .participant-avatar`);
 
         if (speakingAvatar) {
           speakingAvatar.classList.add('speaking');
-          // 动态计算说话时长：每字200ms，最长5秒
           const speakTime = Math.min(aiResponse.length * 200, 5000);
           setTimeout(() => speakingAvatar.classList.remove('speaking'), speakTime);
         }
       }
 
       callFeed.scrollTop = callFeed.scrollHeight;
+      pushInCallStreamDebug({
+        type: 'final-write',
+        requestId: streamRequestId,
+        length: aiResponse.length,
+        endState: streamProtocolMeta.endState,
+        fallbackUsed: streamProtocolMeta.fallbackUsed
+      });
 
     } catch (error) {
+      if (error.name === 'AbortError') {
+        updateInCallRequestLifecycle(streamRequestId, 'aborted');
+        clearInCallStreamingPlaceholder(streamRequestId);
+        return;
+      }
+      if (isInCallRequestCurrent(streamRequestId)) {
+        updateInCallRequestLifecycle(streamRequestId, 'errored');
+      }
+      clearInCallStreamingPlaceholder(streamRequestId);
       const errorBubble = document.createElement('div');
       errorBubble.className = 'call-message-bubble ai-speech';
       errorBubble.style.color = '#ff8a80';
@@ -24798,8 +26179,107 @@ ${linkedContents}
         role: 'assistant',
         content: `[ERROR: ${error.message}]`
       });
+      pushInCallStreamDebug({
+        type: 'caught-error',
+        requestId: streamRequestId,
+        message: error.message
+      });
     }
   }
+
+  window.__task9InCallTestHooks = {
+    resetDebug() {
+      window.__inCallStreamDebug = {
+        events: []
+      };
+    },
+    prepareScenario(customChat = {}) {
+      const chatId = customChat.id || '__task9_incall_chat__';
+      const defaultChat = {
+        id: chatId,
+        name: customChat.name || 'Task9测试角色',
+        isGroup: Boolean(customChat.isGroup),
+        members: customChat.members || [],
+        settings: {
+          aiPersona: '测试人设',
+          myPersona: '测试用户',
+          myNickname: '我',
+          linkedWorldBookIds: [],
+          enableTts: false,
+          minimaxVoiceId: '',
+          videoOptimization: {
+            enableRealCamera: false
+          },
+          aiAvatar: defaultAvatar,
+          myAvatar: defaultAvatar,
+          ...customChat.settings
+        },
+        longTermMemory: Array.isArray(customChat.longTermMemory) ? customChat.longTermMemory : [],
+        history: Array.isArray(customChat.history) ? customChat.history : []
+      };
+
+      state.chats[chatId] = {
+        ...defaultChat,
+        ...customChat,
+        settings: {
+          ...defaultChat.settings,
+          ...(customChat.settings || {})
+        }
+      };
+      state.activeChatId = chatId;
+
+      videoCallState.isActive = true;
+      videoCallState.isAwaitingResponse = false;
+      videoCallState.isGroupCall = Boolean(state.chats[chatId].isGroup);
+      videoCallState.activeChatId = chatId;
+      videoCallState.initiator = 'user';
+      videoCallState.startTime = Date.now();
+      videoCallState.isUserParticipating = true;
+      videoCallState.callHistory = [];
+      videoCallState.preCallContext = customChat.preCallContext || 'Task-9 通话链路验证';
+      videoCallState.participants = videoCallState.isGroupCall
+        ? (customChat.participants || [{
+          id: 'ai-member-1',
+          name: '成员A',
+          originalName: '成员A',
+          avatar: defaultAvatar
+        }])
+        : [];
+
+      const callFeed = document.getElementById('video-call-main');
+      if (callFeed) {
+        callFeed.innerHTML = '<em>测试通话已建立...</em>';
+      }
+
+      updateParticipantAvatars();
+      clearInCallStreamingPlaceholder();
+      inCallRequestLifecycle = {
+        requestId: null,
+        controller: null,
+        endState: 'idle',
+        updatedAt: Date.now()
+      };
+
+      return {
+        chatId,
+        isGroupCall: videoCallState.isGroupCall
+      };
+    },
+    async runAction(userInput = null) {
+      return triggerAiInCallAction(userInput);
+    },
+    getState() {
+      return {
+        lifecycle: {
+          ...inCallRequestLifecycle
+        },
+        callHistoryLength: videoCallState.callHistory.length,
+        debugEvents: (window.__inCallStreamDebug && Array.isArray(window.__inCallStreamDebug.events))
+          ? [...window.__inCallStreamDebug.events]
+          : []
+      };
+    }
+  };
 
 
 
@@ -49101,13 +50581,17 @@ ${internalMonologueBuilder}
       return;
     }
 
-
     const userInput = document.getElementById('werewolf-user-input');
     const speech = userInput.value.trim();
+    const waitReplyBtn = document.getElementById('werewolf-wait-reply-btn');
 
     if (!speech) {
       alert("请先输入你的发言内容。");
       return;
+    }
+
+    if (waitReplyBtn) {
+      waitReplyBtn.disabled = true;
     }
 
     addDialogueLog(myPlayer.name, speech);
@@ -49122,6 +50606,9 @@ ${internalMonologueBuilder}
       model
     } = state.apiConfig;
     if (!proxyUrl || !apiKey || !model) {
+      if (waitReplyBtn) {
+        waitReplyBtn.disabled = false;
+      }
       alert('API未配置，无法生成对话。');
       return;
     }
@@ -49136,112 +50623,35 @@ ${internalMonologueBuilder}
       }];
       let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesForApi);
 
-      const response = isGemini ?
-        await fetch(geminiConfig.url, geminiConfig.data) :
-        await fetch(`${proxyUrl}/v1/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: [{
-              role: 'system',
-              content: systemPrompt
-            }, ...messagesForApi],
-            temperature: state.globalSettings.apiTemperature || 0.9,
-          })
-        });
+      const streamResult = await runFeatureTextStreamRequest({
+        lifecycle: werewolfRequestLifecycle,
+        entry: 'werewolf-wait-reply',
+        proxyUrl,
+        apiKey,
+        model,
+        systemPrompt,
+        messagesPayload: messagesForApi,
+        isGemini,
+        geminiConfig,
+        streamEnabled: true,
+        fallbackEnabled: true
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API 错误: ${errorData.error.message}`);
+      if (streamResult.ignored) {
+        return;
       }
 
-      const data = await response.json();
-      const aiResponseContent = getGeminiResponseText(data);
+      const aiResponseContent = String(streamResult.finalText || '');
+      let cleanedJsonString = aiResponseContent.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+      const startIndex = cleanedJsonString.indexOf('[');
+      const endIndex = cleanedJsonString.lastIndexOf(']');
 
-
-
-      let dialogues;
-      try {
-
-        let cleanedJsonString = aiResponseContent.replace(/^```json\s*/, '').replace(/```$/, '').trim();
-        const startIndex = cleanedJsonString.indexOf('[');
-        const endIndex = cleanedJsonString.lastIndexOf(']');
-
-        if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
-          throw new Error("AI返回的内容中未找到有效的JSON数组结构 (`[...]`)。");
-        }
-
-        const jsonArrayString = cleanedJsonString.substring(startIndex, endIndex + 1);
-
-
-        dialogues = JSON.parse(jsonArrayString);
-
-      } catch (e) {
-
-        if (e.message.includes("Bad control character")) {
-          console.warn("检测到JSON中的非法控制字符，尝试清理并重试...");
-
-
-          const sanitizeJsonString = (str) => {
-            let inString = false;
-            let escaped = false;
-            let result = '';
-            for (let i = 0; i < str.length; i++) {
-              const char = str[i];
-
-              if (escaped) {
-                result += char;
-                escaped = false;
-                continue;
-              }
-              if (char === '\\') {
-                result += char;
-                escaped = true;
-                continue;
-              }
-              if (char === '"') {
-                result += char;
-                inString = !inString;
-                continue;
-              }
-
-              if (inString) {
-
-                if (char === '\n') result += '\\n';
-                else if (char === '\r') result += '\\r';
-                else if (char === '\t') result += '\\t';
-
-                else if (char.charCodeAt(0) < 32) continue;
-                else result += char;
-              } else {
-
-                result += char;
-              }
-            }
-            return result;
-          };
-
-
-          let cleanedJsonString = aiResponseContent.replace(/^```json\s*/, '').replace(/```$/, '').trim();
-
-
-          const sanitizedString = sanitizeJsonString(cleanedJsonString);
-
-          const jsonMatch = sanitizedString.match(/(\[[\s\S]*\])/);
-          if (!jsonMatch) throw new Error("清理后仍未找到JSON数组。");
-
-          dialogues = JSON.parse(jsonMatch[0]);
-
-        } else {
-
-          throw new Error(`解析AI返回的JSON时出错: ${e.message}\n\nAI原始返回内容:\n${aiResponseContent}`);
-        }
+      if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+        throw new Error("AI返回的内容中未找到有效的JSON数组结构 (`[...]`)。");
       }
 
+      const jsonArrayString = cleanedJsonString.substring(startIndex, endIndex + 1);
+      const dialogues = JSON.parse(jsonArrayString);
 
       for (const dialogue of dialogues) {
         if (dialogue.speaker_name && dialogue.dialogue) {
@@ -49250,9 +50660,37 @@ ${internalMonologueBuilder}
           await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 2000));
         }
       }
+
+      pushTask10Evidence('werewolf', {
+        entry: 'wait-reply',
+        action: 'click-werewolf-wait-reply-btn',
+        requestId: streamResult.requestId,
+        endState: streamResult.endState,
+        fallbackUsed: streamResult.fallbackUsed,
+        streamEnabled: streamResult.streamEnabled,
+        controlledDegrade: Boolean(streamResult.fallbackUsed),
+        currentPhase: werewolfGameState.currentPhase,
+        currentDay: werewolfGameState.currentDay,
+        discussionCount: werewolfGameState.discussionLog.length,
+        aliveCount: werewolfGameState.players.filter(p => p.isAlive).length
+      });
     } catch (error) {
       console.error("狼人杀AI回应生成失败:", error);
+      pushTask10Evidence('werewolf', {
+        entry: 'wait-reply',
+        action: 'click-werewolf-wait-reply-btn',
+        endState: 'errored',
+        controlledDegrade: true,
+        errorMessage: error && error.message ? error.message : String(error),
+        currentPhase: werewolfGameState.currentPhase,
+        currentDay: werewolfGameState.currentDay,
+        discussionCount: werewolfGameState.discussionLog.length
+      });
       await showCustomAlert("AI 发言失败", `错误: ${error.message}`);
+    } finally {
+      if (waitReplyBtn) {
+        waitReplyBtn.disabled = false;
+      }
     }
   }
 
@@ -63045,6 +64483,25 @@ ${recentHistoryWithUser}
     window.renderApiSettingsProxy = renderApiSettings;
     window.renderWallpaperScreenProxy = renderWallpaperScreen;
     window.renderWorldBookScreenProxy = renderWorldBookScreen;
+    window.__task10Hooks = {
+      setupDrawAndGuessSession,
+      handleGetTopicFromAi,
+      triggerDrawAndGuessAiResponse,
+      handleWerewolfWaitReply,
+      renderWerewolfScreen,
+      getEvidence: () => ensureTask10EvidenceStore()
+    };
+    window.__task11Hooks = {
+      triggerMainAiResponse: triggerAiResponse,
+      getEvidence: () => ensureTask11EvidenceStore(),
+      pushEvidence: (channel, payload) => pushTask11Evidence(channel, payload)
+    };
+    window.__task10State = {
+      drawGuessState,
+      werewolfGameState,
+      drawGuessRequestLifecycle,
+      werewolfRequestLifecycle
+    };
 
     await loadAllDataFromDB();
     await initFunds();
@@ -75217,17 +76674,28 @@ ${linkedContents}
       let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesForApi);
 
       try {
-        const response = isGemini
-          ? await fetch(geminiConfig.url, geminiConfig.data)
-          : await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, ...messagesForApi] })
-          });
+        const streamResult = await runFeatureTextStreamRequest({
+          lifecycle: drawGuessRequestLifecycle,
+          entry: 'draw-guess-topic',
+          proxyUrl,
+          apiKey,
+          model,
+          systemPrompt,
+          messagesPayload: messagesForApi,
+          isGemini,
+          geminiConfig,
+          streamEnabled: true,
+          fallbackEnabled: true
+        });
 
-        if (!response.ok) throw new Error(`API 错误: ${response.statusText}`);
-        const data = await response.json();
-        const aiTopic = getGeminiResponseText(data);
+        if (streamResult.ignored) {
+          return;
+        }
+
+        const aiTopic = String(streamResult.finalText || '').trim();
+        if (!aiTopic) {
+          throw new Error('AI返回为空，无法出题。');
+        }
 
         // 处理回复（线上模式支持多条消息）
         if (drawGuessState.mode === 'online') {
@@ -75254,8 +76722,26 @@ ${linkedContents}
           appendDrawGuessMessage(aiMessage);
         }
 
+        pushTask10Evidence('drawGuess', {
+          entry: 'topic',
+          mode: drawGuessState.mode,
+          requestId: streamResult.requestId,
+          endState: streamResult.endState,
+          fallbackUsed: streamResult.fallbackUsed,
+          streamEnabled: streamResult.streamEnabled,
+          controlledDegrade: Boolean(streamResult.fallbackUsed),
+          sampleLengths: drawGuessState.history.slice(-3).map(msg => String(msg.content || '').length)
+        });
+
       } catch (error) {
         console.error("AI出题失败:", error);
+        pushTask10Evidence('drawGuess', {
+          entry: 'topic',
+          mode: drawGuessState.mode,
+          endState: 'errored',
+          controlledDegrade: true,
+          errorMessage: error && error.message ? error.message : String(error)
+        });
         await showCustomAlert("出题失败", `无法获取题目: ${error.message}`);
       }
     }
@@ -75267,6 +76753,7 @@ ${linkedContents}
       if (drawGuessState.isAiResponding || !drawGuessState.isActive || !drawGuessState.partnerId) return;
 
       drawGuessState.isAiResponding = true;
+      let draftParagraph = null;
 
       const dialogueBox = document.getElementById('draw-guess-dialogue-box');
       if (dialogueBox.childElementCount === 0) {
@@ -75279,31 +76766,23 @@ ${linkedContents}
 
         const chat = state.chats[drawGuessState.partnerId];
         const userNickname = chat.settings.myNickname || '我';
-
-        // 构建更完整的上下文信息
-
-        // 1. 双方人设
         const aiPersona = chat.settings.aiPersona || '一个友好的对话伙伴';
         const myPersona = chat.settings.myPersona || '用户';
 
-        // 2. 世界书
         const worldBookContext = (chat.settings.linkedWorldBookIds || []).map(bookId =>
           state.worldBooks.find(wb => wb.id === bookId)
         ).filter(Boolean).map(book =>
           `## 世界书《${book.name}》设定:\n${book.content.filter(e => e.enabled).map(e => `- ${e.content}`).join('\n')}`
         ).join('\n');
 
-        // 3. 长期记忆
         const longTermMemory = chat.longTermMemory && chat.longTermMemory.length > 0
           ? chat.longTermMemory.map(mem => `- ${mem.content}`).join('\n')
           : '';
 
-        // 4. 短期记忆（主聊天最近的对话）
         const shortTermMemory = chat.history.slice(-15).map(msg =>
           `${msg.role === 'user' ? userNickname : chat.name}: ${String(msg.content)}`
         ).join('\n');
 
-        // 5. 挂载的聊天记录
         let linkedChatsContext = '';
         if (chat.settings.linkedChatIds && chat.settings.linkedChatIds.length > 0) {
           const linkedMemories = [];
@@ -75319,15 +76798,11 @@ ${linkedContents}
           linkedChatsContext = linkedMemories.join('\n');
         }
 
-        // 6. 游戏内对话历史
         const drawGuessHistory = drawGuessState.history.map(msg => `${msg.sender}: ${msg.content}`).join('\n');
-
         const canvasContentDescription = imageBase64 ? "(用户刚刚画完了一幅画，图片内容如下，请你猜测。)" : "(当前画板为空)";
-
         let systemPrompt;
 
         if (drawGuessState.mode === 'online') {
-          // 线上模式：无线下描写，支持多条消息
           let finalInstruction;
           if (isInitial) {
             finalInstruction = '这是你们第一次在线上打开这个游戏。请你主动说几句话，比如打个招呼、表达对游戏的期待、或者提议游戏规则。';
@@ -75352,23 +76827,12 @@ ${linkedContents}
 # 【对话节奏铁律（至关重要！）】
 你的回复【必须】模拟真人在线聊天的打字习惯。**绝对不要一次性发送一大段文字！** 你应该将你想说的话，拆分成【多条、简短的】消息来发送，每条消息最好不要超过30个字。这会让对话看起来更自然、更真实。
 
-举例：
-- ❌ 错误："哇！你画的这个真有意思，让我想想...这个圆圆的形状，还有上面的小点，会不会是一个苹果？不对，感觉更像是一个太阳呢！"
-- ✅ 正确：
-  消息1: "哇！你画的这个真有意思"
-  消息2: "让我想想..."
-  消息3: "这个圆圆的形状"
-  消息4: "还有上面的小点"
-  消息5: "会不会是一个苹果？"
-  消息6: "不对，感觉更像是一个太阳呢！"
-
 # 核心规则
 1. **【线上场景】**: 你们在线上聊天，不在同一个地点。【禁止】出现任何线下见面的描写，如"走过来"、"拿起笔"、"看向你"等动作描述。
 2. **【纯文字交流】**: 你只能通过文字表达，可以使用语气词、表情符号，但不能描述肢体动作或表情。
 3. **【多条消息】**: 你的回复应该自然地拆分成多条消息，就像真人在线聊天时的节奏。
 
 # 供你参考的上下文
-
 ## 世界观设定
 ${worldBookContext || '（暂无）'}
 
@@ -75387,7 +76851,6 @@ ${finalInstruction}
 
 请直接回复你想说的内容，将你的话自然地分成多条消息。每条消息之间用换行符（\n）分隔。不要加任何JSON格式或前缀后缀。`;
         } else {
-          // 线下模式：保留原有的提示词（有线下描写）
           let finalInstruction;
           if (isInitial) {
             finalInstruction = '这是你们第一次打开这个游戏。请你主动说几句话，比如打个招呼、表达对游戏的期待、或者制定游戏规则，来开启这场游戏。';
@@ -75410,7 +76873,6 @@ ${finalInstruction}
 画板内容: ${canvasContentDescription}
 
 # 供你参考的上下文
-
 ## 世界观设定
 ${worldBookContext || '（暂无）'}
 
@@ -75437,23 +76899,54 @@ ${finalInstruction}
         let isGemini = proxyUrl.includes('generativelanguage');
         let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesForApi);
 
-        const response = isGemini
-          ? await fetch(geminiConfig.url, geminiConfig.data)
-          : await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, ...messagesForApi] })
-          });
+        const streamResult = await runFeatureTextStreamRequest({
+          lifecycle: drawGuessRequestLifecycle,
+          entry: imageBase64 ? 'draw-guess-reply-image' : 'draw-guess-reply-text',
+          proxyUrl,
+          apiKey,
+          model,
+          systemPrompt,
+          messagesPayload: messagesForApi,
+          isGemini,
+          geminiConfig,
+          streamEnabled: true,
+          fallbackEnabled: true,
+          onDeltaText: (_delta, fullText) => {
+            if (drawGuessState.mode !== 'online') return;
+            const previewLines = String(fullText || '').split('\n').filter(line => line.trim());
+            const previewText = previewLines[previewLines.length - 1] || String(fullText || '').trim();
+            if (!previewText) return;
 
-        if (!response.ok) throw new Error(`API 错误: ${response.statusText}`);
-        const data = await response.json();
-        const aiReply = getGeminiResponseText(data);
+            if (!draftParagraph) {
+              draftParagraph = appendDrawGuessMessage({
+                sender: chat.name,
+                content: `${previewText}▍`,
+                timestamp: Date.now() + 1
+              });
+              if (draftParagraph) draftParagraph.dataset.streaming = '1';
+            } else {
+              draftParagraph.textContent = `${chat.name}: ${previewText}▍`;
+            }
+          }
+        });
 
-        // 处理AI回复
+        if (streamResult.ignored) {
+          if (draftParagraph && draftParagraph.parentNode) draftParagraph.parentNode.removeChild(draftParagraph);
+          return;
+        }
+
+        const aiReply = String(streamResult.finalText || '').trim();
+        if (!aiReply) {
+          throw new Error('AI返回为空，无法继续回复。');
+        }
+
+        if (draftParagraph && draftParagraph.parentNode) {
+          draftParagraph.parentNode.removeChild(draftParagraph);
+          draftParagraph = null;
+        }
+
         if (drawGuessState.mode === 'online') {
-          // 线上模式：拆分成多条消息
           const messages = aiReply.split('\n').filter(msg => msg.trim());
-
           for (const msgContent of messages) {
             const aiMessage = {
               sender: chat.name,
@@ -75462,14 +76955,11 @@ ${finalInstruction}
             };
             drawGuessState.history.push(aiMessage);
             appendDrawGuessMessage(aiMessage);
-
-            // 添加短暂延迟，模拟打字效果
             if (messages.length > 1) {
               await new Promise(resolve => setTimeout(resolve, 300));
             }
           }
         } else {
-          // 线下模式：保持原有逻辑（单条消息）
           const aiMessage = {
             sender: chat.name,
             content: aiReply,
@@ -75479,8 +76969,29 @@ ${finalInstruction}
           appendDrawGuessMessage(aiMessage);
         }
 
+        pushTask10Evidence('drawGuess', {
+          entry: isInitial ? 'reply-initial' : (imageBase64 ? 'reply-image' : 'reply-text'),
+          mode: drawGuessState.mode,
+          requestId: streamResult.requestId,
+          endState: streamResult.endState,
+          fallbackUsed: streamResult.fallbackUsed,
+          streamEnabled: streamResult.streamEnabled,
+          controlledDegrade: Boolean(streamResult.fallbackUsed),
+          sampleLengths: drawGuessState.history.slice(-4).map(msg => String(msg.content || '').length)
+        });
+
       } catch (error) {
         console.error("AI响应失败:", error);
+        if (draftParagraph && draftParagraph.parentNode) {
+          draftParagraph.parentNode.removeChild(draftParagraph);
+        }
+        pushTask10Evidence('drawGuess', {
+          entry: isInitial ? 'reply-initial' : (imageBase64 ? 'reply-image' : 'reply-text'),
+          mode: drawGuessState.mode,
+          endState: 'errored',
+          controlledDegrade: true,
+          errorMessage: error && error.message ? error.message : String(error)
+        });
         await showCustomAlert("AI响应失败", `无法获取回复: ${error.message}`);
       } finally {
         drawGuessState.isAiResponding = false;
@@ -77559,4 +79070,3 @@ function getCustomPromptIfExists(scenePath) {
   }
   return promptManager.getPrompt(scenePath);
 }
-
