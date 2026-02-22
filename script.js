@@ -7837,6 +7837,8 @@ document.addEventListener('DOMContentLoaded', () => {
       enableThoughts: false,              // 新增：全局心声开关，默认关闭
       enableQzoneActions: false,          // 新增：全局动态开关，默认关闭
       enableViewMyPhone: false,           // 新增：全局查看User手机开关，默认关闭
+      streamEnabled: false,               // 流式传输开关，默认关闭以避免兼容性风险
+      fallbackEnabled: true,              // 回退逻辑开关，默认开启以确保可用性
       enableBackgroundActivity: false,
       backgroundActivityInterval: 60,
       blockCooldownHours: 1,
@@ -9890,6 +9892,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTemp = state.globalSettings.apiTemperature || 0.8;
     tempSlider.value = savedTemp;
     tempValue.textContent = savedTemp;
+    const streamingSwitch = document.getElementById('api-streaming-switch');
+    if (streamingSwitch) {
+      streamingSwitch.checked = typeof state.globalSettings.streamEnabled === 'boolean'
+        ? state.globalSettings.streamEnabled
+        : false;
+    }
+    const fallbackSwitch = document.getElementById('api-streaming-fallback-switch');
+    if (fallbackSwitch) {
+      fallbackSwitch.checked = typeof state.globalSettings.fallbackEnabled === 'boolean'
+        ? state.globalSettings.fallbackEnabled
+        : true;
+    }
+    syncStreamingSettingsUiState();
     
     // 方案4：加载API历史记录开关状态（默认关闭以减小导出文件体积）
     const apiHistorySwitch = document.getElementById('enable-api-history-switch');
@@ -10074,6 +10089,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadApiPresetsDropdown(forcePresetId);
     displayTotalImageSize();
+  }
+  function syncStreamingSettingsUiState() {
+    const streamingSwitch = document.getElementById('api-streaming-switch');
+    const fallbackSwitch = document.getElementById('api-streaming-fallback-switch');
+    const fallbackItem = fallbackSwitch ? fallbackSwitch.closest('.settings-item') : null;
+    const statusText = document.getElementById('api-streaming-status-text');
+    const streamEnabled = streamingSwitch ? streamingSwitch.checked : false;
+
+    if (statusText) {
+      statusText.textContent = streamEnabled ? '流式已开启' : '流式已关闭';
+    }
+    if (fallbackSwitch) {
+      fallbackSwitch.disabled = !streamEnabled;
+    }
+    if (fallbackItem) {
+      if (!streamEnabled) {
+        fallbackItem.classList.add('disabled-state');
+      } else {
+        fallbackItem.classList.remove('disabled-state');
+      }
+    }
   }
 
   window.renderApiSettingsProxy = renderApiSettings;
@@ -65328,6 +65364,14 @@ ${recentHistoryWithUser}
       state.globalSettings.chatRenderWindow = parseInt(document.getElementById('chat-render-window-input').value) || 50;
       state.globalSettings.chatListRenderWindow = parseInt(document.getElementById('chat-list-render-window-input').value) || 30;
       state.globalSettings.apiTemperature = parseFloat(document.getElementById('api-temperature-slider').value);
+      const streamingSwitch = document.getElementById('api-streaming-switch');
+      if (streamingSwitch) {
+        state.globalSettings.streamEnabled = streamingSwitch.checked;
+      }
+      const fallbackSwitch = document.getElementById('api-streaming-fallback-switch');
+      if (fallbackSwitch) {
+        state.globalSettings.fallbackEnabled = fallbackSwitch.checked;
+      }
       
       // 方案4：保存API历史记录开关状态
       const apiHistorySwitch = document.getElementById('enable-api-history-switch');
@@ -65459,6 +65503,11 @@ ${recentHistoryWithUser}
         document.getElementById('secondary-model-input').value = selectedModel;
       }
     });
+
+    const streamingSwitchControl = document.getElementById('api-streaming-switch');
+    if (streamingSwitchControl) {
+      streamingSwitchControl.addEventListener('change', syncStreamingSettingsUiState);
+    }
 
     // ========== 移动端控制台功能 ==========
     (function () {
