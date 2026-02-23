@@ -5,6 +5,31 @@
 const CACHE_VERSION = 'v0.0.17';
 const CACHE_NAME = `ephone-cache-${CACHE_VERSION}`;
 
+function createHtmlOfflineResponse(requestUrl) {
+  return new Response(
+    `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>离线提示</title></head><body><h1>页面暂时不可用</h1><p>当前网络不可用，且未命中离线缓存。</p><p>${requestUrl}</p></body></html>`,
+    {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store'
+      }
+    }
+  );
+}
+
+function createAssetOfflineResponse(requestUrl) {
+  return new Response(`resource unavailable: ${requestUrl}`, {
+    status: 503,
+    statusText: 'Service Unavailable',
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store'
+    }
+  });
+}
+
 // 需要被缓存的文件列表（仅用于离线访问）
 const URLS_TO_CACHE = [
   './index.html',
@@ -46,6 +71,7 @@ self.addEventListener('activate', event => {
             console.log('[SW] 正在删除旧的缓存:', cacheName);
             return caches.delete(cacheName);
           }
+          return Promise.resolve(false);
         })
       );
     }).then(() => {
@@ -113,9 +139,10 @@ self.addEventListener('fetch', event => {
             });
           }
           return response;
-        }).catch(() => {
+        }).catch(async () => {
           // 网络失败，尝试返回缓存
-          return caches.match(event.request);
+          const cachedFallback = await caches.match(event.request);
+          return cachedFallback || createAssetOfflineResponse(url);
         });
       })
     );
@@ -135,10 +162,15 @@ self.addEventListener('fetch', event => {
         }
         return response;
       })
-      .catch(() => {
+      .catch(async () => {
         // 网络失败，使用缓存
         console.log('[SW] 网络失败，使用缓存的 HTML:', url);
-        return caches.match(event.request);
+        const requestCache = await caches.match(event.request);
+        if (requestCache) {
+          return requestCache;
+        }
+        const indexCache = await caches.match('./index.html');
+        return indexCache || createHtmlOfflineResponse(url);
       })
     );
   }
@@ -154,7 +186,10 @@ self.addEventListener('fetch', event => {
             });
           }
           return response;
-        }).catch(() => null);
+        }).catch(async () => {
+          const cachedFallback = await caches.match(event.request);
+          return cachedFallback || createAssetOfflineResponse(url);
+        });
 
         // 如果有缓存，立即返回缓存，同时后台更新
         if (cachedResponse) {
@@ -217,7 +252,8 @@ self.addEventListener('notificationclick', event => {
   event.notification.close();
   
   const chatId = event.notification.data?.chatId;
-  const urlToOpen = chatId ? `/?openChat=${chatId}` : '/';
+  const entryPath = './index.html';
+  const urlToOpen = chatId ? `${entryPath}?openChat=${encodeURIComponent(chatId)}` : entryPath;
   
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })

@@ -1876,13 +1876,97 @@ async function runFeatureTextStreamRequest(options = {}) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  const DB_READY_WAIT_TIMEOUT_MS = 4000;
+
+  async function awaitDbReadyWithTimeout(timeoutMs = DB_READY_WAIT_TIMEOUT_MS) {
+    const startedAt = Date.now();
+    const status = {
+      timeoutMs,
+      startedAt,
+      finishedAt: null,
+      elapsedMs: null,
+      outcome: 'pending',
+      fallbackUsed: false,
+      dbReadyAtResolve: false,
+      error: null
+    };
+    window.dbStartupStatus = status;
+
+    if (!window.dbReadyPromise || typeof window.dbReadyPromise.then !== 'function') {
+      status.finishedAt = Date.now();
+      status.elapsedMs = status.finishedAt - startedAt;
+      status.outcome = 'missing_db_ready_promise';
+      status.fallbackUsed = true;
+      status.dbReadyAtResolve = !!window.dbReady;
+      console.warn('[启动链路][DB等待降级] window.dbReadyPromise 不可用，跳过等待并继续渲染', {
+        timeoutMs,
+        elapsedMs: status.elapsedMs,
+        dbReady: !!window.dbReady
+      });
+      return status;
+    }
+
+    let timeoutId = null;
+    const timeoutPromise = new Promise(resolve => {
+      timeoutId = setTimeout(() => resolve({ type: 'timeout' }), timeoutMs);
+    });
+
+    let raceResult;
+    try {
+      raceResult = await Promise.race([
+        Promise.resolve(window.dbReadyPromise)
+          .then(() => ({ type: 'ready' }))
+          .catch(error => ({ type: 'error', error })),
+        timeoutPromise
+      ]);
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    status.finishedAt = Date.now();
+    status.elapsedMs = status.finishedAt - startedAt;
+    status.dbReadyAtResolve = !!window.dbReady;
+
+    if (raceResult.type === 'ready') {
+      status.outcome = 'ready';
+      console.log('[启动链路][DB等待] 数据库已就绪，按原流程继续', {
+        timeoutMs,
+        elapsedMs: status.elapsedMs,
+        dbReady: !!window.dbReady
+      });
+      return status;
+    }
+
+    status.fallbackUsed = true;
+
+    if (raceResult.type === 'timeout') {
+      status.outcome = 'timeout_fallback';
+      console.warn('[启动链路][DB等待降级] 等待数据库超时，继续渲染以避免启动阻塞', {
+        timeoutMs,
+        elapsedMs: status.elapsedMs,
+        dbReady: !!window.dbReady
+      });
+      return status;
+    }
+
+    status.outcome = 'error_fallback';
+    status.error = raceResult.error ? (raceResult.error.message || String(raceResult.error)) : 'unknown_error';
+    console.error('[启动链路][DB等待降级] 数据库等待异常，继续渲染以避免启动阻塞', {
+      timeoutMs,
+      elapsedMs: status.elapsedMs,
+      dbReady: !!window.dbReady,
+      error: raceResult.error
+    });
+    return status;
+  }
 
   // ========================================
   // 🛡️ 崩溃恢复检测 - 应用启动时执行
   // ========================================
   (async () => {
-    // 等待数据库就绪
-    await window.dbReadyPromise;
+    await awaitDbReadyWithTimeout();
     
     // 检测是否有异常退出
     const hadCrash = CrashRecoveryDetector.markSessionStart();
@@ -2152,18 +2236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
   }
-  document.addEventListener('visibilitychange', () => {
-
-    if (document.visibilityState === 'visible') {
-      console.log('应用已返回前台，正在检查更新...');
-
-      navigator.serviceWorker.ready.then(registration => {
-
-        registration.update();
-      });
-    }
-  });
-
   function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision) {
     const apiTemperature = state.globalSettings.apiTemperature || 0.8;
     const roleType = {

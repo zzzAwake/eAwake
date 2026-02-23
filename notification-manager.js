@@ -8,6 +8,109 @@ class NotificationManager {
         this.swRegistration = null;
         this.permissionGranted = false;
         this.isInitialized = false;
+        this.swReadyTimeoutMs = 8000;
+        this.swUpdateThrottleMs = 15000;
+        this.swLastUpdateAt = 0;
+        this.swUpdateInFlight = false;
+        this.visibilityUpdateBound = false;
+    }
+
+    async resolveServiceWorkerReadyRegistration() {
+        if (!('serviceWorker' in navigator)) {
+            return null;
+        }
+
+        const timeoutPromise = new Promise(resolve => {
+            setTimeout(() => resolve(null), this.swReadyTimeoutMs);
+        });
+
+        const readyPromise = Promise.resolve(navigator.serviceWorker.ready)
+            .then(registration => registration || null)
+            .catch(error => {
+                console.warn('[通知管理器] 等待 Service Worker ready 失败:', error);
+                return null;
+            });
+
+        const readyRegistration = await Promise.race([readyPromise, timeoutPromise]);
+        if (readyRegistration) {
+            return readyRegistration;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            return registration || null;
+        } catch (error) {
+            console.warn('[通知管理器] 获取 Service Worker registration 失败:', error);
+            return null;
+        }
+    }
+
+    async ensureServiceWorkerRegistration(options = {}) {
+        if (this.swRegistration) {
+            return this.swRegistration;
+        }
+
+        const { allowWait = true } = options;
+        if (!('serviceWorker' in navigator)) {
+            return null;
+        }
+
+        if (!allowWait) {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                this.swRegistration = registration || null;
+                return this.swRegistration;
+            } catch (error) {
+                console.warn('[通知管理器] 快速获取 Service Worker registration 失败:', error);
+                return null;
+            }
+        }
+
+        this.swRegistration = await this.resolveServiceWorkerReadyRegistration();
+        return this.swRegistration;
+    }
+
+    bindVisibilityUpdateListener() {
+        if (this.visibilityUpdateBound) {
+            return;
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                return;
+            }
+            this.triggerServiceWorkerUpdateCheck();
+        });
+
+        this.visibilityUpdateBound = true;
+    }
+
+    async triggerServiceWorkerUpdateCheck() {
+        const now = Date.now();
+        if (this.swUpdateInFlight) {
+            return;
+        }
+        if (now - this.swLastUpdateAt < this.swUpdateThrottleMs) {
+            return;
+        }
+
+        this.swUpdateInFlight = true;
+        this.swLastUpdateAt = now;
+
+        const registration = await this.ensureServiceWorkerRegistration({ allowWait: false });
+        if (!registration) {
+            this.swUpdateInFlight = false;
+            return;
+        }
+
+        try {
+            await registration.update();
+            console.log('[通知管理器] 页面恢复可见，已完成 Service Worker update 检查');
+        } catch (error) {
+            console.warn('[通知管理器] 页面恢复可见，Service Worker update 检查失败:', error);
+        } finally {
+            this.swUpdateInFlight = false;
+        }
     }
 
     /**
@@ -29,8 +132,14 @@ class NotificationManager {
 
         try {
             // 等待 Service Worker 注册完成
-            this.swRegistration = await navigator.serviceWorker.ready;
+            this.swRegistration = await this.ensureServiceWorkerRegistration({ allowWait: true });
+            if (!this.swRegistration) {
+                console.warn('[通知管理器] Service Worker 未在超时窗口内就绪，初始化降级为可重试状态');
+                return false;
+            }
             console.log('[通知管理器] Service Worker 已就绪');
+
+            this.bindVisibilityUpdateListener();
 
             // 检查通知权限
             await this.checkPermission();
@@ -119,6 +228,10 @@ class NotificationManager {
         }
 
         // 确保有 Service Worker Registration
+        if (!this.swRegistration) {
+            this.swRegistration = await this.ensureServiceWorkerRegistration({ allowWait: true });
+        }
+
         if (!this.swRegistration) {
             console.error('[通知管理器] Service Worker Registration 不可用');
             return false;
