@@ -2146,6 +2146,32 @@
                     <span class="slider"></span>
                 </label>
             </div>
+
+            <div class="settings-item api-streaming-row">
+                <div>
+                    <div style="font-weight: 500;">启用流式输出</div>
+                    <div class="settings-desc">开启后可接收正在生成结果的实时流</div>
+                </div>
+                <div class="settings-right">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="api-streaming-switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="api-streaming-status-text" class="settings-status-text">未启用</span>
+                </div>
+            </div>
+            <div class="settings-item api-streaming-row">
+                <div>
+                    <div style="font-weight: 500;">流式回退机制</div>
+                    <div class="settings-desc">在流式异常时自动降级到普通请求</div>
+                </div>
+                <div class="settings-right">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="api-streaming-fallback-switch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <!-- AI行为控制 (全局默认) -->
