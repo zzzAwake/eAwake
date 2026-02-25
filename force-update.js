@@ -3,6 +3,8 @@
 
 const ForceUpdater = (() => {
 
+  let forceUpdateReloadTriggered = false;
+
   // 需要更新的文件列表（静态资源，不包含用户数据）
   const FILES_TO_UPDATE = [
     'index.html',
@@ -114,17 +116,70 @@ const ForceUpdater = (() => {
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('show'));
 
-    document.getElementById('fu-result-ok').onclick = () => {
-      _closeOverlay(overlay);
-      if (success) {
-        location.reload(true);
+    const confirmBtn = document.getElementById('fu-result-ok');
+    if (!confirmBtn) return;
+
+    let reloadTriggered = false;
+    confirmBtn.onclick = async () => {
+      if (!success) {
+        _closeOverlay(overlay);
+        return;
       }
+
+      if (reloadTriggered) return;
+      reloadTriggered = true;
+
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = '刷新中...';
+
+      const reloadSucceeded = await _invokeForceUpdateReload();
+
+      if (!reloadSucceeded) {
+        reloadTriggered = false;
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = '刷新页面';
+        window.alert('无法自动刷新，请稍后重试或手动刷新页面。');
+        return;
+      }
+
+      _closeOverlay(overlay);
     };
   }
 
   function _closeOverlay(el) {
     el.classList.remove('show');
     setTimeout(() => el.remove(), 300);
+  }
+
+  async function _invokeForceUpdateReload() {
+    if (forceUpdateReloadTriggered) {
+      console.warn('[ForceUpdate] 刷新请求已触发，忽略重复执行');
+      return false;
+    }
+    forceUpdateReloadTriggered = true;
+
+    let success = true;
+    if (typeof window.requestReload === 'function') {
+      try {
+        const result = await window.requestReload({ reason: 'force-update', forceReload: true });
+        success = result !== false;
+        if (!success) {
+          console.warn('[ForceUpdate] 强制刷新闸门拒绝执行，不触发自动刷新');
+        }
+      } catch (error) {
+        console.error('[ForceUpdate] 强制刷新闸门失败，已取消直接 fallback reload', error);
+        success = false;
+      }
+    } else {
+      window.location.reload(true);
+      success = true;
+    }
+
+    if (!success) {
+      forceUpdateReloadTriggered = false;
+    }
+
+    return success;
   }
 
   // 核心：执行强制更新

@@ -55,7 +55,7 @@ self.addEventListener('install', event => {
       })
       .then(() => {
         console.log('[SW] 所有核心文件已缓存成功！');
-        return self.skipWaiting();
+        return Promise.resolve();
       })
   );
 });
@@ -76,7 +76,7 @@ self.addEventListener('activate', event => {
       );
     }).then(() => {
         console.log('[SW] Service Worker 已激活！使用智能缓存策略。');
-        return self.clients.claim();
+        return Promise.resolve();
     })
   );
 });
@@ -236,12 +236,23 @@ self.addEventListener('push', event => {
 // 5. 接收来自页面的消息（用于手动触发通知）
 self.addEventListener('message', event => {
   console.log('[SW] 收到页面消息:', event.data);
-  
+
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const { title, options } = event.data;
     event.waitUntil(
       self.registration.showNotification(title, options)
     );
+    return;
+  }
+
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    const shouldClaimClients = Boolean(event.data.claimClients);
+    event.waitUntil((async () => {
+      await self.skipWaiting();
+      if (shouldClaimClients) {
+        await self.clients.claim();
+      }
+    })());
   }
 });
 

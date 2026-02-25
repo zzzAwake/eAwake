@@ -746,6 +746,100 @@ function setLanguage(lang) {
   });
 }
 
+const RELOAD_ONCE_SESSION_KEY = 'eawake-reload-once';
+
+async function requestReload(options = {}) {
+  const {
+    reason = 'unknown',
+    needConfirm = false,
+    delayMs = 0,
+    forceReload = false,
+    confirmMessage = '页面需要刷新以应用更改，是否立即刷新？',
+    confirmTitle = '刷新页面？',
+    confirmHandler = null
+  } = options;
+
+  console.log('[刷新闸门] 收到刷新请求:', {
+    reason,
+    needConfirm,
+    delayMs,
+    forceReload
+  });
+
+  if (needConfirm) {
+    let confirmed = false;
+    try {
+      if (typeof confirmHandler === 'function') {
+        confirmed = await Promise.resolve(confirmHandler({ reason, confirmTitle, confirmMessage }));
+      } else {
+        confirmed = window.confirm(confirmMessage);
+      }
+    } catch (error) {
+      console.error('[刷新闸门] 刷新确认失败，已取消刷新:', { reason, error });
+      return false;
+    }
+
+    if (!confirmed) {
+      console.log('[刷新闸门] 用户取消刷新:', { reason });
+      return false;
+    }
+  }
+
+  try {
+    const existingLockReason = sessionStorage.getItem(RELOAD_ONCE_SESSION_KEY);
+    if (existingLockReason) {
+      console.warn('[刷新闸门] 同一会话已执行过刷新，跳过本次请求:', {
+        reason,
+        previousReason: existingLockReason
+      });
+      return false;
+    }
+
+    sessionStorage.setItem(RELOAD_ONCE_SESSION_KEY, `${Date.now()}|${reason}`);
+  } catch (error) {
+    console.warn('[刷新闸门] sessionStorage 不可用，无法写入会话锁，将继续执行刷新:', error);
+  }
+
+  const normalizedDelay = Number.isFinite(delayMs) ? Math.max(0, delayMs) : 0;
+  if (normalizedDelay > 0) {
+    await new Promise(resolve => setTimeout(resolve, normalizedDelay));
+  }
+
+  console.warn('[刷新闸门] 开始执行页面刷新:', {
+    reason,
+    delayMs: normalizedDelay,
+    forceReload
+  });
+
+  window.location.reload(Boolean(forceReload));
+  return true;
+}
+
+window.requestReload = requestReload;
+
+async function promptReloadChoice({
+  reason,
+  alertTitle = '操作已完成',
+  alertMessage,
+  confirmTitle = '是否立即刷新？',
+  confirmMessage = '页面不会自动刷新，点击“立即刷新”即可应用更改，或稍后手动刷新。',
+  confirmText = '立即刷新',
+  cancelText = '稍后刷新',
+  confirmButtonClass = 'btn-primary',
+  requestOptions = {}
+} = {}) {
+  if (!alertMessage) return;
+  await showCustomAlert(alertTitle, alertMessage);
+  const shouldReload = await showCustomConfirm(confirmTitle, confirmMessage, {
+    confirmText,
+    cancelText,
+    confirmButtonClass
+  });
+  if (shouldReload) {
+    await requestReload({ reason, ...requestOptions });
+  }
+}
+
 function initLanguage() {
   const savedLang = localStorage.getItem('ephone-language') || 'zh-CN';
   const langSelector = document.getElementById('language-select');
@@ -754,9 +848,17 @@ function initLanguage() {
     langSelector.value = savedLang;
     langSelector.addEventListener('change', (e) => {
       const newLang = e.target.value;
-      alert(translations[newLang].languageChangedAlert);
-      localStorage.setItem('ephone-language', newLang);
-      setTimeout(() => window.location.reload(), 100);
+      const languageAlert = translations[newLang]?.languageChangedAlert || translations['zh-CN'].languageChangedAlert;
+      setLanguage(newLang);
+      promptReloadChoice({
+        reason: 'language-switch',
+        alertTitle: '语言已切换',
+        alertMessage: `${languageAlert}\n\n语言切换后不会自动刷新页面。点击“立即刷新”即可立即应用新语言，或稍后手动刷新。`,
+        confirmTitle: '是否立即刷新？',
+        confirmMessage: '页面不会自动刷新，点击“立即刷新”即可马上应用语言更改，或稍后手动刷新。',
+        confirmText: '立即刷新',
+        cancelText: '稍后刷新'
+      });
     });
   }
   setLanguage(savedLang);
@@ -6804,10 +6906,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       await showCustomAlert("操作成功", summary);
 
-      const confirmedReload = await showCustomConfirm("刷新页面？", "为了确保所有数据同步，建议立即刷新页面。");
-      if (confirmedReload) {
-        location.reload();
-      }
+      await requestReload({
+        reason: 'cleanup-redundant-data',
+        needConfirm: true,
+        confirmHandler: () => showCustomConfirm("刷新页面？", "为了确保所有数据同步，建议立即刷新页面。")
+      });
 
     } catch (error) {
       console.error("清理冗余数据时出错:", error);
@@ -7411,7 +7514,13 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error("未知的备份类型。");
       }
 
-      await showCustomAlert('导入成功', '所有数据已成功恢复！应用即将刷新以应用所有更改。');
+      await promptReloadChoice({
+        reason: 'full-import',
+        alertTitle: '导入成功',
+        alertMessage: '所有数据已成功恢复！页面不会自动刷新，您可以稍后手动刷新，也可以点击“立即刷新”同步所有更改。',
+        confirmTitle: '立即刷新应用备份？',
+        confirmMessage: '导入完成后不会自动刷新。点击“立即刷新”即可应用更改，或稍后手动刷新。'
+      });
       try {
         const restoredApiConfig = await db.apiConfig.get('main');
         if (restoredApiConfig) {
@@ -7438,7 +7547,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {
         console.error("同步配置失败:", e);
       }
-      setTimeout(() => window.location.reload(), 1500);
 
     } catch (error) {
       console.error("完全导入失败:", error);
@@ -7616,8 +7724,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      await showCustomAlert('合并成功', '数据已成功合并！应用即将刷新以应用所有更改。');
-      setTimeout(() => window.location.reload(), 1500);
+      await promptReloadChoice({
+        reason: 'selective-import',
+        alertTitle: '合并成功',
+        alertMessage: '选中的数据已成功合并！页面不会自动刷新，您可以稍后手动刷新或点击“立即刷新”同步新内容。',
+        confirmTitle: '立即刷新以应用新数据？',
+        confirmMessage: '选择性导入完成后不会自动刷新。点击“立即刷新”即可应用更改，或稍后手动刷新。'
+      });
 
     } catch (error) {
       console.error("选择性导入失败:", error);
@@ -33005,14 +33118,22 @@ ${formattedHistory}
       }
     }
 
-    if (migrationCount > 0) {
-      console.log(`数据迁移完成！总共修复了 ${migrationCount} 条红包记录。`);
-      alert(`检测到并成功修复了 ${migrationCount} 条旧的红包消息！页面将自动刷新以应用更改。`);
-      location.reload();
-    } else {
-      console.log("未发现需要迁移的旧红包数据。");
-    }
+  if (migrationCount > 0) {
+    console.log(`数据迁移完成！总共修复了 ${migrationCount} 条红包记录。`);
+    const summary = `检测到并成功修复了 ${migrationCount} 条旧的红包消息！\n\n迁移完成后不会自动刷新页面。您可以稍后手动刷新，或点击“立即刷新”以立即同步。`;
+    await showCustomAlert("旧红包迁移完成", summary);
+    await requestReload({
+      reason: 'legacy-redpacket-migration',
+      needConfirm: true,
+      confirmHandler: () => showCustomConfirm(
+        "是否立即刷新？",
+        "迁移后的数据已准备就绪。页面不会自动刷新，如需立即应用更改，请刷新，否则稍后手动刷新也可以。"
+      )
+    });
+  } else {
+    console.log("未发现需要迁移的旧红包数据。");
   }
+}
 
   // USER状态修改弹窗 - 直接输入框
   async function showUserStatusModal(chatId) {
@@ -58107,8 +58228,13 @@ ${stickerList}
       } catch (e) { }
 
       confirmBtn.style.display = '';
-      await showCustomAlert("恢复成功", "所有分片已处理完毕，数据已恢复！点击确定刷新页面。");
-      setTimeout(() => window.location.reload(), 500);
+      await promptReloadChoice({
+        reason: 'multi-part-restore',
+        alertTitle: '恢复成功',
+        alertMessage: '所有分片已处理完毕，数据已恢复！页面不会自动刷新，您可以稍后手动刷新或点击“立即刷新”同步变更。',
+        confirmTitle: '立即刷新以应用恢复？',
+        confirmMessage: '恢复完成后不会自动刷新，点击“立即刷新”即可应用备份内容。'
+      });
 
     } catch (error) {
       console.error(error);
@@ -63115,11 +63241,16 @@ ${email.content}
       // 2. 清空 LocalStorage (包括主题、语言、未读计数、临时缓存等，也包括联机设置)
       localStorage.clear();
 
-      // 3. 强制刷新页面
-      // 延迟一下让用户看到提示，然后刷新重载整个应用
-      setTimeout(() => {
-        window.location.reload(true);
-      }, 1000);
+      await promptReloadChoice({
+        reason: 'factory-reset',
+        alertTitle: '初始化完成',
+        alertMessage: '所有数据已清空，应用不会自动刷新。点击“立即刷新”即可重启应用，也可以稍后手动刷新。',
+        confirmTitle: '是否立即刷新？',
+        confirmMessage: '重置后不会自动刷新，点击“立即刷新”即可立刻重新加载本地数据，或稍后手动刷新。',
+        confirmText: '立即刷新',
+        cancelText: '稍后刷新',
+        requestOptions: { forceReload: true }
+      });
 
     } catch (error) {
       console.error("初始化失败:", error);
