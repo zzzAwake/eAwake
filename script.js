@@ -830,7 +830,11 @@ async function promptReloadChoice({
 } = {}) {
   if (!alertMessage) return;
   await showCustomAlert(alertTitle, alertMessage);
-  const shouldReload = await showCustomConfirm(confirmTitle, confirmMessage, {
+  const confirmFn =
+    typeof showCustomConfirm === 'function'
+      ? showCustomConfirm
+      : async (title, message) => window.confirm(`${title}\n\n${message}`);
+  const shouldReload = await confirmFn(confirmTitle, confirmMessage, {
     confirmText,
     cancelText,
     confirmButtonClass
@@ -1108,6 +1112,7 @@ let lastGroupMessagesSent = [];
 let currentQzoneReplyContext = null;
 let editingNpcId = null;
 let pendingBackupData = null;
+let pendingImportSampleHint = 'unknown';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models'
 function findBestStickerMatch(meaning, availableStickers) {
   if (!meaning || !availableStickers || availableStickers.length === 0) {
@@ -7337,7 +7342,170 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  async function importStreamedBackup(backupData) {
+  const FULL_IMPORT_REQUIRED_TABLES = ['chats', 'worldBooks'];
+  const GITHUB_RESTORE_REQUIRED_TABLES = ['chats', 'worldBooks'];
+
+  function precheckFullImportCompatibility(backupData) {
+    const knownTablesToImport = [];
+    const skippedUnknownTables = [];
+    const blockingErrors = [];
+
+    if (!backupData || typeof backupData !== 'object') {
+      blockingErrors.push('备份数据格式无效');
+      return {
+        knownTablesToImport,
+        skippedUnknownTables,
+        blockingErrors
+      };
+    }
+
+    const knownTableNames = new Set(db.tables.map(table => table.name));
+
+    for (const requiredTable of FULL_IMPORT_REQUIRED_TABLES) {
+      if (!Array.isArray(backupData[requiredTable])) {
+        blockingErrors.push(`关键表缺失或格式错误: ${requiredTable}`);
+      }
+    }
+
+    for (const tableName in backupData) {
+      if (!Array.isArray(backupData[tableName])) continue;
+
+      if (knownTableNames.has(tableName)) {
+        knownTablesToImport.push(tableName);
+      } else {
+        skippedUnknownTables.push(tableName);
+      }
+    }
+
+    return {
+      knownTablesToImport,
+      skippedUnknownTables,
+      blockingErrors
+    };
+  }
+
+  function precheckGitHubRestoreCompatibility(mergedBackupData) {
+    const knownTablesToImport = [];
+    const skippedUnknownTables = [];
+    const blockingErrors = [];
+
+    if (!mergedBackupData || typeof mergedBackupData !== 'object') {
+      blockingErrors.push('备份数据格式无效');
+      return {
+        knownTablesToImport,
+        skippedUnknownTables,
+        blockingErrors
+      };
+    }
+
+    const knownTableNames = new Set(db.tables.map(table => table.name));
+
+    for (const requiredTable of GITHUB_RESTORE_REQUIRED_TABLES) {
+      if (!Array.isArray(mergedBackupData[requiredTable])) {
+        blockingErrors.push(`关键表缺失或格式错误: ${requiredTable}`);
+      }
+    }
+
+    for (const tableName in mergedBackupData) {
+      if (!Array.isArray(mergedBackupData[tableName])) continue;
+
+      if (knownTableNames.has(tableName)) {
+        knownTablesToImport.push(tableName);
+      } else {
+        skippedUnknownTables.push(tableName);
+      }
+    }
+
+    return {
+      knownTablesToImport,
+      skippedUnknownTables,
+      blockingErrors
+    };
+  }
+
+  function buildImportAuditSummary({
+    importedTables = 0,
+    importedRecords = 0,
+    skippedUnknownTables = [],
+    failedTableErrors = []
+  } = {}) {
+    const uniqueSkippedUnknownTables = [...new Set((skippedUnknownTables || []).filter(Boolean))];
+    const normalizedFailedTableErrors = (failedTableErrors || []).filter(Boolean);
+
+    return {
+      importedTables,
+      importedRecords,
+      skippedUnknownTables: uniqueSkippedUnknownTables,
+      failedTableErrors: normalizedFailedTableErrors,
+      successText: `成功：${importedTables} 个表 / ${importedRecords} 条记录`,
+      skippedText: uniqueSkippedUnknownTables.length > 0
+        ? `跳过：${uniqueSkippedUnknownTables.length} 个未知表（${uniqueSkippedUnknownTables.join('、')}）`
+        : '跳过：0 个未知表',
+      failedText: normalizedFailedTableErrors.length > 0
+        ? `失败：${normalizedFailedTableErrors.length} 个表（${normalizedFailedTableErrors.join('；')}）`
+        : '失败：0 个表'
+    };
+  }
+
+  function formatImportAuditSummaryHtml(summary) {
+    if (!summary) return '';
+    return `${summary.successText}<br>${summary.skippedText}<br>${summary.failedText}`;
+  }
+
+  function buildImportObservabilityContext({
+    entryPath = 'unknown',
+    sampleHint = 'unknown',
+    stage = 'unknown',
+    skippedCount = 0,
+    failedCount = 0
+  } = {}) {
+    return {
+      entryPath,
+      sampleHint: sampleHint || 'unknown',
+      stage,
+      skippedCount: Number.isFinite(skippedCount) ? skippedCount : 0,
+      failedCount: Number.isFinite(failedCount) ? failedCount : 0
+    };
+  }
+
+  function logImportObservability(level = 'log', context = {}) {
+    const normalizedContext = buildImportObservabilityContext(context);
+    const logger = level === 'error'
+      ? console.error
+      : level === 'warn'
+        ? console.warn
+        : console.log;
+    logger('[导入观测]', normalizedContext);
+    return normalizedContext;
+  }
+
+  function buildImportSuccessAlertMessage(mainSentence, importAuditSummary) {
+    const summaryHtml = formatImportAuditSummaryHtml(importAuditSummary);
+    if (!summaryHtml) {
+      return `${mainSentence}<br><br>页面不会自动刷新，您可以稍后手动刷新，也可以点击“立即刷新”同步更改。`;
+    }
+    return `${mainSentence}<br><br>${summaryHtml}<br><br>页面不会自动刷新，您可以稍后手动刷新，也可以点击“立即刷新”同步更改。`;
+  }
+
+  function buildImportFailureAlertMessage(entryLabel, errorMessage, importAuditSummary) {
+    const summaryHtml = formatImportAuditSummaryHtml(importAuditSummary);
+    if (!summaryHtml) {
+      return `${entryLabel}失败：文件应用失败: ${errorMessage}`;
+    }
+    return `${entryLabel}失败：文件应用失败: ${errorMessage}<br><br>${summaryHtml}`;
+  }
+
+  async function importStreamedBackup(backupData, precheckResult = null) {
+    const compatibilityPrecheck = precheckResult || precheckFullImportCompatibility(backupData);
+
+    console.log('[完整导入][预检结果]', compatibilityPrecheck);
+    if (compatibilityPrecheck.skippedUnknownTables.length > 0) {
+      console.warn(`[完整导入] 发现未知表，已跳过: ${compatibilityPrecheck.skippedUnknownTables.join(', ')}`);
+    }
+    if (compatibilityPrecheck.blockingErrors.length > 0) {
+      throw new Error(`完整导入预检失败（数据库未清空）: ${compatibilityPrecheck.blockingErrors.join('；')}`);
+    }
+
     try {
       await db.transaction('rw', db.tables, async () => {
 
@@ -7346,14 +7514,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        for (const tableName in backupData) {
-          if (Array.isArray(backupData[tableName])) {
-            console.log(`正在导入表: ${tableName}, 记录数: ${backupData[tableName].length}`);
-            await db.table(tableName).bulkPut(backupData[tableName]);
-          }
+        for (const tableName of compatibilityPrecheck.knownTablesToImport) {
+          const tableData = backupData[tableName];
+          if (!Array.isArray(tableData)) continue;
+
+          console.log(`正在导入表: ${tableName}, 记录数: ${tableData.length}`);
+          await db.table(tableName).bulkPut(tableData);
         }
       });
 
+      return compatibilityPrecheck;
     } catch (error) {
 
       throw new Error(`数据库写入失败: ${error.message}`);
@@ -7394,6 +7564,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: backupType,
         content: backupDataContent
       };
+      pendingImportSampleHint = file?.name || 'unknown';
 
 
       openImportOptionsModal(backupDataContent);
@@ -7401,6 +7572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       console.error("导入数据时出错:", error);
       pendingBackupData = null;
+      pendingImportSampleHint = 'unknown';
       await showCustomAlert('导入失败', `文件解析或应用失败: ${error.message}`);
     }
   }
@@ -7503,21 +7675,56 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    await showCustomAlert("请稍候...", "正在执行完全导入，请勿关闭页面...");
-
     try {
+      const compatibilityPrecheck = precheckFullImportCompatibility(backupInfo.content);
+      console.log('[完整导入][预检结果]', compatibilityPrecheck);
+      logImportObservability('log', {
+        entryPath: 'full',
+        sampleHint: pendingImportSampleHint,
+        stage: 'precheck',
+        skippedCount: compatibilityPrecheck.skippedUnknownTables.length,
+        failedCount: compatibilityPrecheck.blockingErrors.length
+      });
+      if (compatibilityPrecheck.skippedUnknownTables.length > 0) {
+        console.warn(`[完整导入] 发现未知表，已跳过: ${compatibilityPrecheck.skippedUnknownTables.join(', ')}`);
+      }
+      if (compatibilityPrecheck.blockingErrors.length > 0) {
+        throw new Error(`完整导入预检失败（数据库未清空）: ${compatibilityPrecheck.blockingErrors.join('；')}`);
+      }
+
+      await showCustomAlert("请稍候...", "正在执行完全导入，请勿关闭页面...");
+
+      let importAuditSummary = null;
       if (backupInfo.type === 'streamed') {
-        await importStreamedBackup(backupInfo.content);
+        const streamedPrecheck = await importStreamedBackup(backupInfo.content, compatibilityPrecheck);
+        const importedRecords = streamedPrecheck.knownTablesToImport.reduce((sum, tableName) => {
+          const records = backupInfo.content[tableName];
+          return sum + (Array.isArray(records) ? records.length : 0);
+        }, 0);
+        importAuditSummary = buildImportAuditSummary({
+          importedTables: streamedPrecheck.knownTablesToImport.length,
+          importedRecords,
+          skippedUnknownTables: streamedPrecheck.skippedUnknownTables,
+          failedTableErrors: []
+        });
       } else if (backupInfo.type === 'legacy') {
-        await importLegacyBackup(backupInfo.content);
+        importAuditSummary = await importLegacyBackup(backupInfo.content, compatibilityPrecheck);
       } else {
         throw new Error("未知的备份类型。");
       }
 
+      logImportObservability('log', {
+        entryPath: 'full',
+        sampleHint: pendingImportSampleHint,
+        stage: 'complete',
+        skippedCount: importAuditSummary?.skippedUnknownTables?.length || 0,
+        failedCount: importAuditSummary?.failedTableErrors?.length || 0
+      });
+
       await promptReloadChoice({
         reason: 'full-import',
         alertTitle: '导入成功',
-        alertMessage: '所有数据已成功恢复！页面不会自动刷新，您可以稍后手动刷新，也可以点击“立即刷新”同步所有更改。',
+        alertMessage: buildImportSuccessAlertMessage('所有数据已成功恢复！', importAuditSummary),
         confirmTitle: '立即刷新应用备份？',
         confirmMessage: '导入完成后不会自动刷新。点击“立即刷新”即可应用更改，或稍后手动刷新。'
       });
@@ -7550,9 +7757,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
       console.error("完全导入失败:", error);
-      await showCustomAlert('导入失败', `文件应用失败: ${error.message}`);
+      const importAuditSummary = error?.importAuditSummary || null;
+      logImportObservability('error', {
+        entryPath: 'full',
+        sampleHint: pendingImportSampleHint,
+        stage: 'fail',
+        skippedCount: importAuditSummary?.skippedUnknownTables?.length || 0,
+        failedCount: importAuditSummary?.failedTableErrors?.length || 1
+      });
+      await showCustomAlert('导入失败', buildImportFailureAlertMessage('完整导入', error.message, importAuditSummary));
     } finally {
       pendingBackupData = null;
+      pendingImportSampleHint = 'unknown';
     }
   }
 
@@ -7671,6 +7887,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const typesToMerge = Array.from(selectedItems).map(item => item.dataset.typeId);
     const dataToMerge = backupInfo.content;
+    const knownTableNames = new Set(db.tables.map(table => table.name));
+    const skippedUnknownTables = [];
+    let importedTables = 0;
+    let importedRecords = 0;
+    const failedTableErrors = [];
+
+    const describeSkippedUnknown = () => {
+      if (skippedUnknownTables.length === 0) return '';
+      return `\n\n⚠️ 已跳过 ${skippedUnknownTables.length} 个未知表：${skippedUnknownTables.join('、')}`;
+    };
 
     const confirmed = await showCustomConfirm(
       '确认合并？',
@@ -7683,26 +7909,54 @@ document.addEventListener('DOMContentLoaded', () => {
     await showCustomAlert("请稍候...", "正在合并数据，请勿关闭页面...");
 
     try {
+      logImportObservability('log', {
+        entryPath: 'selective',
+        sampleHint: pendingImportSampleHint,
+        stage: 'precheck',
+        skippedCount: skippedUnknownTables.length,
+        failedCount: 0
+      });
 
       await db.transaction('rw', db.tables, async () => {
         for (const type of typesToMerge) {
-          const data = dataToMerge[type];
+          const tableName = type;
+          const data = dataToMerge[tableName];
           if (!data) continue;
 
-          const table = db.table(type);
-          if (!table) {
-            console.warn(`找不到表: ${type}, 跳过...`);
+          if (!knownTableNames.has(tableName)) {
+            if (!skippedUnknownTables.includes(type)) {
+              skippedUnknownTables.push(type);
+            }
+            console.warn(`[选择性导入] 找不到表: ${type}, 跳过...`);
             continue;
           }
+
+          const table = db.table(tableName);
 
           if (Array.isArray(data)) {
 
             console.log(`正在合并 ${data.length} 条记录到 ${type}...`);
-            await table.bulkPut(data);
+            try {
+              await table.bulkPut(data);
+              importedTables++;
+              importedRecords += data.length;
+            } catch (error) {
+              const reason = `表 ${type} 写入失败: ${error.message}`;
+              failedTableErrors.push(reason);
+              throw error;
+            }
           } else if (typeof data === 'object' && data.id) {
 
             console.log(`正在合并单条记录到 ${type}...`);
-            await table.put(data);
+            try {
+              await table.put(data);
+              importedTables++;
+              importedRecords += 1;
+            } catch (error) {
+              const reason = `表 ${type} 写入失败: ${error.message}`;
+              failedTableErrors.push(reason);
+              throw error;
+            }
           } else if (typeof data === 'object') {
 
             console.log(`正在合并非标对象到 ${type}...`);
@@ -7719,29 +7973,118 @@ document.addEventListener('DOMContentLoaded', () => {
               mergedData.id = 'main';
             }
 
-            await table.put(mergedData);
+            try {
+              await table.put(mergedData);
+              importedTables++;
+              importedRecords += 1;
+            } catch (error) {
+              const reason = `表 ${type} 写入失败: ${error.message}`;
+              failedTableErrors.push(reason);
+              throw error;
+            }
           }
         }
       });
 
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors
+      });
+      logImportObservability('log', {
+        entryPath: 'selective',
+        sampleHint: pendingImportSampleHint,
+        stage: 'complete',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
       await promptReloadChoice({
         reason: 'selective-import',
         alertTitle: '合并成功',
-        alertMessage: '选中的数据已成功合并！页面不会自动刷新，您可以稍后手动刷新或点击“立即刷新”同步新内容。',
+        alertMessage: buildImportSuccessAlertMessage('选中的数据已成功合并！', importAuditSummary),
         confirmTitle: '立即刷新以应用新数据？',
         confirmMessage: '选择性导入完成后不会自动刷新。点击“立即刷新”即可应用更改，或稍后手动刷新。'
       });
 
     } catch (error) {
       console.error("选择性导入失败:", error);
-      await showCustomAlert('合并失败', `文件应用失败: ${error.message}`);
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors: failedTableErrors.length > 0 ? failedTableErrors : [error.message]
+      });
+      logImportObservability('error', {
+        entryPath: 'selective',
+        sampleHint: pendingImportSampleHint,
+        stage: 'fail',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
+      await showCustomAlert('合并失败', buildImportFailureAlertMessage('选择性导入', error.message, importAuditSummary));
     } finally {
       pendingBackupData = null;
+      pendingImportSampleHint = 'unknown';
     }
   }
 
 
-  async function importLegacyBackup(backupData) {
+  async function importLegacyBackup(backupData, precheckResult = null) {
+    const knownTableNames = new Set(db.tables.map(table => table.name));
+    const skippedUnknownTables = [];
+    for (const tableName in backupData) {
+      if (!Array.isArray(backupData[tableName])) continue;
+      if (!knownTableNames.has(tableName)) {
+        skippedUnknownTables.push(tableName);
+      }
+    }
+    if (precheckResult && Array.isArray(precheckResult.skippedUnknownTables)) {
+      skippedUnknownTables.push(...precheckResult.skippedUnknownTables);
+    }
+
+    let importedTables = 0;
+    let importedRecords = 0;
+    const failedTableErrors = [];
+
+    const createAuditedError = (message) => {
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors
+      });
+      const auditedError = new Error(message);
+      auditedError.importAuditSummary = importAuditSummary;
+      return auditedError;
+    };
+
+    const bulkPutIfArray = async (tableName, records) => {
+      if (!Array.isArray(records) || records.length === 0) return;
+      try {
+        await db.table(tableName).bulkPut(records);
+        importedTables++;
+        importedRecords += records.length;
+      } catch (error) {
+        const reason = `表 ${tableName} 写入失败: ${error.message}`;
+        failedTableErrors.push(reason);
+        throw createAuditedError(reason);
+      }
+    };
+
+    const putIfExists = async (tableName, record) => {
+      if (!record) return;
+      try {
+        await db.table(tableName).put(record);
+        importedTables++;
+        importedRecords += 1;
+      } catch (error) {
+        const reason = `表 ${tableName} 写入失败: ${error.message}`;
+        failedTableErrors.push(reason);
+        throw createAuditedError(reason);
+      }
+    };
+
     try {
       await db.transaction('rw', db.tables, async () => {
         await db.chats.clear();
@@ -7751,55 +8094,68 @@ document.addEventListener('DOMContentLoaded', () => {
           await table.clear();
         }
 
-        if (Array.isArray(backupData.chats)) await db.chats.bulkPut(backupData.chats);
-        if (Array.isArray(backupData.worldBooks)) await db.worldBooks.bulkPut(backupData.worldBooks);
+        await bulkPutIfArray('chats', backupData.chats);
+        await bulkPutIfArray('worldBooks', backupData.worldBooks);
 
-        if (Array.isArray(backupData.userStickers)) await db.userStickers.bulkPut(backupData.userStickers);
-        if (backupData.apiConfig) await db.apiConfig.put(backupData.apiConfig);
-        if (backupData.globalSettings) await db.globalSettings.put(backupData.globalSettings);
+        await bulkPutIfArray('userStickers', backupData.userStickers);
+        await putIfExists('apiConfig', backupData.apiConfig);
+        await putIfExists('globalSettings', backupData.globalSettings);
 
-        if (Array.isArray(backupData.personaPresets)) await db.personaPresets.bulkPut(backupData.personaPresets);
-        if (backupData.musicLibrary) await db.musicLibrary.put(backupData.musicLibrary);
-        if (backupData.qzoneSettings) await db.qzoneSettings.put(backupData.qzoneSettings);
-        if (Array.isArray(backupData.qzonePosts)) await db.qzonePosts.bulkPut(backupData.qzonePosts);
-        if (Array.isArray(backupData.qzoneAlbums)) await db.qzoneAlbums.bulkPut(backupData.qzoneAlbums);
-        if (Array.isArray(backupData.qzonePhotos)) await db.qzonePhotos.bulkPut(backupData.qzonePhotos);
-        if (Array.isArray(backupData.favorites)) await db.favorites.bulkPut(backupData.favorites);
-        if (Array.isArray(backupData.qzoneGroups)) await db.qzoneGroups.bulkPut(backupData.qzoneGroups);
-        if (Array.isArray(backupData.memories)) await db.memories.bulkPut(backupData.memories);
-        if (Array.isArray(backupData.worldBookCategories)) await db.worldBookCategories.bulkPut(backupData.worldBookCategories);
-        if (Array.isArray(backupData.apiPresets)) await db.apiPresets.bulkPut(backupData.apiPresets);
-        if (Array.isArray(backupData.shoppingProducts)) await db.shoppingProducts.bulkPut(backupData.shoppingProducts);
-        if (Array.isArray(backupData.callRecords)) await db.callRecords.bulkPut(backupData.callRecords);
-        if (Array.isArray(backupData.renderingRules)) await db.renderingRules.bulkPut(backupData.renderingRules);
-        if (Array.isArray(backupData.doubanPosts)) await db.doubanPosts.bulkPut(backupData.doubanPosts);
-        if (Array.isArray(backupData.stickerCategories)) await db.stickerCategories.bulkPut(backupData.stickerCategories);
-        if (Array.isArray(backupData.appearancePresets)) await db.appearancePresets.bulkPut(backupData.appearancePresets);
-        if (Array.isArray(backupData.presets)) await db.presets.bulkPut(backupData.presets);
-        if (Array.isArray(backupData.presetCategories)) await db.presetCategories.bulkPut(backupData.presetCategories);
-        if (Array.isArray(backupData.npcs)) await db.npcs.bulkPut(backupData.npcs);
+        await bulkPutIfArray('personaPresets', backupData.personaPresets);
+        await putIfExists('musicLibrary', backupData.musicLibrary);
+        await putIfExists('qzoneSettings', backupData.qzoneSettings);
+        await bulkPutIfArray('qzonePosts', backupData.qzonePosts);
+        await bulkPutIfArray('qzoneAlbums', backupData.qzoneAlbums);
+        await bulkPutIfArray('qzonePhotos', backupData.qzonePhotos);
+        await bulkPutIfArray('favorites', backupData.favorites);
+        await bulkPutIfArray('qzoneGroups', backupData.qzoneGroups);
+        await bulkPutIfArray('memories', backupData.memories);
+        await bulkPutIfArray('worldBookCategories', backupData.worldBookCategories);
+        await bulkPutIfArray('apiPresets', backupData.apiPresets);
+        await bulkPutIfArray('shoppingProducts', backupData.shoppingProducts);
+        await bulkPutIfArray('callRecords', backupData.callRecords);
+        await bulkPutIfArray('renderingRules', backupData.renderingRules);
+        await bulkPutIfArray('doubanPosts', backupData.doubanPosts);
+        await bulkPutIfArray('stickerCategories', backupData.stickerCategories);
+        await bulkPutIfArray('appearancePresets', backupData.appearancePresets);
+        await bulkPutIfArray('presets', backupData.presets);
+        await bulkPutIfArray('presetCategories', backupData.presetCategories);
+        await bulkPutIfArray('npcs', backupData.npcs);
 
         // 新增的表
-        if (Array.isArray(backupData.stickerVisionCache)) await db.stickerVisionCache.bulkPut(backupData.stickerVisionCache);
-        if (Array.isArray(backupData.shoppingCategories)) await db.shoppingCategories.bulkPut(backupData.shoppingCategories);
-        if (Array.isArray(backupData.customAvatarFrames)) await db.customAvatarFrames.bulkPut(backupData.customAvatarFrames);
-        if (Array.isArray(backupData.readingLibrary)) await db.readingLibrary.bulkPut(backupData.readingLibrary);
-        if (Array.isArray(backupData.quickReplies)) await db.quickReplies.bulkPut(backupData.quickReplies);
-        if (Array.isArray(backupData.quickReplyCategories)) await db.quickReplyCategories.bulkPut(backupData.quickReplyCategories);
-        if (Array.isArray(backupData.npcGroups)) await db.npcGroups.bulkPut(backupData.npcGroups);
-        if (Array.isArray(backupData.naiPresets)) await db.naiPresets.bulkPut(backupData.naiPresets);
-        if (Array.isArray(backupData.grAuthors)) await db.grAuthors.bulkPut(backupData.grAuthors);
-        if (Array.isArray(backupData.grStories)) await db.grStories.bulkPut(backupData.grStories);
-        if (backupData.userWallet) await db.userWallet.put(backupData.userWallet);
-        if (Array.isArray(backupData.userTransactions)) await db.userTransactions.bulkPut(backupData.userTransactions);
-        if (Array.isArray(backupData.funds)) await db.funds.bulkPut(backupData.funds);
-        if (Array.isArray(backupData.auctions)) await db.auctions.bulkPut(backupData.auctions);
-        if (Array.isArray(backupData.inventory)) await db.inventory.bulkPut(backupData.inventory);
-        if (Array.isArray(backupData.emails)) await db.emails.bulkPut(backupData.emails);
-        if (Array.isArray(backupData.watchTogetherPlaylist)) await db.watchTogetherPlaylist.bulkPut(backupData.watchTogetherPlaylist);
+        await bulkPutIfArray('stickerVisionCache', backupData.stickerVisionCache);
+        await bulkPutIfArray('shoppingCategories', backupData.shoppingCategories);
+        await bulkPutIfArray('customAvatarFrames', backupData.customAvatarFrames);
+        await bulkPutIfArray('readingLibrary', backupData.readingLibrary);
+        await bulkPutIfArray('quickReplies', backupData.quickReplies);
+        await bulkPutIfArray('quickReplyCategories', backupData.quickReplyCategories);
+        await bulkPutIfArray('npcGroups', backupData.npcGroups);
+        await bulkPutIfArray('naiPresets', backupData.naiPresets);
+        await bulkPutIfArray('grAuthors', backupData.grAuthors);
+        await bulkPutIfArray('grStories', backupData.grStories);
+        await putIfExists('userWallet', backupData.userWallet);
+        await bulkPutIfArray('userTransactions', backupData.userTransactions);
+        await bulkPutIfArray('funds', backupData.funds);
+        await bulkPutIfArray('auctions', backupData.auctions);
+        await bulkPutIfArray('inventory', backupData.inventory);
+        await bulkPutIfArray('emails', backupData.emails);
+        await bulkPutIfArray('watchTogetherPlaylist', backupData.watchTogetherPlaylist);
+      });
+
+      return buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors
       });
     } catch (error) {
-      throw new Error(`旧版备份数据写入数据库失败: ${error.message}`);
+      if (error?.importAuditSummary) {
+        throw error;
+      }
+
+      const reason = `旧版备份写入失败: ${error.message}`;
+      failedTableErrors.push(reason);
+      throw createAuditedError(reason);
     }
   }
 
@@ -53766,15 +54122,26 @@ ${recentHistoryContext}
 
       // 检查是否为高级导出文件
       if (data.exportType !== 'advanced' || !data.data || !data.categories) {
+        pendingImportSampleHint = 'unknown';
         await showCustomAlert('文件格式错误', '这不是一个有效的高级导出文件。请使用"导入备份文件"功能导入普通备份。');
         return;
       }
+
+      pendingImportSampleHint = file?.name || 'unknown';
+      logImportObservability('log', {
+        entryPath: 'advanced',
+        sampleHint: pendingImportSampleHint,
+        stage: 'precheck',
+        skippedCount: 0,
+        failedCount: 0
+      });
 
       // 显示导入确认界面
       await showAdvancedImportConfirmModal(data);
 
     } catch (error) {
       console.error("读取高级导出文件时出错:", error);
+      pendingImportSampleHint = 'unknown';
       await showCustomAlert('导入失败', `文件解析失败: ${error.message}`);
     }
   }
@@ -53872,6 +54239,7 @@ ${recentHistoryContext}
 
     // 取消
     document.getElementById('cancel-advanced-import').addEventListener('click', () => {
+      pendingImportSampleHint = 'unknown';
       document.body.removeChild(modalContainer);
     });
 
@@ -53884,6 +54252,7 @@ ${recentHistoryContext}
     // 点击背景关闭
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
+        pendingImportSampleHint = 'unknown';
         document.body.removeChild(modalContainer);
       }
     });
@@ -53893,48 +54262,103 @@ ${recentHistoryContext}
   async function executeAdvancedImport(data) {
     await showCustomAlert("正在导入...", "正在将数据写入数据库，请稍候...");
 
+    const knownTableNames = new Set(db.tables.map(table => table.name));
+    let importedTables = 0;
+    let importedRecords = 0;
+    const skippedUnknownTables = [];
+    const failedTableErrors = [];
+
+    const createAuditError = (message) => {
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors
+      });
+
+      const auditedError = new Error(message);
+      auditedError.importAuditSummary = importAuditSummary;
+      return auditedError;
+    };
+
     try {
-      let importedTables = 0;
-      let importedRecords = 0;
-
       for (const tableName in data) {
-        if (db[tableName]) {
-          const tableData = data[tableName];
-          if (Array.isArray(tableData) && tableData.length > 0) {
-            // 使用 bulkPut 来合并数据（如果有主键冲突会覆盖）
-            await db.table(tableName).bulkPut(tableData);
-            importedTables++;
-            importedRecords += tableData.length;
-            console.log(`已导入表 ${tableName}: ${tableData.length} 条记录`);
+        const tableData = data[tableName];
+        if (!knownTableNames.has(tableName)) {
+          if (!skippedUnknownTables.includes(tableName)) {
+            skippedUnknownTables.push(tableName);
           }
-        } else {
-          console.warn(`表 ${tableName} 不存在于当前数据库中，跳过`);
+          console.warn(`[高级导入] 表 ${tableName} 不存在于当前数据库中，跳过`);
+          continue;
+        }
+
+        if (!Array.isArray(tableData)) {
+          const reason = `表 ${tableName} 数据格式无效（预期数组）`;
+          failedTableErrors.push(reason);
+          throw createAuditError(reason);
+        }
+
+        if (tableData.length === 0) {
+          continue;
+        }
+
+        try {
+          // 使用 bulkPut 来合并数据（如果有主键冲突会覆盖）
+          await db.table(tableName).bulkPut(tableData);
+          importedTables++;
+          importedRecords += tableData.length;
+          console.log(`已导入表 ${tableName}: ${tableData.length} 条记录`);
+        } catch (error) {
+          const reason = `表 ${tableName} 写入失败: ${error.message}`;
+          failedTableErrors.push(reason);
+          throw createAuditError(reason);
         }
       }
 
-      // 导入成功，询问用户是否刷新页面
-      const shouldRefresh = await showCustomConfirm(
-        '导入成功',
-        `已成功导入 ${importedTables} 个数据表，共 ${importedRecords} 条记录！<br><br>是否立即刷新页面以使数据生效？<br><span style="color: #666; font-size: 14px;">（点击"取消"可以继续进行其他操作）</span>`,
-        {
-          confirmText: '立即刷新',
-          cancelText: '稍后刷新'
-        }
-      );
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors
+      });
 
-      if (shouldRefresh) {
-        // 用户选择刷新页面
-        location.reload();
-      } else {
-        // 用户选择不刷新，尝试局部刷新界面
-        if (typeof loadChats === 'function') {
-          loadChats();
-        }
-      }
+      logImportObservability('log', {
+        entryPath: 'advanced',
+        sampleHint: pendingImportSampleHint,
+        stage: 'complete',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
+
+      await promptReloadChoice({
+        reason: 'advanced-import',
+        alertTitle: '导入成功',
+        alertMessage: buildImportSuccessAlertMessage('高级导入（合并）已完成。', importAuditSummary),
+        confirmTitle: '立即刷新以应用导入？',
+        confirmMessage: '高级导入完成后不会自动刷新。点击“立即刷新”即可应用更改，或稍后手动刷新。'
+      });
 
     } catch (error) {
-      console.error("高级导入数据时出错:", error);
-      await showCustomAlert('导入失败', `发生了一个错误: ${error.message}`);
+      const importAuditSummary = error?.importAuditSummary || buildImportAuditSummary({
+        importedTables,
+        importedRecords,
+        skippedUnknownTables,
+        failedTableErrors: failedTableErrors.length > 0 ? failedTableErrors : [error.message]
+      });
+      logImportObservability('error', {
+        entryPath: 'advanced',
+        sampleHint: pendingImportSampleHint,
+        stage: 'fail',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
+      console.error("高级导入数据时出错:", {
+        error,
+        importAuditSummary
+      });
+      await showCustomAlert('导入失败', buildImportFailureAlertMessage('高级导入', error.message, importAuditSummary));
+    } finally {
+      pendingImportSampleHint = 'unknown';
     }
   }
 
@@ -58062,6 +58486,7 @@ ${stickerList}
     const modalBody = document.getElementById('custom-modal-body');
     const confirmBtn = document.getElementById('custom-modal-confirm');
     const cancelBtn = document.getElementById('custom-modal-cancel');
+    const githubSampleHint = pendingImportSampleHint !== 'unknown' ? pendingImportSampleHint : 'github:selected-backup';
 
     const showProgress = (text) => {
       const modal = document.getElementById('custom-modal-overlay');
@@ -58150,14 +58575,6 @@ ${stickerList}
 
       showProgress("正在下载并恢复数据...");
 
-      // 4. 清空数据库 (一次性清空，避免分片恢复时数据冲突)
-      await db.transaction('rw', db.tables, async () => {
-        for (const table of db.tables) {
-          await table.clear();
-        }
-      });
-
-      // 5. 定义下载和处理单个文件的逻辑
       const processFile = async (filePath) => {
         let url = `https://api.github.com/repos/${username}/${repo}/contents/${filePath}`;
         if (state.apiConfig.githubProxyEnable && state.apiConfig.githubProxyUrl) {
@@ -58172,49 +58589,123 @@ ${stickerList}
         let json;
         const isGzipped = filePath.endsWith('.gz');
 
-        if (isGzipped && typeof pako !== 'undefined') {
-          // 处理 gzip 压缩的分片
-          const arrayBuffer = await res.arrayBuffer();
-          const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
-          json = JSON.parse(decompressed);
-        } else {
-          const text = await res.text();
-          try {
-            json = JSON.parse(text);
-          } catch (e) {
-            // 尝试 Base64 解码 (兼容旧逻辑)
-            const decoded = decodeURIComponent(escape(window.atob(text.replace(/\s/g, ''))));
-            json = JSON.parse(decoded);
+        try {
+          if (isGzipped) {
+            if (typeof pako === 'undefined') {
+              throw new Error('当前环境不支持 gzip 解压');
+            }
+            const arrayBuffer = await res.arrayBuffer();
+            const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
+            json = JSON.parse(decompressed);
+          } else {
+            const text = await res.text();
+            try {
+              json = JSON.parse(text);
+            } catch (e) {
+              const decoded = decodeURIComponent(escape(window.atob(text.replace(/\s/g, ''))));
+              json = JSON.parse(decoded);
+            }
           }
+        } catch (error) {
+          throw new Error(`备份分片解析失败: ${filePath} (${error.message})`);
         }
 
-        // 核心：根据格式决定如何导入
         const dataPart = json.data || json; // 兼容 {version:.., data:{...}} 和 直接 {...}
 
-        // 写入数据库
+        if (!dataPart || typeof dataPart !== 'object') {
+          throw new Error(`备份分片格式无效: ${filePath}`);
+        }
+
+        return dataPart;
+      };
+
+      const mergedBackupData = {};
+      const mergeDataPart = (dataPart) => {
         for (const tableName of Object.keys(dataPart)) {
           const records = dataPart[tableName];
+          if (!Array.isArray(records) || records.length === 0) continue;
+          if (!Array.isArray(mergedBackupData[tableName])) {
+            mergedBackupData[tableName] = [];
+          }
+          mergedBackupData[tableName].push(...records);
+        }
+      };
+
+      if (targetSet.type === 'multipart') {
+        targetSet.parts.sort((a, b) => a.num - b.num);
+        const partNumberSet = new Set(targetSet.parts.map(part => part.num));
+        if (partNumberSet.size !== targetSet.parts.length) {
+          throw new Error('GitHub恢复分片编号重复（数据库未清空）');
+        }
+        const maxPartNumber = targetSet.parts[targetSet.parts.length - 1].num;
+        const missingPartNumbers = [];
+        for (let expected = 1; expected <= maxPartNumber; expected++) {
+          if (!partNumberSet.has(expected)) {
+            missingPartNumbers.push(expected);
+          }
+        }
+        if (missingPartNumbers.length > 0) {
+          throw new Error(`GitHub恢复分片缺失（数据库未清空）: 缺少 part${missingPartNumbers.join(', part')}`);
+        }
+        for (let i = 0; i < targetSet.parts.length; i++) {
+          const part = targetSet.parts[i];
+          modalBody.innerHTML = `<div class="spinner"></div><p style="text-align:center;">正在处理分片 ${i + 1}/${targetSet.parts.length}...</p>`;
+          const dataPart = await processFile(part.path);
+          mergeDataPart(dataPart);
+          await new Promise(r => setTimeout(r, 50));
+        }
+      } else {
+        const dataPart = await processFile(targetSet.path);
+        mergeDataPart(dataPart);
+      }
+
+      const compatibilityPrecheck = precheckGitHubRestoreCompatibility(mergedBackupData);
+      console.log('[GitHub恢复][预检结果]', compatibilityPrecheck);
+      logImportObservability('log', {
+        entryPath: 'github',
+        sampleHint: githubSampleHint,
+        stage: 'precheck',
+        skippedCount: compatibilityPrecheck.skippedUnknownTables.length,
+        failedCount: compatibilityPrecheck.blockingErrors.length
+      });
+      if (compatibilityPrecheck.skippedUnknownTables.length > 0) {
+        console.warn(`[GitHub恢复] 发现未知表，已跳过: ${compatibilityPrecheck.skippedUnknownTables.join(', ')}`);
+      }
+      if (compatibilityPrecheck.blockingErrors.length > 0) {
+        throw new Error(`GitHub恢复预检失败（数据库未清空）: ${compatibilityPrecheck.blockingErrors.join('；')}`);
+      }
+
+      await db.transaction('rw', db.tables, async () => {
+        for (const table of db.tables) {
+          await table.clear();
+        }
+
+        for (const tableName of compatibilityPrecheck.knownTablesToImport) {
+          const records = mergedBackupData[tableName];
           if (Array.isArray(records) && records.length > 0) {
             await db.table(tableName).bulkPut(records);
           }
         }
-      };
+      });
 
-      // 6. 执行恢复
-      if (targetSet.type === 'multipart') {
-        targetSet.parts.sort((a, b) => a.num - b.num);
-        for (let i = 0; i < targetSet.parts.length; i++) {
-          const part = targetSet.parts[i];
-          modalBody.innerHTML = `<div class="spinner"></div><p style="text-align:center;">正在处理分片 ${i + 1}/${targetSet.parts.length}...</p>`;
-          await processFile(part.path);
-          // 强制垃圾回收建议（通过断开引用）
-          await new Promise(r => setTimeout(r, 50));
-        }
-      } else {
-        await processFile(targetSet.path);
-      }
+      const importedRecords = compatibilityPrecheck.knownTablesToImport.reduce((sum, tableName) => {
+        const records = mergedBackupData[tableName];
+        return sum + (Array.isArray(records) ? records.length : 0);
+      }, 0);
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables: compatibilityPrecheck.knownTablesToImport.length,
+        importedRecords,
+        skippedUnknownTables: compatibilityPrecheck.skippedUnknownTables,
+        failedTableErrors: []
+      });
+      logImportObservability('log', {
+        entryPath: 'github',
+        sampleHint: githubSampleHint,
+        stage: 'complete',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
 
-      // 7. 恢复 API 配置 (防止覆盖后丢失 Key)
       try {
         const restoredApiConfig = await db.apiConfig.get('main');
         if (restoredApiConfig) {
@@ -58222,7 +58713,6 @@ ${stickerList}
           if (restoredApiConfig.imgbbEnable !== undefined) localStorage.setItem('imgbb-enabled', restoredApiConfig.imgbbEnable);
           if (restoredApiConfig.minimaxApiKey) localStorage.setItem('minimax-api-key', restoredApiConfig.minimaxApiKey);
           if (restoredApiConfig.minimaxGroupId) localStorage.setItem('minimax-group-id', restoredApiConfig.minimaxGroupId);
-          // 恢复 GitHub 配置，否则下次无法备份
           if (restoredApiConfig.githubToken) state.apiConfig.githubToken = restoredApiConfig.githubToken;
         }
       } catch (e) { }
@@ -58231,7 +58721,7 @@ ${stickerList}
       await promptReloadChoice({
         reason: 'multi-part-restore',
         alertTitle: '恢复成功',
-        alertMessage: '所有分片已处理完毕，数据已恢复！页面不会自动刷新，您可以稍后手动刷新或点击“立即刷新”同步变更。',
+        alertMessage: buildImportSuccessAlertMessage('所有分片已处理完毕，数据已恢复！', importAuditSummary),
         confirmTitle: '立即刷新以应用恢复？',
         confirmMessage: '恢复完成后不会自动刷新，点击“立即刷新”即可应用备份内容。'
       });
@@ -58239,7 +58729,22 @@ ${stickerList}
     } catch (error) {
       console.error(error);
       confirmBtn.style.display = '';
-      await showCustomAlert("恢复失败", error.message);
+      const importAuditSummary = buildImportAuditSummary({
+        importedTables: 0,
+        importedRecords: 0,
+        skippedUnknownTables: [],
+        failedTableErrors: [error.message]
+      });
+      logImportObservability('error', {
+        entryPath: 'github',
+        sampleHint: githubSampleHint,
+        stage: 'fail',
+        skippedCount: importAuditSummary.skippedUnknownTables.length,
+        failedCount: importAuditSummary.failedTableErrors.length
+      });
+      await showCustomAlert("恢复失败", buildImportFailureAlertMessage('GitHub恢复', error.message, importAuditSummary));
+    } finally {
+      pendingImportSampleHint = 'unknown';
     }
   }
   let backupIntervalId = null;
