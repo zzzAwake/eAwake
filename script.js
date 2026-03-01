@@ -5207,6 +5207,10 @@ document.addEventListener('DOMContentLoaded', () => {
     watchTogetherPlaylist: '++id, name, timestamp'
   });
 
+  db.version(53).stores({
+    focusStats: '++id, timestamp, date, chatId'
+  });
+
   window.db = db;
 
   // ========================================
